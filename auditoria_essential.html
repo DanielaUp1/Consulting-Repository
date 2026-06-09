@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Auditoría de Cumplimiento RRHH · UPTURN</title>
-    <style>
+<style>
+
         * {
             margin: 0;
             padding: 0;
@@ -945,20 +946,7 @@
                 page-break-inside: avoid;
             }
         }
-    </style>
-</head>
-<body>
-    <div id="auditoria-root">
-        <div class="container">
-            <!-- HEADER -->
-            <div class="header">
-                <h1>Auditoría de Cumplimiento RRHH</h1>
-                <p>Su misión es obtener las 11 insignias para asegurar su cumplimiento</p>
-                <div class="header-empresa" id="headerEmpresa" style="display:none;">
-                    <span>📌 <span id="empresaName"></span></span>
-                    <span>✉️ <span id="empresaEmail"></span></span>
-
-    <style>
+    
         .config-banner{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#856404;display:none}
         .config-banner input{width:100%;margin-top:8px;padding:8px 12px;border:1px solid #ffc107;border-radius:6px;font-size:13px}
         .config-banner button{margin-top:8px;padding:6px 16px;background:#856404;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px}
@@ -986,179 +974,166 @@
         .historial-row .periodo{font-weight:700;color:var(--bright)}
         .historial-row .fecha{color:var(--gray-600);font-size:12px}
         .historial-row button{font-size:12px;padding:4px 12px;background:var(--bright);color:white;border:none;border-radius:6px;cursor:pointer}
-    </style>
+        .aviso-id{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 16px;margin-bottom:12px;font-size:13px;color:#856404;display:none}
+</style>
 </head>
 <body>
 
+<!-- MODAL CONFIRMACIÓN EMPRESA -->
 <div class="modal-overlay" id="modalConfirmEmpresa">
-    <div class="modal-box">
-        <h3>¿Es esta tu empresa?</h3>
-        <p>Encontramos registros anteriores para:</p>
-        <div class="modal-empresa-found" id="modalEmpresaFound">—</div>
-        <p>Si confirmas, cargaremos tu progreso más reciente.</p>
-        <div class="modal-btns">
-            <button class="btn-confirmar" onclick="confirmarEmpresaExistente()">Sí, es mi empresa</button>
-            <button class="btn-cancelar" onclick="cerrarModalEmpresa()">No, editar nombre</button>
-        </div>
+  <div class="modal-box">
+    <h3>¿Es esta tu empresa?</h3>
+    <p>Encontramos registros anteriores para:</p>
+    <div class="modal-empresa-found" id="modalEmpresaFound">—</div>
+    <p>Si confirmas, cargaremos tu progreso más reciente.</p>
+    <div class="modal-btns">
+      <button class="btn-confirmar" onclick="confirmarEmpresaExistente()">Sí, es mi empresa</button>
+      <button class="btn-cancelar" onclick="cerrarModalEmpresa()">No, editar nombre</button>
     </div>
+  </div>
 </div>
 
 <div class="container">
 
-    <div class="config-banner" id="configBanner">
-        ⚙️ <strong>Configuración inicial:</strong> Pega la URL del Apps Script para conectar con Google Sheets.
-        <input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/..." />
-        <button onclick="guardarScriptUrl()">Guardar URL</button>
+  <!-- BANNER CONFIG -->
+  <div class="config-banner" id="configBanner">
+    ⚙️ <strong>Configuración:</strong> Pega la URL del Apps Script para conectar con Google Sheets.
+    <input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/..." />
+    <button onclick="guardarScriptUrl()">Guardar URL</button>
+  </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Auditoría de Cumplimiento RRHH</h1>
+    <p>Sistema de validación de cumplimiento laboral — Puerto Rico</p>
+    <div class="header-empresa" id="headerEmpresa" style="display:none;">
+      <span id="empresaName"></span>
+      <span id="empresaEmail"></span>
+      <span class="save-status" id="saveStatus"></span>
     </div>
+  </div>
 
-    <div class="header">
-        <h1>Auditoría de Cumplimiento RRHH</h1>
-        <p>Sistema de validación de cumplimiento laboral — Puerto Rico</p>
-        <div class="header-empresa" id="headerEmpresa" style="display:none;">
-            <span id="empresaName"></span>
-            <span id="empresaEmail"></span>
-            <span class="save-status" id="saveStatus"></span>
+  <!-- NAVEGACIÓN -->
+  <div class="nav-tabs">
+    <button class="nav-btn active" id="navLanding" onclick="switchScreen('landing', this)">Inicio</button>
+    <button class="nav-btn" onclick="switchScreen('instrucciones', this)">Indicaciones</button>
+    <button class="nav-btn" id="navTabla" onclick="switchScreen('tabla-maestra', this)">Mi Progreso</button>
+  </div>
+
+  <!-- PANTALLA INICIO -->
+  <div id="landing" class="screen active">
+    <div class="landing-content">
+
+      <div class="instructions-section">
+        <button class="instructions-toggle" onclick="toggleInstructionsLanding()">Indicaciones — Cómo completar la auditoría</button>
+        <div class="instructions-content" id="instructionsContent">
+          <h3>¿Cómo funciona esta auditoría?</h3>
+          <ul>
+            <li><strong>Responde los módulos</strong> según el riesgo de tu empresa.</li>
+            <li><strong>Identifícate</strong> con el nombre de tu empresa para guardar tu progreso.</li>
+            <li><strong>Guarda tu progreso</strong> al terminar cada sesión con el botón de guardar.</li>
+            <li><strong>Valida</strong> cada módulo cuando hayas respondido todas las preguntas.</li>
+          </ul>
+          <h3>Sobre tus datos</h3>
+          <ul>
+            <li>Escribe siempre el nombre de tu empresa <strong>exactamente igual</strong>.</li>
+            <li>Cada guardado crea un registro trimestral (Q1–Q4) con fecha.</li>
+          </ul>
         </div>
+      </div>
+
+      <!-- IDENTIFICACIÓN -->
+      <div class="registro-section">
+        <h3>Información de tu Empresa</h3>
+        <div class="form-group">
+          <input type="text" id="empresaInput" placeholder="Nombre exacto de tu empresa" autocomplete="off" />
+          <input type="email" id="correoInput" placeholder="Correo de contacto" />
+        </div>
+        <button class="btn-guardar-progreso" onclick="identificarEmpresa()" style="background:var(--primary);margin-top:0;">Buscar mi empresa</button>
+        <div class="historial-panel" id="historialPanel">
+          <strong>Historial — <span id="historialEmpresaNombre"></span></strong>
+          <div id="historialLista"></div>
+        </div>
+      </div>
+
+      <p class="mision-text">Su misión es obtener las insignias para asegurar su cumplimiento</p>
+
+      <div class="brecha-section">
+        <strong>Identifique cuál es su mayor brecha en cumplimiento RRHH</strong>
+        <p>Inicie por los módulos donde considera que tiene mayor riesgo o incumplimiento.</p>
+      </div>
+
+      <div id="avisoId" class="aviso-id">⚠️ Estás respondiendo sin identificarte. <strong>Escribe el nombre de tu empresa y haz clic en "Buscar mi empresa"</strong> antes de guardar.</div>
+      <div class="badges-grid" id="badgesGrid"></div>
+
+      <div style="text-align:center;margin:24px 0;">
+        <button class="btn-guardar-progreso" id="btnGuardarProgreso" onclick="guardarProgreso()" disabled>💾 Guardar progreso de esta sesión</button>
+      </div>
     </div>
+  </div>
 
-    <div class="nav-tabs">
-        <button class="nav-btn active" id="navLanding" onclick="switchScreen('landing', this)">Inicio</button>
-        <button class="nav-btn" id="navInstrucciones" onclick="switchScreen('instrucciones', this)">Indicaciones</button>
-        <button class="nav-btn" id="navTabla" onclick="switchScreen('tabla-maestra', this)">Mi Progreso</button>
+  <!-- PANTALLA INSTRUCCIONES -->
+  <div id="instrucciones" class="screen">
+    <div class="instructions-page">
+      <h2>Indicaciones Completas</h2>
+      <div class="instruction-section">
+        <h3>Entendiendo las respuestas</h3>
+        <ul>
+          <li><strong>Sí:</strong> Confirmas que tu empresa cumple con ese punto legal.</li>
+          <li><strong>No:</strong> Identificaste un gap. Se mostrarán acciones para remediarlo.</li>
+          <li><strong>No Aplica:</strong> Ese punto no aplica a tu empresa.</li>
+        </ul>
+      </div>
+      <div class="instruction-section">
+        <h3>Guardando tu progreso</h3>
+        <ul>
+          <li>Identifícate con tu empresa antes de guardar.</li>
+          <li>Cada guardado crea un registro trimestral (Q1–Q4).</li>
+          <li>Al volver, escribe tu empresa y haz clic en "Buscar mi empresa" para cargar tu historial.</li>
+        </ul>
+      </div>
     </div>
+  </div>
 
-    <div id="landing" class="screen active">
-        <div class="landing-content">
-            <div class="instructions-section">
-                <button class="instructions-toggle" onclick="toggleInstructionsLanding()">Indicaciones — Cómo completar la auditoría</button>
-                <div class="instructions-content" id="instructionsContent">
-                    <h3>¿Cómo funciona esta auditoría?</h3>
-                    <ul>
-                        <li><strong>Identifícate:</strong> Escribe el nombre exacto de tu empresa. Usa siempre el mismo nombre para que tu progreso se cargue correctamente.</li>
-                        <li><strong>Elige un módulo:</strong> Haz clic en cualquiera según tu prioridad de riesgo.</li>
-                        <li><strong>Responde las preguntas:</strong> Marca "Sí", "No" o "No Aplica" según corresponda.</li>
-                        <li><strong>Guarda tu progreso:</strong> Usa el botón "Guardar progreso" al finalizar cada sesión.</li>
-                        <li><strong>Valida tu cumplimiento:</strong> Una vez respondidas todas las preguntas de un módulo.</li>
-                    </ul>
-                    <h3>Sobre tus datos</h3>
-                    <ul>
-                        <li>Tus respuestas se guardan en la nube. Puedes retomar desde cualquier dispositivo.</li>
-                        <li>Cada vez que guardas, se crea un registro con la fecha. Podrás comparar tu avance trimestre a trimestre.</li>
-                        <li>Escribe siempre el nombre de tu empresa <strong>exactamente igual</strong>.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="registro-section">
-                <h3>Información de tu Empresa</h3>
-                <div class="form-group">
-                    <input type="text" id="empresaInput" placeholder="Nombre exacto de tu empresa" autocomplete="off" />
-                    <input type="email" id="correoInput" placeholder="Correo de contacto" />
-                </div>
-                <button class="btn-guardar-progreso" onclick="identificarEmpresa()" style="margin-top:8px;background:var(--primary);">Buscar mi empresa</button>
-                <div class="historial-panel" id="historialPanel">
-                    <strong>Historial — <span id="historialEmpresaNombre"></span></strong>
-                    <div id="historialLista"></div>
-                </div>
-            </div>
-
-            <p class="mision-text">Su misión es obtener las insignias para asegurar su cumplimiento</p>
-
-            <div class="brecha-section">
-                <strong>Identifique cuál es su mayor brecha en cumplimiento RRHH</strong>
-                <p>Inicie por los módulos donde considera que tiene mayor riesgo o incumplimiento.</p>
-                <strong style="margin-top:16px;">¿Por dónde debería empezar?</strong>
-                <p>Todos los módulos son críticos para cumplimiento normativo. Inicie por los módulos donde SIENTE que hay mayor brecha. Obtendrá las insignias una vez valide el cumplimiento de cada módulo.</p>
-            </div>
-
-            <div id="avisoIdentificacion" style="display:none;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:10px 16px;margin-bottom:12px;font-size:13px;color:#856404;">
-    ⚠️ Estás respondiendo sin identificarte. <strong>Escribe el nombre de tu empresa arriba y haz clic en "Buscar mi empresa"</strong> antes de guardar para que tu progreso quede registrado.
-</div>
-<div class="badges-grid" id="badgesGrid"></div>
-
-            <div style="text-align:center;margin:24px 0;">
-                <button class="btn-guardar-progreso" id="btnGuardarProgreso" onclick="guardarProgreso()" disabled>
-                    💾 Guardar progreso de esta sesión
-                </button>
-            </div>
-        </div>
+  <!-- PANTALLA MÓDULO -->
+  <div id="modulo" class="screen">
+    <div class="module-header">
+      <button class="back-btn" onclick="volverAlInicio()">← Volver</button>
+      <h2 id="moduleTitle"></h2>
+      <p id="moduleDesc"></p>
+      <div class="module-progress">
+        <div class="progress-bar"><div class="progress-fill" id="moduleProgressFill" style="width:0%"></div></div>
+        <span id="modulePercentage">0%</span>
+      </div>
     </div>
-
-    <div id="instrucciones" class="screen">
-        <div class="instructions-page">
-            <h2>Indicaciones Completas</h2>
-            <div class="instruction-section">
-                <h3>¿Cómo funciona esta auditoría?</h3>
-                <ul>
-                    <li><strong>Elige un módulo:</strong> Haz clic según tu prioridad de riesgo legal.</li>
-                    <li><strong>Responde las preguntas:</strong> Marca "Sí", "No" o "No Aplica".</li>
-                    <li><strong>Completa las acciones:</strong> Si respondes "No", verás acciones pendientes con links a lecciones.</li>
-                    <li><strong>Valida tu cumplimiento:</strong> Una vez respondidas todas las preguntas, haz clic en "Validar".</li>
-                    <li><strong>Obtén las insignias:</strong> Al completar todos los módulos al 100%.</li>
-                </ul>
-            </div>
-            <div class="instruction-section">
-                <h3>Entendiendo las respuestas</h3>
-                <ul>
-                    <li><strong>Sí:</strong> Confirmas que tu empresa cumple con ese punto legal.</li>
-                    <li><strong>No:</strong> Identificaste un gap. Se mostrarán acciones específicas para remediarlo.</li>
-                    <li><strong>No Aplica:</strong> Ese punto no aplica a tu empresa; no cuenta en el cumplimiento.</li>
-                </ul>
-            </div>
-            <div class="instruction-section">
-                <h3>Guardando tu progreso</h3>
-                <ul>
-                    <li>Usa el botón <strong>"Guardar progreso"</strong> al terminar cada sesión.</li>
-                    <li>Cada guardado crea un registro trimestral (Q1–Q4) con la fecha exacta.</li>
-                    <li>Al iniciar, escribe tu empresa y haz clic en <strong>"Buscar mi empresa"</strong> para cargar tu progreso anterior.</li>
-                </ul>
-            </div>
-        </div>
+    <div id="questionsContainer"></div>
+    <div id="tablaLocal" class="tabla-local">
+      <h3>Acciones Pendientes</h3>
+      <table><thead><tr><th>Pregunta</th><th>Acción Requerida</th><th>Recurso</th></tr></thead>
+      <tbody id="tablaLocalBody"></tbody></table>
     </div>
-
-    <div id="modulo" class="screen">
-        <div class="module-header">
-            <button class="back-btn" onclick="volverAlInicio()">← Volver</button>
-            <h2 id="moduleTitle"></h2>
-            <p id="moduleDesc"></p>
-            <div class="module-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="moduleProgressFill" style="width:0%"></div>
-                </div>
-                <span id="modulePercentage">0%</span>
-            </div>
-        </div>
-        <div id="questionsContainer"></div>
-        <div id="tablaLocal" class="tabla-local">
-            <h3>Acciones Pendientes (Respuestas 'No')</h3>
-            <table>
-                <thead><tr><th>Pregunta</th><th>Acción Requerida</th><th>Recurso</th></tr></thead>
-                <tbody id="tablaLocalBody"></tbody>
-            </table>
-        </div>
-        <div class="module-footer">
-            <button class="btn btn-secondary" onclick="volverAlInicio()">← Regresar</button>
-            <button class="btn btn-primary" id="btnValidar" onclick="validarModulo()" disabled>Validar Módulo ✓</button>
-        </div>
+    <div class="module-footer">
+      <button class="btn btn-secondary" onclick="volverAlInicio()">← Regresar</button>
+      <button class="btn btn-primary" id="btnValidar" onclick="validarModulo()" disabled>Validar Módulo ✓</button>
     </div>
+  </div>
 
-    <div id="tabla-maestra" class="screen">
-        <div class="tabla-maestra-header">
-            <div class="dashboard-stats">
-                <div class="stat-card"><div class="stat-number" id="globalPercentage">0%</div><div class="stat-label">Cumplimiento Global</div></div>
-                <div class="stat-card"><div class="stat-number" id="totalRespondidas">0/0</div><div class="stat-label">Preguntas Respondidas</div></div>
-                <div class="stat-card"><div class="stat-number" id="totalPendientes">0</div><div class="stat-label">Acciones Pendientes</div></div>
-            </div>
-            <div id="estadoGeneral" class="estado"></div>
-        </div>
-        <div id="tablaMaestraContent"></div>
-        <div style="text-align:center;margin:24px 0;">
-            <button class="btn btn-secondary" onclick="window.print()">Descargar Reporte</button>
-            <button class="btn-guardar-progreso" id="btnGuardarProgresoTabla" onclick="guardarProgreso()" disabled style="margin-left:12px;">
-                💾 Guardar progreso
-            </button>
-        </div>
+  <!-- PANTALLA MI PROGRESO -->
+  <div id="tabla-maestra" class="screen">
+    <div class="tabla-maestra-header">
+      <div class="dashboard-stats">
+        <div class="stat-card"><div class="stat-number" id="globalPercentage">0%</div><div class="stat-label">Cumplimiento Global</div></div>
+        <div class="stat-card"><div class="stat-number" id="totalRespondidas">0/0</div><div class="stat-label">Preguntas Respondidas</div></div>
+        <div class="stat-card"><div class="stat-number" id="totalPendientes">0</div><div class="stat-label">Acciones Pendientes</div></div>
+      </div>
+      <div id="estadoGeneral" class="estado"></div>
     </div>
+    <div id="tablaMaestraContent"></div>
+    <div style="text-align:center;margin:24px 0;">
+      <button class="btn btn-secondary" onclick="window.print()">Descargar Reporte</button>
+      <button class="btn-guardar-progreso" id="btnGuardarProgresoTabla" onclick="guardarProgreso()" disabled style="margin-left:12px;">💾 Guardar progreso</button>
+    </div>
+  </div>
 
 </div>
 
@@ -1735,10 +1710,6 @@ const MODULOS = {
         };
 
 
-// ============================================================
-// CONFIGURACIÓN
-// ============================================================
-
 const SCRIPT_URL_KEY = 'upturn_auditoria_script_url';
 const EMPRESA_KEY    = 'upturn_auditoria_empresa';
 
@@ -1746,22 +1717,20 @@ let SCRIPT_URL = localStorage.getItem(SCRIPT_URL_KEY) || '';
 let respuestas = {};
 let currentModuloId = null;
 let empresaActiva = '';
-let correoActivo = '';
+let correoActivo  = '';
 let historialRegistros = [];
 
 function init() {
     if (!SCRIPT_URL) document.getElementById('configBanner').style.display = 'block';
-    const savedEmpresa = localStorage.getItem(EMPRESA_KEY);
-    if (savedEmpresa) document.getElementById('empresaInput').value = savedEmpresa;
+    const saved = localStorage.getItem(EMPRESA_KEY);
+    if (saved) document.getElementById('empresaInput').value = saved;
     renderBadges();
-    updateHeader();
 }
 
 function guardarScriptUrl() {
     const url = document.getElementById('scriptUrlInput').value.trim();
     if (!url.startsWith('https://script.google.com')) {
-        alert('La URL no parece correcta. Verifica que empiece con https://script.google.com');
-        return;
+        alert('URL incorrecta. Debe empezar con https://script.google.com'); return;
     }
     SCRIPT_URL = url;
     localStorage.setItem(SCRIPT_URL_KEY, url);
@@ -1769,29 +1738,27 @@ function guardarScriptUrl() {
 }
 
 async function identificarEmpresa() {
-    const inputEmpresa = document.getElementById('empresaInput').value.trim();
-    const inputCorreo  = document.getElementById('correoInput').value.trim();
-    if (!inputEmpresa) { alert('Escribe el nombre de tu empresa antes de continuar.'); return; }
-    if (!SCRIPT_URL) { alert('El sistema no está configurado. Contacta a tu consultor de UPTURN.'); return; }
+    const nombre = document.getElementById('empresaInput').value.trim();
+    const correo = document.getElementById('correoInput').value.trim();
+    if (!nombre) { alert('Escribe el nombre de tu empresa.'); return; }
+    if (!SCRIPT_URL) { activarEmpresa(nombre, correo, []); return; }
     mostrarStatus('saving', 'Buscando...');
     try {
-        const resp = await fetch(SCRIPT_URL + '?action=search&empresa=' + encodeURIComponent(inputEmpresa));
-        const data = await resp.json();
-        if (data.ok && data.registros.length > 0) {
-            const nombreEncontrado = data.registros[0].empresa;
-            historialRegistros = data.registros;
-            if (nombreEncontrado.toLowerCase() !== inputEmpresa.toLowerCase()) {
-                document.getElementById('modalEmpresaFound').textContent = nombreEncontrado;
+        const r = await fetch(SCRIPT_URL + '?action=search&empresa=' + encodeURIComponent(nombre));
+        const d = await r.json();
+        if (d.ok && d.registros.length > 0) {
+            const encontrado = d.registros[0].empresa;
+            historialRegistros = d.registros;
+            if (encontrado.toLowerCase() !== nombre.toLowerCase()) {
+                document.getElementById('modalEmpresaFound').textContent = encontrado;
                 document.getElementById('modalConfirmEmpresa').classList.add('show');
             } else {
-                activarEmpresa(nombreEncontrado, inputCorreo, data.registros);
+                activarEmpresa(encontrado, correo, d.registros);
             }
         } else {
-            activarEmpresa(inputEmpresa, inputCorreo, []);
+            activarEmpresa(nombre, correo, []);
         }
-    } catch (err) {
-        mostrarStatus('error', 'Error de conexión');
-    }
+    } catch(e) { mostrarStatus('error', 'Error de conexión'); }
 }
 
 function confirmarEmpresaExistente() {
@@ -1808,8 +1775,7 @@ function cerrarModalEmpresa() {
 }
 
 function activarEmpresa(nombre, correo, registros) {
-    empresaActiva = nombre;
-    correoActivo  = correo;
+    empresaActiva = nombre; correoActivo = correo;
     localStorage.setItem(EMPRESA_KEY, nombre);
     if (registros.length > 0) {
         cargarRespuestasDesdeRegistro(registros[registros.length - 1]);
@@ -1819,22 +1785,20 @@ function activarEmpresa(nombre, correo, registros) {
     document.getElementById('btnGuardarProgresoTabla').disabled = false;
     updateHeader();
     renderBadges();
-    mostrarStatus('saved', registros.length > 0 ? registros.length + ' registros anteriores cargados' : 'Empresa nueva registrada');
+    mostrarStatus('saved', registros.length > 0 ? registros.length + ' registros cargados' : 'Empresa nueva');
 }
 
-function cargarRespuestasDesdeRegistro(registro) {
+function cargarRespuestasDesdeRegistro(reg) {
     respuestas = {};
-    Object.keys(MODULOS).forEach(moduloId => {
-        MODULOS[moduloId].preguntas.forEach(q => {
-            const val = registro[q.id];
-            if (val && val !== '') {
-                if (!respuestas[moduloId]) respuestas[moduloId] = {};
-                respuestas[moduloId][q.id] = val;
+    Object.keys(MODULOS).forEach(mid => {
+        MODULOS[mid].preguntas.forEach(q => {
+            if (reg[q.id]) {
+                if (!respuestas[mid]) respuestas[mid] = {};
+                respuestas[mid][q.id] = reg[q.id];
             }
         });
     });
-    renderBadges();
-    updateTablaMaestra();
+    renderBadges(); updateTablaMaestra();
 }
 
 function mostrarHistorial(registros) {
@@ -1842,13 +1806,14 @@ function mostrarHistorial(registros) {
     const lista  = document.getElementById('historialLista');
     document.getElementById('historialEmpresaNombre').textContent = empresaActiva;
     lista.innerHTML = registros.map((r, i) => {
-        const fecha = new Date(r.timestamp).toLocaleDateString('es-PR', { year:'numeric', month:'short', day:'numeric' });
-        const esReciente = i === registros.length - 1;
+        const fecha = new Date(r.timestamp).toLocaleDateString('es-PR', {year:'numeric',month:'short',day:'numeric'});
+        const activo = i === registros.length - 1;
         return '<div class="historial-row">'
             + '<span class="periodo">' + r.periodo + '</span>'
             + '<span class="fecha">' + fecha + '</span>'
-            + '<button onclick="cargarRegistroHistorial(' + i + ')" ' + (esReciente ? 'style="background:var(--gray-200);color:var(--gray-700);"' : '') + '>'
-            + (esReciente ? 'Activo' : 'Cargar') + '</button>'
+            + '<button onclick="cargarRegistroHistorial(' + i + ')" '
+            + (activo ? 'style="background:var(--gray-200);color:var(--gray-700);"' : '') + '>'
+            + (activo ? 'Activo' : 'Cargar') + '</button>'
             + '</div>';
     }).join('');
     panel.classList.add('show');
@@ -1861,35 +1826,30 @@ function cargarRegistroHistorial(idx) {
 
 async function guardarProgreso() {
     if (!empresaActiva) { alert('Primero identifica tu empresa.'); return; }
-    if (!SCRIPT_URL) { alert('El sistema no está configurado.'); return; }
+    if (!SCRIPT_URL) { alert('Configura la URL del Apps Script primero.'); return; }
     mostrarStatus('saving', 'Guardando...');
     const payload = { empresa: empresaActiva, tipo_cliente: 'Essential', consultora: '' };
-    Object.keys(MODULOS).forEach(moduloId => {
-        MODULOS[moduloId].preguntas.forEach(q => {
-            payload[q.id] = respuestas[moduloId] && respuestas[moduloId][q.id] ? respuestas[moduloId][q.id] : '';
+    Object.keys(MODULOS).forEach(mid => {
+        MODULOS[mid].preguntas.forEach(q => {
+            payload[q.id] = (respuestas[mid] && respuestas[mid][q.id]) ? respuestas[mid][q.id] : '';
         });
     });
-    const completados = Object.keys(MODULOS).filter(id => {
-        const prog = getModuloProgress(id);
-        return prog.respondidas === prog.total && prog.total > 0;
+    payload.modulos_completados = Object.keys(MODULOS).filter(id => {
+        const p = getModuloProgress(id); return p.respondidas === p.total && p.total > 0;
     }).join(', ');
-    payload.modulos_completados = completados;
     payload.notas = '';
     try {
-        const resp = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-        const data = await resp.json();
-        if (data.ok) mostrarStatus('saved', 'Guardado · ' + data.periodo);
+        const r = await fetch(SCRIPT_URL, {method:'POST', body: JSON.stringify(payload)});
+        const d = await r.json();
+        if (d.ok) mostrarStatus('saved', 'Guardado · ' + d.periodo);
         else mostrarStatus('error', 'Error al guardar');
-    } catch (err) {
-        mostrarStatus('error', 'Sin conexión');
-    }
+    } catch(e) { mostrarStatus('error', 'Sin conexión'); }
 }
 
-function mostrarStatus(tipo, mensaje) {
+function mostrarStatus(tipo, msg) {
     const el = document.getElementById('saveStatus');
     el.className = 'save-status ' + tipo;
-    const icons = { saving: '⏳', saved: '✓', error: '✗' };
-    el.innerHTML = icons[tipo] + ' ' + mensaje;
+    el.innerHTML = {saving:'⏳',saved:'✓',error:'✗'}[tipo] + ' ' + msg;
     document.getElementById('headerEmpresa').style.display = 'block';
 }
 
@@ -1909,222 +1869,179 @@ function switchScreen(screen, btn) {
     if (screen === 'tabla-maestra') updateTablaMaestra();
 }
 
-function volverAlInicio() {
-    switchScreen('landing', document.getElementById('navLanding'));
-}
-
-function toggleInstructionsLanding() {
-    document.getElementById('instructionsContent').classList.toggle('active');
-}
+function volverAlInicio() { switchScreen('landing', document.getElementById('navLanding')); }
+function toggleInstructionsLanding() { document.getElementById('instructionsContent').classList.toggle('active'); }
 
 function renderBadges() {
     const grid = document.getElementById('badgesGrid');
-    const isReady = true; // módulos siempre visibles; guardar requiere identificación
     grid.innerHTML = '';
     Object.values(MODULOS).forEach(modulo => {
-        const progress = getModuloProgress(modulo.id);
+        const p = getModuloProgress(modulo.id);
         const card = document.createElement('div');
         card.className = 'badge-card';
         const btn = document.createElement('button');
         btn.className = 'btn-entrar';
         btn.textContent = 'Entrar al Módulo';
-        btn.disabled = !isReady;
         btn.onclick = () => openModulo(modulo.id);
         card.innerHTML = '<div class="badge-icon">' + modulo.icon + '</div>'
             + '<div class="badge-name">' + modulo.nombre + '</div>'
             + '<div class="badge-desc">' + modulo.descripcion + '</div>'
-            + '<div class="badge-progress">' + progress.cumplimiento + '% cumplimiento</div>'
-            + '<div class="progress-bar-small"><div class="progress-fill" style="width:' + progress.cumplimiento + '%"></div></div>';
+            + '<div class="badge-progress">' + p.cumplimiento + '% cumplimiento</div>'
+            + '<div class="progress-bar-small"><div class="progress-fill" style="width:' + p.cumplimiento + '%"></div></div>';
         card.appendChild(btn);
         grid.appendChild(card);
     });
 }
 
 function getModuloProgress(moduloId) {
-    const modulo = MODULOS[moduloId];
-    const total = modulo.preguntas.length;
+    const m = MODULOS[moduloId], total = m.preguntas.length;
     const respondidas = Object.keys(respuestas[moduloId] || {}).length;
-    let conteoSi = 0, conteoNoAplica = 0;
-    modulo.preguntas.forEach(q => {
-        const resp = respuestas[moduloId] && respuestas[moduloId][q.id];
-        if (resp === 'si') conteoSi++;
-        if (resp === 'naplica') conteoNoAplica++;
+    let si = 0, na = 0;
+    m.preguntas.forEach(q => {
+        const v = respuestas[moduloId] && respuestas[moduloId][q.id];
+        if (v === 'si') si++;
+        if (v === 'naplica') na++;
     });
-    const denominador = total - conteoNoAplica;
-    const cumplimiento = denominador === 0 ? 0 : Math.round((conteoSi / denominador) * 100);
-    return { total, respondidas, cumplimiento };
+    const denom = total - na;
+    return { total, respondidas, cumplimiento: denom === 0 ? 0 : Math.round((si/denom)*100) };
 }
 
 function openModulo(moduloId) {
     currentModuloId = moduloId;
-    const modulo = MODULOS[moduloId];
-    document.getElementById('moduleTitle').textContent = modulo.nombre;
-    document.getElementById('moduleDesc').textContent = modulo.descripcion;
-    renderQuestions(modulo);
-    updateModuleProgress(modulo);
-    updateTablaLocal(modulo);
-    switchScreen('modulo', null);
-    window.scrollTo(0, 0);
+    const m = MODULOS[moduloId];
+    document.getElementById('moduleTitle').textContent = m.nombre;
+    document.getElementById('moduleDesc').textContent = m.descripcion;
+    renderQuestions(m); updateModuleProgress(m); updateTablaLocal(m);
+    switchScreen('modulo', null); window.scrollTo(0,0);
 }
 
 function renderQuestions(modulo) {
-    const container = document.getElementById('questionsContainer');
-    container.innerHTML = '';
-    let currentSeccion = null;
+    const cont = document.getElementById('questionsContainer');
+    cont.innerHTML = '';
+    let secActual = null;
     modulo.preguntas.forEach((q, idx) => {
-        if (modulo.secciones && q.seccion !== currentSeccion) {
-            currentSeccion = q.seccion;
-            const seccion = modulo.secciones.find(s => s.id === currentSeccion);
-            if (seccion) {
-                const sh = document.createElement('div');
-                sh.className = 'section-header';
-                sh.textContent = seccion.nombre;
-                container.appendChild(sh);
-            }
+        if (modulo.secciones && q.seccion !== secActual) {
+            secActual = q.seccion;
+            const sec = modulo.secciones.find(s => s.id === secActual);
+            if (sec) { const d = document.createElement('div'); d.className='section-header'; d.textContent=sec.nombre; cont.appendChild(d); }
         }
-        const card = document.createElement('div');
-        card.className = 'question-card';
-        const response = respuestas[modulo.id] && respuestas[modulo.id][q.id];
-        const opciones = ['si', 'no'];
-        if (q.tieneNoAplica) opciones.push('naplica');
-        let optionsHTML = opciones.map(opt => {
-            const isSelected = response === opt;
-            const labels = { 'si': 'Sí', 'no': 'No', 'naplica': 'No Aplica' };
-            return '<button class="option-btn ' + (isSelected ? 'selected ' + opt : '') + '" onclick="responderPregunta(\'' + modulo.id + '\', \'' + q.id + '\', \'' + opt + '\')">' + labels[opt] + '</button>';
-        }).join('');
-        let infoBoxHTML = '';
-        if (response === 'si') {
-            const checklistHTML = q.checklistSi.map((p, i) => i === 0 ? '<strong>' + p + '</strong>' : '<li>' + p + '</li>').join('');
-            infoBoxHTML = '<div class="info-box si show">' + checklistHTML + '</div>';
-        } else if (response === 'no') {
-            infoBoxHTML = '<div class="info-box no show"><strong>Acciones a completar:</strong><p>' + q.accionNo + '</p><a href="' + q.linkCallao + '" target="_blank">Ir a la Lección</a></div>';
-        } else if (response === 'naplica') {
-            infoBoxHTML = '<div class="info-box naplica show"><strong>No Aplica</strong><p>Esta pregunta no aplica a tu empresa.</p></div>';
+        const card = document.createElement('div'); card.className = 'question-card';
+        const resp = respuestas[modulo.id] && respuestas[modulo.id][q.id];
+        const opts = ['si','no']; if (q.tieneNoAplica) opts.push('naplica');
+        const labels = {si:'Sí',no:'No',naplica:'No Aplica'};
+        let optsHTML = opts.map(o =>
+            '<button class="option-btn ' + (resp===o ? 'selected '+o : '') + '" onclick="responderPregunta(\'' + modulo.id + '\',\'' + q.id + '\',\'' + o + '\')">' + labels[o] + '</button>'
+        ).join('');
+        let info = '';
+        if (resp==='si') {
+            info = '<div class="info-box si show">' + q.checklistSi.map((p,i)=>i===0?'<strong>'+p+'</strong>':'<li>'+p+'</li>').join('') + '</div>';
+        } else if (resp==='no') {
+            info = '<div class="info-box no show"><strong>Acciones a completar:</strong><p>' + q.accionNo + '</p><a href="' + q.linkCallao + '" target="_blank">Ir a la Lección</a></div>';
+        } else if (resp==='naplica') {
+            info = '<div class="info-box naplica show"><strong>No Aplica</strong><p>Esta pregunta no aplica a tu empresa.</p></div>';
         }
-        card.innerHTML = '<div class="question-text">' + (idx+1) + '. ' + q.pregunta + '</div><div class="question-options">' + optionsHTML + '</div>' + infoBoxHTML;
-        container.appendChild(card);
+        card.innerHTML = '<div class="question-text">'+(idx+1)+'. '+q.pregunta+'</div><div class="question-options">'+optsHTML+'</div>'+info;
+        cont.appendChild(card);
     });
     updateValidarBtn(modulo);
 }
 
-function responderPregunta(moduloId, preguntaId, respuesta) {
-    if (!respuestas[moduloId]) respuestas[moduloId] = {};
-    respuestas[moduloId][preguntaId] = respuesta;
-    // Recordatorio suave si aún no se identificó
-    if (!empresaActiva) {
-        const aviso = document.getElementById('avisoIdentificacion');
-        if (aviso) aviso.style.display = 'block';
-    }
-    const modulo = MODULOS[moduloId];
-    renderQuestions(modulo);
-    updateModuleProgress(modulo);
-    updateTablaLocal(modulo);
-    updateTablaMaestra();
-    renderBadges();
+function responderPregunta(mid, qid, val) {
+    if (!respuestas[mid]) respuestas[mid] = {};
+    respuestas[mid][qid] = val;
+    if (!empresaActiva) document.getElementById('avisoId').style.display = 'block';
+    const m = MODULOS[mid];
+    renderQuestions(m); updateModuleProgress(m); updateTablaLocal(m); updateTablaMaestra(); renderBadges();
 }
 
-function updateModuleProgress(modulo) {
-    const progress = getModuloProgress(modulo.id);
-    document.getElementById('moduleProgressFill').style.width = progress.cumplimiento + '%';
-    document.getElementById('modulePercentage').textContent = progress.cumplimiento + '%';
-    updateValidarBtn(modulo);
+function updateModuleProgress(m) {
+    const p = getModuloProgress(m.id);
+    document.getElementById('moduleProgressFill').style.width = p.cumplimiento + '%';
+    document.getElementById('modulePercentage').textContent = p.cumplimiento + '%';
+    updateValidarBtn(m);
 }
 
-function updateValidarBtn(modulo) {
-    const progress = getModuloProgress(modulo.id);
-    document.getElementById('btnValidar').disabled = progress.respondidas !== progress.total;
+function updateValidarBtn(m) {
+    const p = getModuloProgress(m.id);
+    document.getElementById('btnValidar').disabled = p.respondidas !== p.total;
 }
 
-function updateTablaLocal(modulo) {
+function updateTablaLocal(m) {
     const tabla = document.getElementById('tablaLocal');
     const tbody = document.getElementById('tablaLocalBody');
-    const noResponses = modulo.preguntas.filter(q => respuestas[modulo.id] && respuestas[modulo.id][q.id] === 'no');
-    if (noResponses.length === 0) {
-        tabla.classList.remove('show');
-    } else {
-        tabla.classList.add('show');
-        tbody.innerHTML = noResponses.map(q => '<tr><td>' + q.pregunta + '</td><td>' + q.accionNo + '</td><td><a href="' + q.linkCallao + '" target="_blank">Ir</a></td></tr>').join('');
-    }
+    const nos = m.preguntas.filter(q => respuestas[m.id] && respuestas[m.id][q.id]==='no');
+    if (nos.length===0) { tabla.classList.remove('show'); return; }
+    tabla.classList.add('show');
+    tbody.innerHTML = nos.map(q=>'<tr><td>'+q.pregunta+'</td><td>'+q.accionNo+'</td><td><a href="'+q.linkCallao+'" target="_blank">Ir</a></td></tr>').join('');
 }
 
 function validarModulo() {
-    const modulo = MODULOS[currentModuloId];
-    const progress = getModuloProgress(modulo.id);
-    if (progress.respondidas !== progress.total) { alert('Debes responder todas las preguntas.'); return; }
-    const tieneNo = modulo.preguntas.some(q => respuestas[modulo.id] && respuestas[modulo.id][q.id] === 'no');
-    if (tieneNo) { alert('Aún tienes respuestas "No". Completa las acciones pendientes primero.'); return; }
-    alert('¡Felicidades! Validaste el módulo "' + modulo.nombre + '".\n\nAhora accede al quiz final en Kajabi para obtener tu insignia.');
-    window.open(modulo.linkValidar, '_blank');
+    const m = MODULOS[currentModuloId];
+    const p = getModuloProgress(m.id);
+    if (p.respondidas !== p.total) { alert('Debes responder todas las preguntas.'); return; }
+    if (m.preguntas.some(q => respuestas[m.id] && respuestas[m.id][q.id]==='no')) {
+        alert('Aún tienes respuestas "No". Completa las acciones pendientes primero.'); return;
+    }
+    alert('¡Felicidades! Validaste el módulo "' + m.nombre + '".\n\nAccede al quiz final en Kajabi para obtener tu insignia.');
+    window.open(m.linkValidar, '_blank');
 }
 
 function updateTablaMaestra() {
-    let totalRespondidas=0, totalPendientes=0, totalPreguntas=0, totalSi=0, totalNoAplica=0, tieneNo=false;
-    Object.values(MODULOS).forEach(modulo => {
-        totalPreguntas += modulo.preguntas.length;
-        modulo.preguntas.forEach(q => {
-            const resp = respuestas[modulo.id] && respuestas[modulo.id][q.id];
-            if (resp) totalRespondidas++;
-            if (resp === 'si') totalSi++;
-            if (resp === 'naplica') totalNoAplica++;
-            if (resp === 'no') { totalPendientes++; tieneNo = true; }
+    let tR=0,tP=0,tQ=0,tS=0,tNA=0,tieneNo=false;
+    Object.values(MODULOS).forEach(m => {
+        tQ += m.preguntas.length;
+        m.preguntas.forEach(q => {
+            const v = respuestas[m.id] && respuestas[m.id][q.id];
+            if (v) tR++;
+            if (v==='si') tS++;
+            if (v==='naplica') tNA++;
+            if (v==='no') { tP++; tieneNo=true; }
         });
     });
-    const denominador = totalPreguntas - totalNoAplica;
-    const globalCumplimiento = denominador === 0 ? 0 : Math.round((totalSi / denominador) * 100);
-    document.getElementById('globalPercentage').textContent = globalCumplimiento + '%';
-    document.getElementById('totalRespondidas').textContent = totalRespondidas + '/' + totalPreguntas;
-    document.getElementById('totalPendientes').textContent = totalPendientes;
-    document.getElementById('estadoGeneral').textContent = tieneNo ? 'ESTADO: RIESGO CRÍTICO' : 'ESTADO: EN CUMPLIMIENTO';
-    document.getElementById('estadoGeneral').className = tieneNo ? 'estado estado-critico' : 'estado estado-cumplimiento';
+    const den = tQ-tNA;
+    const pct = den===0?0:Math.round((tS/den)*100);
+    document.getElementById('globalPercentage').textContent = pct+'%';
+    document.getElementById('totalRespondidas').textContent = tR+'/'+tQ;
+    document.getElementById('totalPendientes').textContent = tP;
+    document.getElementById('estadoGeneral').textContent = tieneNo?'ESTADO: RIESGO CRÍTICO':'ESTADO: EN CUMPLIMIENTO';
+    document.getElementById('estadoGeneral').className = tieneNo?'estado estado-critico':'estado estado-cumplimiento';
     renderTablaMaestra();
 }
 
-function getEstadoModulo(moduloId) {
-    const modulo = MODULOS[moduloId];
-    const progress = getModuloProgress(moduloId);
-    const noResponses = modulo.preguntas.filter(q => respuestas[moduloId] && respuestas[moduloId][q.id] === 'no');
-    if (progress.respondidas < progress.total) return { estado: 'INCOMPLETO', clase: 'estado-incompleto' };
-    if (noResponses.length > 0) return { estado: 'CRÍTICO', clase: 'estado-critico' };
-    return { estado: 'CUMPLIMIENTO', clase: 'estado-cumplimiento' };
+function getEstadoModulo(mid) {
+    const p = getModuloProgress(mid);
+    const nos = MODULOS[mid].preguntas.filter(q => respuestas[mid] && respuestas[mid][q.id]==='no');
+    if (p.respondidas < p.total) return {estado:'INCOMPLETO',clase:'estado-incompleto'};
+    if (nos.length > 0) return {estado:'CRÍTICO',clase:'estado-critico'};
+    return {estado:'CUMPLIMIENTO',clase:'estado-cumplimiento'};
 }
 
 function renderTablaMaestra() {
-    const content = document.getElementById('tablaMaestraContent');
-    content.innerHTML = '';
-    Object.values(MODULOS).forEach(modulo => {
-        const progress = getModuloProgress(modulo.id);
-        const estadoObj = getEstadoModulo(modulo.id);
-        const noResponses = modulo.preguntas.filter(q => respuestas[modulo.id] && respuestas[modulo.id][q.id] === 'no');
-        const headerRow = document.createElement('div');
-        headerRow.className = 'modulo-row';
-        const headerContent = document.createElement('div');
-        headerContent.className = 'modulo-header-row';
-        headerContent.innerHTML = '<div class="modulo-info"><div class="modulo-nombre">' + modulo.nombre + '</div><div class="modulo-respondidas">' + progress.respondidas + '/' + progress.total + ' respondidas</div></div>'
-            + '<div class="modulo-barra"><div class="bar"><div class="progress-fill" style="width:' + progress.cumplimiento + '%"></div></div><div class="percent">' + progress.cumplimiento + '%</div></div>'
-            + '<div style="text-align:center;font-size:12px;font-weight:600;">' + progress.respondidas + '/' + progress.total + '</div>'
-            + '<div class="modulo-estado ' + estadoObj.clase + '">' + estadoObj.estado + '</div>'
-            + '<button class="btn btn-primary" onclick="openModulo(\'' + modulo.id + '\')">Ir al Módulo</button>';
-        headerRow.appendChild(headerContent);
-        const accionesRow = document.createElement('div');
-        accionesRow.className = 'modulo-row';
-        const accionesContent = document.createElement('div');
-        accionesContent.className = 'modulo-acciones';
-        if (noResponses.length === 0 && progress.respondidas === progress.total) {
-            accionesContent.classList.add('empty');
-            accionesContent.textContent = 'Todas las preguntas respondidas correctamente';
-        } else if (noResponses.length === 0) {
-            accionesContent.textContent = 'Completa todas las preguntas del módulo';
-        } else {
-            const lista = noResponses.map(q => '<li><strong>' + q.pregunta + '</strong><br/>' + q.accionNo + '<br/><a href="' + q.linkCallao + '" target="_blank">Ir a la Lección</a></li>').join('');
-            accionesContent.innerHTML = '<details><summary>Acciones Pendientes (' + noResponses.length + ')</summary><ul>' + lista + '</ul></details>';
-        }
-        accionesRow.appendChild(accionesContent);
-        content.appendChild(headerRow);
-        content.appendChild(accionesRow);
+    const cont = document.getElementById('tablaMaestraContent');
+    cont.innerHTML = '';
+    Object.values(MODULOS).forEach(m => {
+        const p = getModuloProgress(m.id);
+        const e = getEstadoModulo(m.id);
+        const nos = m.preguntas.filter(q => respuestas[m.id] && respuestas[m.id][q.id]==='no');
+        const hr = document.createElement('div'); hr.className='modulo-row';
+        const hc = document.createElement('div'); hc.className='modulo-header-row';
+        hc.innerHTML = '<div class="modulo-info"><div class="modulo-nombre">'+m.nombre+'</div><div class="modulo-respondidas">'+p.respondidas+'/'+p.total+' respondidas</div></div>'
+            +'<div class="modulo-barra"><div class="bar"><div class="progress-fill" style="width:'+p.cumplimiento+'%"></div></div><div class="percent">'+p.cumplimiento+'%</div></div>'
+            +'<div style="text-align:center;font-size:12px;font-weight:600;">'+p.respondidas+'/'+p.total+'</div>'
+            +'<div class="modulo-estado '+e.clase+'">'+e.estado+'</div>'
+            +'<button class="btn btn-primary" onclick="openModulo(\''+m.id+'\')">Ir al Módulo</button>';
+        hr.appendChild(hc);
+        const ar = document.createElement('div'); ar.className='modulo-row';
+        const ac = document.createElement('div'); ac.className='modulo-acciones';
+        if (nos.length===0 && p.respondidas===p.total) { ac.classList.add('empty'); ac.textContent='Todas las preguntas respondidas correctamente'; }
+        else if (nos.length===0) { ac.textContent='Completa todas las preguntas del módulo'; }
+        else { ac.innerHTML='<details><summary>Acciones Pendientes ('+nos.length+')</summary><ul>'+nos.map(q=>'<li><strong>'+q.pregunta+'</strong><br/>'+q.accionNo+'<br/><a href="'+q.linkCallao+'" target="_blank">Ir a la Lección</a></li>').join('')+'</ul></details>'; }
+        ar.appendChild(ac); cont.appendChild(hr); cont.appendChild(ar);
     });
 }
 
 init();
+
 </script>
 </body>
 </html>
