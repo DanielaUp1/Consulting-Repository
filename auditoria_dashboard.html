@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Auditoría · UPTURN Interno</title>
+<style>
+:root {
+    --navy:       #0A1520;
+    --blue:       #2E6DFF;
+    --teal:       #1A3A5C;
+    --gold:       #FAB727;
+    --blue-tint:  #6895FD;
+    --white:      #FFFFFF;
+    --white-soft: rgba(255,255,255,0.75);
+    --border:     rgba(255,255,255,0.1);
+    --card-bg:    rgba(255,255,255,0.04);
+    --green:      #4CAF82;
+    --red:        #E05C5C;
+    --yellow:     #FAB727;
+    --gray-bg:    rgba(255,255,255,0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+.layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+    width: 240px;
+    background: rgba(0,0,0,0.3);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+}
+
+.sidebar-logo {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+}
+.sidebar-logo .brand {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--blue);
+    letter-spacing: -0.5px;
+}
+.sidebar-logo .sub {
+    font-size: 11px;
+    color: var(--white-soft);
+    margin-top: 2px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--white-soft);
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+}
+.nav-item:hover { background: var(--card-bg); color: var(--white); }
+.nav-item.active { border-left-color: var(--blue); color: var(--white); background: rgba(46,109,255,0.08); }
+.nav-icon { font-size: 16px; }
+
+.sidebar-bottom {
+    margin-top: auto;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--white-soft);
+}
+
+/* MAIN */
+.main {
+    margin-left: 240px;
+    flex: 1;
+    padding: 28px 32px;
+}
+
+/* HEADER MAIN */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+.topbar h1 {
+    font-size: 22px;
+    font-weight: 700;
+}
+.consultora-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+}
+.consultora-badge select {
+    background: transparent;
+    border: none;
+    color: var(--white);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+}
+.consultora-badge select option { background: var(--navy); }
+
+/* CONFIG BANNER */
+.config-banner {
+    background: rgba(250,183,39,0.1);
+    border: 1px solid rgba(250,183,39,0.3);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--gold);
+    display: none;
+}
+.config-banner input {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(250,183,39,0.3);
+    border-radius: 6px;
+    color: var(--white);
+    padding: 7px 12px;
+    font-size: 13px;
+    width: 100%;
+    margin-top: 8px;
+}
+.config-banner button {
+    margin-top: 8px;
+    padding: 7px 18px;
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* SCREENS */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* BUSCADOR */
+.search-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.search-bar input {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--white);
+    padding: 10px 16px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.search-bar input:focus { border-color: var(--blue); }
+.search-bar input::placeholder { color: var(--white-soft); }
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-primary { background: var(--blue); color: white; }
+.btn-primary:hover { background: #1a5ae8; }
+.btn-secondary { background: var(--card-bg); border: 1px solid var(--border); color: var(--white-soft); }
+.btn-secondary:hover { color: var(--white); border-color: var(--blue); }
+.btn-gold { background: var(--gold); color: var(--navy); }
+.btn-gold:hover { background: #e6a520; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+
+/* TABLA CLIENTES */
+.table-wrap {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+table { width: 100%; border-collapse: collapse; }
+thead { background: rgba(46,109,255,0.08); }
+th {
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--blue-tint);
+    text-align: left;
+}
+td {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    color: var(--white-soft);
+    vertical-align: middle;
+}
+tr:hover td { background: rgba(46,109,255,0.04); }
+td .empresa-nombre { font-weight: 600; color: var(--white); font-size: 14px; }
+
+/* PILLS */
+.pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+.pill-essential { background: rgba(76,175,130,0.15); color: var(--green); }
+.pill-empower   { background: rgba(46,109,255,0.15); color: var(--blue-tint); }
+.pill-complete  { background: rgba(250,183,39,0.15); color: var(--gold); }
+.pill-q1 { background: rgba(255,255,255,0.08); color: var(--white-soft); }
+.pill-q2 { background: rgba(76,175,130,0.1);  color: var(--green); }
+.pill-q3 { background: rgba(46,109,255,0.1);  color: var(--blue-tint); }
+.pill-q4 { background: rgba(250,183,39,0.1);  color: var(--gold); }
+
+/* ESTADO */
+.estado-cumplimiento { color: var(--green); font-weight: 700; font-size: 12px; }
+.estado-critico      { color: var(--red);   font-weight: 700; font-size: 12px; }
+.estado-incompleto   { color: var(--yellow); font-weight: 700; font-size: 12px; }
+
+/* DETALLE CLIENTE */
+.cliente-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.cliente-header h2 { font-size: 24px; font-weight: 800; }
+.cliente-meta { font-size: 13px; color: var(--white-soft); }
+.cliente-meta span { margin-right: 16px; }
+
+.historial-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.historial-tab {
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--white-soft);
+    transition: all 0.2s;
+}
+.historial-tab:hover { border-color: var(--blue); color: var(--white); }
+.historial-tab.active { background: var(--blue); border-color: var(--blue); color: white; }
+
+/* MÓDULOS RESUMEN */
+.modulos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.modulo-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+.modulo-card:hover { border-color: var(--blue); }
+.modulo-card .modulo-nombre { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+.modulo-card .barra { background: rgba(255,255,255,0.08); border-radius: 4px; height: 6px; margin-bottom: 6px; overflow: hidden; }
+.modulo-card .barra-fill { height: 100%; background: var(--blue); border-radius: 4px; transition: width 0.3s; }
+.modulo-card .modulo-stats { font-size: 11px; color: var(--white-soft); }
+
+/* PANEL MÓDULO */
+.modulo-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 16px;
+}
+.modulo-panel h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+
+/* PREGUNTAS */
+.pregunta-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+.pregunta-row:last-child { border-bottom: none; }
+.pregunta-text { flex: 1; font-size: 13px; color: var(--white-soft); line-height: 1.5; }
+.pregunta-text .q-num { color: var(--blue-tint); font-weight: 700; margin-right: 6px; }
+.respuesta-btns { display: flex; gap: 6px; flex-shrink: 0; }
+.r-btn {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--white-soft);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.r-btn:hover { border-color: var(--blue); color: var(--white); }
+.r-btn.sel-si    { background: rgba(76,175,130,0.2); border-color: var(--green); color: var(--green); }
+.r-btn.sel-no    { background: rgba(224,92,92,0.2);  border-color: var(--red);   color: var(--red); }
+.r-btn.sel-naplica { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); color: var(--white-soft); }
+
+/* FORM NUEVO CLIENTE */
+.form-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    max-width: 520px;
+}
+.form-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 12px; color: var(--white-soft); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.04em; }
+.form-group input, .form-group select {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--white);
+    padding: 9px 14px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--blue); }
+.form-group select option { background: var(--navy); }
+
+/* STATS CARDS */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+}
+.stat-card .num {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--blue);
+    line-height: 1;
+    margin-bottom: 6px;
+}
+.stat-card .lbl { font-size: 11px; color: var(--white-soft); font-weight: 600; letter-spacing: 0.04em; }
+
+/* TOAST */
+.toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--teal);
+    border: 1px solid var(--blue);
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    display: none;
+    z-index: 999;
+    animation: slideUp 0.3s ease;
+}
+.toast.show { display: block; }
+.toast.ok  { border-color: var(--green); background: rgba(76,175,130,0.15); }
+.toast.err { border-color: var(--red);   background: rgba(224,92,92,0.15); }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* EMPTY STATE */
+.empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--white-soft);
+}
+.empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; }
+
+/* SECCIÓN HEADER */
+.sec-header {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--blue-tint);
+    text-transform: uppercase;
+    padding: 10px 0 6px;
+    border-bottom: 1px solid var(--border);
+    margin: 16px 0 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="brand">UPTURN</div>
+        <div class="sub">Dashboard Auditoría · Interno</div>
+    </div>
+
+    <div class="nav-item active" onclick="showScreen('clientes')" id="nav-clientes">
+        <span class="nav-icon">🏢</span> Clientes
+    </div>
+    <div class="nav-item" onclick="showScreen('nuevo')" id="nav-nuevo">
+        <span class="nav-icon">➕</span> Registrar cliente
+    </div>
+    <div class="nav-item" onclick="showScreen('resumen')" id="nav-resumen">
+        <span class="nav-icon">📊</span> Resumen general
+    </div>
+    <div class="nav-item" onclick="showScreen('config')" id="nav-config">
+        <span class="nav-icon">⚙️</span> Configuración
+    </div>
+
+    <div class="sidebar-bottom">
+        Consultora activa:<br>
+        <strong id="sidebarConsultora">—</strong>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+    <!-- SCREEN: CLIENTES -->
+    <div class="screen active" id="screen-clientes">
+        <div class="topbar">
+            <h1>Clientes</h1>
+            <div class="consultora-badge">
+                <span>👤</span>
+                <select id="consultoraSelect" onchange="seleccionarConsultora()">
+                    <option value="">Selecciona tu nombre</option>
+                    <option>Natalia Reyes</option>
+                    <option>Kalia Torres</option>
+                    <option>Janice Alicea</option>
+                    <option>Michelle Camacho</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="buscarInput" placeholder="Buscar empresa..." oninput="filtrarTabla()" autocomplete="off" />
+            <select id="filtroTipo" onchange="filtrarTabla()" style="background:var(--card-bg);border:1px solid var(--border);border-radius:8px;color:var(--white);padding:10px 14px;font-size:13px;outline:none;cursor:pointer;">
+                <option value="">Todos los tiers</option>
+                <option value="Essential">Essential</option>
+                <option value="Empower">Empower</option>
+                <option value="Complete">Complete</option>
+            </select>
+            <button class="btn btn-secondary btn-sm" onclick="cargarTodosClientes()">↺ Actualizar</button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Tier</th>
+                        <th>Consultora</th>
+                        <th>Último registro</th>
+                        <th>Período</th>
+                        <th>Cumplimiento</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tablaClientes">
+                    <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--white-soft);">Cargando datos...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SCREEN: DETALLE CLIENTE -->
+    <div class="screen" id="screen-detalle">
+        <div class="topbar">
+            <button class="btn btn-secondary btn-sm" onclick="showScreen('clientes')">← Volver</button>
+            <div style="display:flex;gap:10px;">
+                <button class="btn btn-gold btn-sm" id="btnGuardarDetalle" onclick="guardarRegistroDetalle()" disabled>
+                    💾 Guardar sesión
+                </button>
+            </div>
+        </div>
+
+        <div class="cliente-header">
+            <div>
+                <h2 id="detalleEmpresaNombre">—</h2>
+                <div class="cliente-meta">
+                    <span id="detalleTier">—</span>
+                    <span id="detalleConsultora">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historial de registros -->
+        <div style="margin-bottom:16px;">
+            <span style="font-size:12px;color:var(--white-soft);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Historial de sesiones</span>
+            <div class="historial-tabs" id="historialTabs" style="margin-top:8px;"></div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row" id="detalleStats"></div>
+
+        <!-- Módulos -->
+        <div class="modulos-grid" id="detalleModulos"></div>
+
+        <!-- Panel de preguntas de un módulo -->
+        <div class="modulo-panel" id="moduloPanel" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                <h3 id="moduloPanelTitulo">—</h3>
+                <button class="btn btn-secondary btn-sm" onclick="cerrarModuloPanel()">✕ Cerrar</button>
+            </div>
+            <div id="moduloPanelPreguntas"></div>
+        </div>
+    </div>
+
+    <!-- SCREEN: NUEVO CLIENTE -->
+    <div class="screen" id="screen-nuevo">
+        <div class="topbar"><h1>Registrar cliente Empower / Complete</h1></div>
+        <div class="form-card">
+            <h3>Datos del cliente</h3>
+            <div class="form-group">
+                <label>NOMBRE DE LA EMPRESA *</label>
+                <input type="text" id="nuevoEmpresa" placeholder="Nombre exacto de la empresa" />
+            </div>
+            <div class="form-group">
+                <label>CORREO DE CONTACTO</label>
+                <input type="email" id="nuevoCorreo" placeholder="contacto@empresa.com" />
+            </div>
+            <div class="form-group">
+                <label>TIER *</label>
+                <select id="nuevoTier">
+                    <option value="">Selecciona...</option>
+                    <option value="Empower">Empower</option>
+                    <option value="Complete">Complete</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>CONSULTORA ASIGNADA *</label>
+                <select id="nuevoConsultora">
+                    <option value="">Selecciona...</option>
+                    <option>Natalia Reyes</option>
+                    <option>Kalia Torres</option>
+                    <option>Janice Alicea</option>
+                    <option>Michelle Camacho</option>
+                </select>
+            </div>
+            <div style="margin-top:20px;">
+                <button class="btn btn-primary" onclick="registrarNuevoCliente()">Registrar y comenzar auditoría →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN: RESUMEN -->
+    <div class="screen" id="screen-resumen">
+        <div class="topbar"><h1>Resumen general</h1></div>
+        <div class="stats-row" id="resumenStats"></div>
+        <div class="table-wrap" id="resumenTablaWrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Tier</th>
+                        <th>Q1</th>
+                        <th>Q2</th>
+                        <th>Q3</th>
+                        <th>Q4</th>
+                        <th>Tendencia</th>
+                    </tr>
+                </thead>
+                <tbody id="resumenTabla"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SCREEN: CONFIG -->
+    <div class="screen" id="screen-config">
+        <div class="topbar"><h1>Configuración</h1></div>
+        <div class="form-card">
+            <h3>URL del Apps Script</h3>
+            <div class="form-group">
+                <label>SCRIPT URL</label>
+                <input type="text" id="configScriptUrl" placeholder="https://script.google.com/macros/s/..." />
+            </div>
+            <button class="btn btn-primary" onclick="guardarConfigUrl()">Guardar URL</button>
+            <div style="margin-top:16px;font-size:12px;color:var(--white-soft);">
+                URL actual: <span id="configUrlActual" style="color:var(--blue-tint);">No configurada</span>
+            </div>
+        </div>
+    </div>
+
+</main>
+</div>
+
+<script>
+// ============================================================
+// DATOS MÓDULOS (mismo que Essential)
+// ============================================================
+
+const MODULOS = {
+    reclutamiento: {
+        id: 'reclutamiento',
+        nombre: 'Reclutamiento y Selección',
+        icon: '👤',
+        preguntas: [
+            { id: 'rec_001', pregunta: '¿Cumple con las disposiciones aplicables al reclutamiento y empleo de menores de edad?', tieneNoAplica: true },
+            { id: 'rec_002', pregunta: '¿Cuenta con una política de igualdad en el empleo?', tieneNoAplica: false },
+            { id: 'rec_003', pregunta: '¿Cuenta con una forma de solicitud de empleo y es completada por el candidato?', tieneNoAplica: false },
+            { id: 'rec_004', pregunta: '¿La entrevista está libre de preguntas discriminatorias?', tieneNoAplica: false }
+        ]
+    },
+    expedientes: {
+        id: 'expedientes',
+        nombre: 'Expedientes de Empleados',
+        icon: '📁',
+        secciones: [
+            { id: 'manejo',       nombre: 'Manejo de expedientes' },
+            { id: 'general',      nombre: 'Expediente general' },
+            { id: 'confidencial', nombre: 'Expediente confidencial' },
+            { id: 'medico',       nombre: 'Expediente médico' }
+        ],
+        preguntas: [
+            { id: 'exp_001', seccion: 'manejo',       pregunta: '¿Existe una política de retención y destrucción de expedientes?', tieneNoAplica: false },
+            { id: 'exp_002', seccion: 'manejo',       pregunta: '¿Se mantienen los expedientes en archivo cerrado y seguro?', tieneNoAplica: false },
+            { id: 'exp_003', seccion: 'manejo',       pregunta: '¿Los expedientes están segregados entre general y confidencial?', tieneNoAplica: false },
+            { id: 'exp_004', seccion: 'manejo',       pregunta: '¿Cuenta con política que regule el acceso de empleados a expedientes?', tieneNoAplica: false },
+            { id: 'exp_005', seccion: 'manejo',       pregunta: '¿Los expedientes de empleados inactivos se retienen de forma segura?', tieneNoAplica: false },
+            { id: 'exp_006', seccion: 'general',      pregunta: '¿Incluye la Solicitud de Empleo?', tieneNoAplica: false },
+            { id: 'exp_007', seccion: 'general',      pregunta: '¿Incluye la Oferta de Empleo firmada?', tieneNoAplica: false },
+            { id: 'exp_008', seccion: 'general',      pregunta: '¿Incluye consentimiento para prueba de dopaje?', tieneNoAplica: true },
+            { id: 'exp_009', seccion: 'general',      pregunta: '¿Incluye consentimiento para verificación de antecedentes?', tieneNoAplica: true },
+            { id: 'exp_010', seccion: 'general',      pregunta: '¿Incluye carta de orientación o acuse de recibo de documentos?', tieneNoAplica: false },
+            { id: 'exp_011', seccion: 'general',      pregunta: '¿Incluye el contrato de empleo o Carta de Términos y Condiciones?', tieneNoAplica: true },
+            { id: 'exp_012', seccion: 'general',      pregunta: '¿Incluye el Manual del Empleado firmado?', tieneNoAplica: false },
+            { id: 'exp_013', seccion: 'general',      pregunta: '¿Incluye evaluaciones de desempeño?', tieneNoAplica: false },
+            { id: 'exp_014', seccion: 'general',      pregunta: '¿Incluye cartas de ascenso, transferencia o cambio de posición?', tieneNoAplica: true },
+            { id: 'exp_015', seccion: 'general',      pregunta: '¿Incluye documentación disciplinaria?', tieneNoAplica: true },
+            { id: 'exp_016', seccion: 'general',      pregunta: '¿Incluye acuerdos de confidencialidad o no competencia?', tieneNoAplica: true },
+            { id: 'exp_017', seccion: 'general',      pregunta: '¿Incluye el Formulario I-9?', tieneNoAplica: false },
+            { id: 'exp_018', seccion: 'confidencial', pregunta: '¿Incluye documentación relacionada con investigaciones?', tieneNoAplica: true },
+            { id: 'exp_019', seccion: 'confidencial', pregunta: '¿Incluye certificado de nacimiento o documentación de ciudadanía?', tieneNoAplica: true },
+            { id: 'exp_020', seccion: 'confidencial', pregunta: '¿Incluye formulario del Seguro Social?', tieneNoAplica: false },
+            { id: 'exp_021', seccion: 'confidencial', pregunta: '¿Incluye el Formulario I-9 segregado del expediente general?', tieneNoAplica: false },
+            { id: 'exp_022', seccion: 'confidencial', pregunta: '¿Incluye formulario 499 (Certificado de Exención)?', tieneNoAplica: false },
+            { id: 'exp_023', seccion: 'confidencial', pregunta: '¿Incluye el registro del empleado según Ley 379?', tieneNoAplica: false },
+            { id: 'exp_024', seccion: 'confidencial', pregunta: '¿Incluye hoja de contactos de emergencia?', tieneNoAplica: false },
+            { id: 'exp_025', seccion: 'confidencial', pregunta: '¿Incluye autorización de depósito directo?', tieneNoAplica: true },
+            { id: 'exp_028', seccion: 'medico',       pregunta: '¿Contiene certificaciones médicas y excusas?', tieneNoAplica: false },
+            { id: 'exp_029', seccion: 'medico',       pregunta: '¿Incluye formularios de licencias médicas (SINOT, FMLA, etc.)?', tieneNoAplica: false },
+            { id: 'exp_030', seccion: 'medico',       pregunta: '¿Incluye documentación de acomodos razonables o ADA?', tieneNoAplica: false },
+            { id: 'exp_031', seccion: 'medico',       pregunta: '¿Se mantiene información médica sensible de empleados o familiares?', tieneNoAplica: false }
+        ]
+    }
+};
+
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+
+const SCRIPT_URL_KEY = 'upturn_auditoria_dash_script_url';
+let SCRIPT_URL = localStorage.getItem(SCRIPT_URL_KEY) || '';
+let consultoraActiva = '';
+let todosRegistros = []; // array plano de filas del Sheet
+let clienteActivo = null; // { empresa, registros[] }
+let respuestasEdicion = {}; // respuestas en edición para el cliente activo
+
+// ============================================================
+// INIT
+// ============================================================
+
+function init() {
+    if (!SCRIPT_URL) showScreen('config');
+    else cargarTodosClientes();
+    actualizarConfigUI();
+}
+
+// ============================================================
+// NAVEGACIÓN
+// ============================================================
+
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(`screen-${id}`).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const navEl = document.getElementById(`nav-${id}`);
+    if (navEl) navEl.classList.add('active');
+
+    if (id === 'resumen') renderResumen();
+}
+
+// ============================================================
+// CONFIG
+// ============================================================
+
+function guardarConfigUrl() {
+    const url = document.getElementById('configScriptUrl').value.trim();
+    if (!url.startsWith('https://script.google.com')) {
+        showToast('URL inválida', 'err');
+        return;
+    }
+    SCRIPT_URL = url;
+    localStorage.setItem(SCRIPT_URL_KEY, url);
+    actualizarConfigUI();
+    showToast('URL guardada', 'ok');
+    cargarTodosClientes();
+    showScreen('clientes');
+}
+
+function actualizarConfigUI() {
+    const el = document.getElementById('configUrlActual');
+    if (el) el.textContent = SCRIPT_URL ? SCRIPT_URL.substring(0, 60) + '...' : 'No configurada';
+    if (document.getElementById('configScriptUrl')) {
+        document.getElementById('configScriptUrl').value = SCRIPT_URL || '';
+    }
+}
+
+function seleccionarConsultora() {
+    consultoraActiva = document.getElementById('consultoraSelect').value;
+    document.getElementById('sidebarConsultora').textContent = consultoraActiva || '—';
+}
+
+// ============================================================
+// CARGAR TODOS LOS CLIENTES
+// ============================================================
+
+async function cargarTodosClientes() {
+    if (!SCRIPT_URL) return;
+    const tbody = document.getElementById('tablaClientes');
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--white-soft);">Cargando...</td></tr>`;
+
+    try {
+        const resp = await fetch(`${SCRIPT_URL}?action=all`);
+        const data = await resp.json();
+
+        if (!data.ok) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--red);">Error al cargar datos</td></tr>`;
+            return;
+        }
+
+        todosRegistros = data.registros;
+        renderTablaClientes(todosRegistros);
+        renderResumenStats(todosRegistros);
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--red);">Sin conexión al servidor</td></tr>`;
+        console.error(err);
+    }
+}
+
+// ============================================================
+// RENDER TABLA CLIENTES
+// ============================================================
+
+function renderTablaClientes(registros) {
+    // Agrupar por empresa — tomar el registro más reciente de cada una
+    const porEmpresa = {};
+    registros.forEach(r => {
+        const key = (r.empresa || '').trim().toLowerCase();
+        if (!porEmpresa[key]) porEmpresa[key] = [];
+        porEmpresa[key].push(r);
+    });
+
+    const tbody = document.getElementById('tablaClientes');
+
+    if (Object.keys(porEmpresa).length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--white-soft);">Sin registros</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = Object.entries(porEmpresa).map(([key, rows]) => {
+        const ultimo = rows[rows.length - 1];
+        const empresa = ultimo.empresa || key;
+        const tier = ultimo.tipo_cliente || '—';
+        const consultora = ultimo.consultora || '—';
+        const fecha = ultimo.timestamp ? new Date(ultimo.timestamp).toLocaleDateString('es-PR', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+        const periodo = ultimo.periodo || '—';
+
+        const { cumplimiento, estado, estadoClass } = calcularCumplimiento(ultimo);
+        const tierClass = { Essential: 'pill-essential', Empower: 'pill-empower', Complete: 'pill-complete' }[tier] || '';
+        const periodoClass = { Q1: 'pill-q1', Q2: 'pill-q2', Q3: 'pill-q3', Q4: 'pill-q4' }[periodo] || 'pill-q1';
+
+        return `<tr>
+            <td><span class="empresa-nombre">${empresa}</span></td>
+            <td><span class="pill ${tierClass}">${tier}</span></td>
+            <td>${consultora}</td>
+            <td style="font-size:12px;">${fecha}</td>
+            <td><span class="pill ${periodoClass}">${periodo}</span></td>
+            <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="background:rgba(255,255,255,0.08);border-radius:4px;height:6px;width:80px;overflow:hidden;">
+                        <div style="height:100%;width:${cumplimiento}%;background:var(--blue);border-radius:4px;"></div>
+                    </div>
+                    <span style="font-size:12px;font-weight:700;">${cumplimiento}%</span>
+                </div>
+            </td>
+            <td><span class="${estadoClass}">${estado}</span></td>
+            <td>
+                <button class="btn btn-secondary btn-sm" onclick="abrirDetalleCliente('${empresa.replace(/'/g,"\\'")}')">Ver →</button>
+                ${tier !== 'Essential' ? `<button class="btn btn-primary btn-sm" style="margin-left:6px;" onclick="abrirEdicionCliente('${empresa.replace(/'/g,"\\'")}')">Editar</button>` : ''}
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function filtrarTabla() {
+    const buscar = (document.getElementById('buscarInput').value || '').trim().toLowerCase();
+    const filtroTipo = document.getElementById('filtroTipo').value;
+
+    const filtrados = todosRegistros.filter(r => {
+        const empresa = (r.empresa || '').toLowerCase();
+        const tier = r.tipo_cliente || '';
+        const matchBuscar = !buscar || empresa.includes(buscar);
+        const matchTier = !filtroTipo || tier === filtroTipo;
+        return matchBuscar && matchTier;
+    });
+    renderTablaClientes(filtrados);
+}
+
+// ============================================================
+// CÁLCULO CUMPLIMIENTO
+// ============================================================
+
+function calcularCumplimiento(registro) {
+    let totalSi = 0, totalNoAplica = 0, totalPreguntas = 0, tieneNo = false, alguna = false;
+
+    Object.values(MODULOS).forEach(modulo => {
+        modulo.preguntas.forEach(q => {
+            totalPreguntas++;
+            const val = registro[q.id] || '';
+            if (val === 'si') { totalSi++; alguna = true; }
+            if (val === 'naplica') { totalNoAplica++; alguna = true; }
+            if (val === 'no') { tieneNo = true; alguna = true; }
+        });
+    });
+
+    const denominador = totalPreguntas - totalNoAplica;
+    const cumplimiento = denominador === 0 ? 0 : Math.round((totalSi / denominador) * 100);
+
+    let estado = 'INCOMPLETO', estadoClass = 'estado-incompleto';
+    if (alguna) {
+        if (tieneNo) { estado = 'CRÍTICO'; estadoClass = 'estado-critico'; }
+        else if (totalSi + totalNoAplica === totalPreguntas) { estado = 'CUMPLIMIENTO'; estadoClass = 'estado-cumplimiento'; }
+    }
+
+    return { cumplimiento, estado, estadoClass };
+}
+
+// ============================================================
+// DETALLE CLIENTE (solo lectura + edición Empower/Complete)
+// ============================================================
+
+function abrirDetalleCliente(empresa) {
+    const registros = todosRegistros.filter(r => (r.empresa || '').trim().toLowerCase() === empresa.trim().toLowerCase());
+    if (registros.length === 0) return;
+
+    clienteActivo = { empresa, registros };
+
+    // Cargar el registro más reciente
+    const masReciente = registros[registros.length - 1];
+    cargarRespuestasEnEdicion(masReciente);
+
+    document.getElementById('detalleEmpresaNombre').textContent = empresa;
+    document.getElementById('detalleTier').innerHTML = `<span class="pill pill-${(masReciente.tipo_cliente || '').toLowerCase()}">${masReciente.tipo_cliente || '—'}</span>`;
+    document.getElementById('detalleConsultora').textContent = masReciente.consultora ? `· ${masReciente.consultora}` : '';
+
+    // Habilitar edición solo si no es Essential
+    const esEditable = masReciente.tipo_cliente !== 'Essential';
+    document.getElementById('btnGuardarDetalle').disabled = !esEditable;
+
+    renderHistorialTabs(registros);
+    renderDetalleStats();
+    renderDetalleModulos();
+
+    showScreen('detalle');
+}
+
+function abrirEdicionCliente(empresa) {
+    abrirDetalleCliente(empresa);
+}
+
+function cargarRespuestasEnEdicion(registro) {
+    respuestasEdicion = {};
+    Object.values(MODULOS).forEach(modulo => {
+        modulo.preguntas.forEach(q => {
+            const val = registro[q.id] || '';
+            if (val) {
+                if (!respuestasEdicion[modulo.id]) respuestasEdicion[modulo.id] = {};
+                respuestasEdicion[modulo.id][q.id] = val;
+            }
+        });
+    });
+}
+
+function renderHistorialTabs(registros) {
+    const tabs = document.getElementById('historialTabs');
+    tabs.innerHTML = registros.map((r, i) => {
+        const fecha = r.timestamp ? new Date(r.timestamp).toLocaleDateString('es-PR', { month: 'short', day: 'numeric' }) : '—';
+        const esActivo = i === registros.length - 1;
+        return `<button class="historial-tab ${esActivo ? 'active' : ''}" onclick="cargarVersionHistorial(${i}, this)">
+            ${r.periodo} · ${fecha}
+        </button>`;
+    }).join('');
+}
+
+function cargarVersionHistorial(idx, btn) {
+    document.querySelectorAll('.historial-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    cargarRespuestasEnEdicion(clienteActivo.registros[idx]);
+    renderDetalleStats();
+    renderDetalleModulos();
+    if (document.getElementById('moduloPanel').style.display !== 'none') {
+        const tituloPanel = document.getElementById('moduloPanelTitulo').textContent;
+        const modulo = Object.values(MODULOS).find(m => m.nombre === tituloPanel);
+        if (modulo) abrirModuloPanel(modulo.id);
+    }
+}
+
+function renderDetalleStats() {
+    const masReciente = clienteActivo.registros[clienteActivo.registros.length - 1];
+    const { cumplimiento, estado, estadoClass } = calcularCumplimiento(masReciente);
+
+    let totalRespondidas = 0, totalPreguntas = 0, totalNos = 0;
+    Object.values(MODULOS).forEach(modulo => {
+        modulo.preguntas.forEach(q => {
+            totalPreguntas++;
+            const val = masReciente[q.id] || '';
+            if (val) totalRespondidas++;
+            if (val === 'no') totalNos++;
+        });
+    });
+
+    document.getElementById('detalleStats').innerHTML = `
+        <div class="stat-card"><div class="num" style="color:var(--blue);">${cumplimiento}%</div><div class="lbl">Cumplimiento</div></div>
+        <div class="stat-card"><div class="num" style="font-size:22px;">${totalRespondidas}/${totalPreguntas}</div><div class="lbl">Respondidas</div></div>
+        <div class="stat-card"><div class="num" style="color:${totalNos > 0 ? 'var(--red)' : 'var(--green)'};">${totalNos}</div><div class="lbl">Brechas</div></div>
+        <div class="stat-card"><div class="num" style="font-size:18px;">${clienteActivo.registros.length}</div><div class="lbl">Sesiones registradas</div></div>
+    `;
+}
+
+function renderDetalleModulos() {
+    const grid = document.getElementById('detalleModulos');
+    grid.innerHTML = Object.values(MODULOS).map(modulo => {
+        let si = 0, noAplica = 0, total = modulo.preguntas.length;
+        modulo.preguntas.forEach(q => {
+            const val = respuestasEdicion[modulo.id]?.[q.id] || '';
+            if (val === 'si') si++;
+            if (val === 'naplica') noAplica++;
+        });
+        const denom = total - noAplica;
+        const pct = denom === 0 ? 0 : Math.round((si / denom) * 100);
+        return `
+            <div class="modulo-card" onclick="abrirModuloPanel('${modulo.id}')">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                    <span>${modulo.icon}</span>
+                    <span class="modulo-nombre">${modulo.nombre}</span>
+                </div>
+                <div class="barra"><div class="barra-fill" style="width:${pct}%"></div></div>
+                <div class="modulo-stats">${pct}% cumplimiento · haz clic para editar</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function abrirModuloPanel(moduloId) {
+    const modulo = MODULOS[moduloId];
+    const panel = document.getElementById('moduloPanel');
+    document.getElementById('moduloPanelTitulo').textContent = modulo.nombre;
+
+    const container = document.getElementById('moduloPanelPreguntas');
+    container.innerHTML = '';
+
+    let seccionActual = null;
+
+    modulo.preguntas.forEach((q, idx) => {
+        if (modulo.secciones && q.seccion !== seccionActual) {
+            seccionActual = q.seccion;
+            const sec = modulo.secciones.find(s => s.id === seccionActual);
+            if (sec) {
+                const div = document.createElement('div');
+                div.className = 'sec-header';
+                div.textContent = sec.nombre;
+                container.appendChild(div);
+            }
+        }
+
+        const row = document.createElement('div');
+        row.className = 'pregunta-row';
+        const val = respuestasEdicion[moduloId]?.[q.id] || '';
+
+        const opciones = ['si', 'no'];
+        if (q.tieneNoAplica) opciones.push('naplica');
+        const labels = { si: 'Sí', no: 'No', naplica: 'N/A' };
+
+        const btns = opciones.map(opt =>
+            `<button class="r-btn ${val === opt ? `sel-${opt}` : ''}"
+                onclick="responderEnDetalle('${moduloId}', '${q.id}', '${opt}')">
+                ${labels[opt]}
+            </button>`
+        ).join('');
+
+        row.innerHTML = `
+            <div class="pregunta-text"><span class="q-num">${idx + 1}.</span>${q.pregunta}</div>
+            <div class="respuesta-btns">${btns}</div>
+        `;
+        container.appendChild(row);
+    });
+
+    panel.style.display = 'block';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cerrarModuloPanel() {
+    document.getElementById('moduloPanel').style.display = 'none';
+}
+
+function responderEnDetalle(moduloId, preguntaId, respuesta) {
+    if (!respuestasEdicion[moduloId]) respuestasEdicion[moduloId] = {};
+    respuestasEdicion[moduloId][preguntaId] = respuesta;
+    abrirModuloPanel(moduloId); // re-render del panel
+    renderDetalleModulos();
+}
+
+// ============================================================
+// GUARDAR DESDE DETALLE
+// ============================================================
+
+async function guardarRegistroDetalle() {
+    if (!clienteActivo) return;
+    if (!consultoraActiva) {
+        showToast('Selecciona tu nombre antes de guardar', 'err');
+        return;
+    }
+
+    const masReciente = clienteActivo.registros[clienteActivo.registros.length - 1];
+
+    const payload = {
+        empresa: clienteActivo.empresa,
+        tipo_cliente: masReciente.tipo_cliente || 'Empower',
+        consultora: consultoraActiva
+    };
+
+    Object.values(MODULOS).forEach(modulo => {
+        modulo.preguntas.forEach(q => {
+            payload[q.id] = respuestasEdicion[modulo.id]?.[q.id] || '';
+        });
+    });
+
+    const completados = Object.keys(MODULOS).filter(id => {
+        const prog = MODULOS[id].preguntas;
+        return prog.every(q => respuestasEdicion[id]?.[q.id]);
+    }).join(', ');
+    payload.modulos_completados = completados;
+    payload.notas = '';
+
+    const btn = document.getElementById('btnGuardarDetalle');
+    btn.textContent = '⏳ Guardando...';
+    btn.disabled = true;
+
+    try {
+        const resp = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const data = await resp.json();
+        if (data.ok) {
+            showToast(`Guardado · ${data.periodo}`, 'ok');
+            await cargarTodosClientes();
+            // Recargar los registros del cliente activo
+            const nuevosRegistros = todosRegistros.filter(r => (r.empresa || '').trim().toLowerCase() === clienteActivo.empresa.trim().toLowerCase());
+            clienteActivo.registros = nuevosRegistros;
+            renderHistorialTabs(nuevosRegistros);
+            renderDetalleStats();
+        } else {
+            showToast('Error al guardar', 'err');
+        }
+    } catch (err) {
+        showToast('Sin conexión', 'err');
+    }
+
+    btn.textContent = '💾 Guardar sesión';
+    btn.disabled = false;
+}
+
+// ============================================================
+// REGISTRAR NUEVO CLIENTE (Empower/Complete)
+// ============================================================
+
+async function registrarNuevoCliente() {
+    const empresa    = document.getElementById('nuevoEmpresa').value.trim();
+    const correo     = document.getElementById('nuevoCorreo').value.trim();
+    const tier       = document.getElementById('nuevoTier').value;
+    const consultora = document.getElementById('nuevoConsultora').value;
+
+    if (!empresa || !tier || !consultora) {
+        showToast('Completa los campos requeridos', 'err');
+        return;
+    }
+
+    const payload = {
+        empresa,
+        tipo_cliente: tier,
+        consultora,
+        modulos_completados: '',
+        notas: correo ? `correo: ${correo}` : ''
+    };
+
+    Object.values(MODULOS).forEach(modulo => {
+        modulo.preguntas.forEach(q => { payload[q.id] = ''; });
+    });
+
+    try {
+        const resp = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const data = await resp.json();
+        if (data.ok) {
+            showToast(`Cliente registrado · ${data.periodo}`, 'ok');
+            await cargarTodosClientes();
+            abrirEdicionCliente(empresa);
+        } else {
+            showToast('Error al registrar', 'err');
+        }
+    } catch (err) {
+        showToast('Sin conexión', 'err');
+    }
+}
+
+// ============================================================
+// RESUMEN COMPARATIVO
+// ============================================================
+
+function renderResumen() {
+    renderResumenStats(todosRegistros);
+    renderResumenTabla();
+}
+
+function renderResumenStats(registros) {
+    const empresas = [...new Set(registros.map(r => (r.empresa || '').trim().toLowerCase()))];
+    const essential = registros.filter(r => r.tipo_cliente === 'Essential').length;
+    const empower   = registros.filter(r => r.tipo_cliente === 'Empower').length;
+    const complete  = registros.filter(r => r.tipo_cliente === 'Complete').length;
+
+    const container = document.getElementById('resumenStats');
+    if (container) {
+        container.innerHTML = `
+            <div class="stat-card"><div class="num">${empresas.length}</div><div class="lbl">Empresas activas</div></div>
+            <div class="stat-card"><div class="num" style="color:var(--green);">${essential}</div><div class="lbl">Essential</div></div>
+            <div class="stat-card"><div class="num" style="color:var(--blue-tint);">${empower}</div><div class="lbl">Empower</div></div>
+            <div class="stat-card"><div class="num" style="color:var(--gold);">${complete}</div><div class="lbl">Complete</div></div>
+        `;
+    }
+}
+
+function renderResumenTabla() {
+    const porEmpresa = {};
+    todosRegistros.forEach(r => {
+        const key = (r.empresa || '').trim();
+        if (!porEmpresa[key]) porEmpresa[key] = { empresa: key, tier: r.tipo_cliente, registros: {} };
+        const p = r.periodo || 'Q1';
+        if (!porEmpresa[key].registros[p]) porEmpresa[key].registros[p] = [];
+        porEmpresa[key].registros[p].push(r);
+    });
+
+    const tbody = document.getElementById('resumenTabla');
+    if (!tbody) return;
+
+    tbody.innerHTML = Object.values(porEmpresa).map(({ empresa, tier, registros }) => {
+        const tierClass = { Essential: 'pill-essential', Empower: 'pill-empower', Complete: 'pill-complete' }[tier] || '';
+
+        const celdaQ = (q) => {
+            const rows = registros[q];
+            if (!rows || rows.length === 0) return `<td style="color:var(--white-soft);font-size:12px;">—</td>`;
+            const ultimo = rows[rows.length - 1];
+            const { cumplimiento } = calcularCumplimiento(ultimo);
+            const color = cumplimiento >= 80 ? 'var(--green)' : cumplimiento >= 50 ? 'var(--gold)' : 'var(--red)';
+            return `<td style="font-weight:700;color:${color};">${cumplimiento}%</td>`;
+        };
+
+        // Tendencia simple
+        const periodos = ['Q1','Q2','Q3','Q4'].filter(p => registros[p]?.length > 0);
+        let tendencia = '—';
+        if (periodos.length >= 2) {
+            const ultimo = calcularCumplimiento(registros[periodos[periodos.length-1]][0]).cumplimiento;
+            const penultimo = calcularCumplimiento(registros[periodos[periodos.length-2]][0]).cumplimiento;
+            tendencia = ultimo > penultimo ? '↑ Mejora' : ultimo < penultimo ? '↓ Baja' : '→ Estable';
+            const colorTend = ultimo > penultimo ? 'var(--green)' : ultimo < penultimo ? 'var(--red)' : 'var(--white-soft)';
+            tendencia = `<span style="color:${colorTend};font-weight:700;">${tendencia}</span>`;
+        }
+
+        return `<tr>
+            <td><span class="empresa-nombre">${empresa}</span></td>
+            <td><span class="pill ${tierClass}">${tier}</span></td>
+            ${celdaQ('Q1')}${celdaQ('Q2')}${celdaQ('Q3')}${celdaQ('Q4')}
+            <td>${tendencia}</td>
+        </tr>`;
+    }).join('');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+
+function showToast(msg, tipo = 'ok') {
+    const t = document.getElementById('toast');
+    t.textContent = tipo === 'ok' ? `✓ ${msg}` : `✗ ${msg}`;
+    t.className = `toast show ${tipo}`;
+    setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+init();
+</script>
+</body>
+</html>
