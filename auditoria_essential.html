@@ -947,9 +947,6 @@
             }
         }
     
-        .config-banner{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#856404;display:none}
-        .config-banner input{width:100%;margin-top:8px;padding:8px 12px;border:1px solid #ffc107;border-radius:6px;font-size:13px}
-        .config-banner button{margin-top:8px;padding:6px 16px;background:#856404;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px}
         .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center}
         .modal-overlay.show{display:flex}
         .modal-box{background:white;border-radius:12px;padding:28px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
@@ -995,13 +992,6 @@
 
 <div class="container">
 
-  <!-- BANNER CONFIG -->
-  <div class="config-banner" id="configBanner">
-    ⚙️ <strong>Configuración:</strong> Pega la URL del Apps Script para conectar con Google Sheets.
-    <input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/..." />
-    <button onclick="guardarScriptUrl()">Guardar URL</button>
-  </div>
-
   <!-- HEADER -->
   <div class="header">
     <h1>Auditoría de Cumplimiento RRHH</h1>
@@ -1045,11 +1035,18 @@
       <!-- IDENTIFICACIÓN -->
       <div class="registro-section">
         <h3>Información de tu Empresa</h3>
+        <p style="font-size:0.82rem;color:#dc2626;margin-bottom:10px;font-weight:600;">* Ambos campos son obligatorios para continuar</p>
         <div class="form-group">
-          <input type="text" id="empresaInput" placeholder="Nombre exacto de tu empresa" autocomplete="off" />
-          <input type="email" id="correoInput" placeholder="Correo de contacto" />
+          <div style="display:flex;flex-direction:column;gap:4px;flex:1;">
+            <label for="empresaInput" style="font-size:0.78rem;font-weight:600;color:var(--gray-700);">Nombre de la empresa <span style="color:#dc2626;">*</span></label>
+            <input type="text" id="empresaInput" placeholder="Nombre exacto de tu empresa" autocomplete="off" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;flex:1;">
+            <label for="correoInput" style="font-size:0.78rem;font-weight:600;color:var(--gray-700);">Correo de contacto <span style="color:#dc2626;">*</span></label>
+            <input type="email" id="correoInput" placeholder="correo@empresa.com" />
+          </div>
         </div>
-        <button class="btn-guardar-progreso" onclick="identificarEmpresa()" style="background:var(--primary);margin-top:0;">Buscar mi empresa</button>
+        <button id="btnBuscarEmpresa" class="btn-guardar-progreso" onclick="identificarEmpresa()" style="background:var(--primary);margin-top:0;opacity:0.45;cursor:not-allowed;" disabled>Buscar mi empresa</button>
         <div class="historial-panel" id="historialPanel">
           <strong>Historial — <span id="historialEmpresaNombre"></span></strong>
           <div id="historialLista"></div>
@@ -1710,10 +1707,10 @@ const MODULOS = {
         };
 
 
-const SCRIPT_URL_KEY = 'upturn_auditoria_script_url';
-const EMPRESA_KEY    = 'upturn_auditoria_empresa';
+const EMPRESA_KEY = 'upturn_auditoria_empresa';
 
-let SCRIPT_URL = localStorage.getItem(SCRIPT_URL_KEY) || '';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqjz0hfUxwVkY3T_h9B5o47099XKghNEl3NIsDU07litqGUFHNPVXaev6XU1ZjrRT0/exec';
+
 let respuestas = {};
 let currentModuloId = null;
 let empresaActiva = '';
@@ -1721,27 +1718,33 @@ let correoActivo  = '';
 let historialRegistros = [];
 
 function init() {
-    if (!SCRIPT_URL) document.getElementById('configBanner').style.display = 'block';
     const saved = localStorage.getItem(EMPRESA_KEY);
     if (saved) document.getElementById('empresaInput').value = saved;
     renderBadges();
+    document.getElementById('empresaInput').addEventListener('input', validarCamposIdentificacion);
+    document.getElementById('correoInput').addEventListener('input', validarCamposIdentificacion);
+    validarCamposIdentificacion();
 }
 
-function guardarScriptUrl() {
-    const url = document.getElementById('scriptUrlInput').value.trim();
-    if (!url.startsWith('https://script.google.com')) {
-        alert('URL incorrecta. Debe empezar con https://script.google.com'); return;
-    }
-    SCRIPT_URL = url;
-    localStorage.setItem(SCRIPT_URL_KEY, url);
-    document.getElementById('configBanner').style.display = 'none';
+function validarCamposIdentificacion() {
+    const nombre = document.getElementById('empresaInput').value.trim();
+    const correo = document.getElementById('correoInput').value.trim();
+    const btn = document.getElementById('btnBuscarEmpresa');
+    const nombreInput = document.getElementById('empresaInput');
+    const correoInput = document.getElementById('correoInput');
+    const nombreValido = nombre.length > 0;
+    const correoValido = correo.length > 0;
+    nombreInput.style.borderColor = (nombreValido || nombre.length === 0) ? '' : '#dc2626';
+    correoInput.style.borderColor = (correoValido || correo.length === 0) ? '' : '#dc2626';
+    btn.disabled = !(nombreValido && correoValido);
+    btn.style.opacity = (nombreValido && correoValido) ? '1' : '0.45';
+    btn.style.cursor = (nombreValido && correoValido) ? 'pointer' : 'not-allowed';
 }
 
 async function identificarEmpresa() {
     const nombre = document.getElementById('empresaInput').value.trim();
     const correo = document.getElementById('correoInput').value.trim();
-    if (!nombre) { alert('Escribe el nombre de tu empresa.'); return; }
-    if (!SCRIPT_URL) { activarEmpresa(nombre, correo, []); return; }
+    if (!nombre || !correo) { validarCamposIdentificacion(); return; }
     mostrarStatus('saving', 'Buscando...');
     try {
         const r = await fetch(SCRIPT_URL + '?action=search&empresa=' + encodeURIComponent(nombre));
@@ -1758,7 +1761,7 @@ async function identificarEmpresa() {
         } else {
             activarEmpresa(nombre, correo, []);
         }
-    } catch(e) { mostrarStatus('error', 'Error de conexión'); }
+    } catch(e) { mostrarStatus('error', 'Error de conexión. Intenta de nuevo en unos segundos.'); }
 }
 
 function confirmarEmpresaExistente() {
@@ -1826,7 +1829,6 @@ function cargarRegistroHistorial(idx) {
 
 async function guardarProgreso() {
     if (!empresaActiva) { alert('Primero identifica tu empresa.'); return; }
-    if (!SCRIPT_URL) { alert('Configura la URL del Apps Script primero.'); return; }
     mostrarStatus('saving', 'Guardando...');
     const payload = { empresa: empresaActiva, tipo_cliente: 'Essential', consultora: '' };
     Object.keys(MODULOS).forEach(mid => {
