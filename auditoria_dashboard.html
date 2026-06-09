@@ -710,6 +710,14 @@ let respuestasEdicion = {}; // respuestas en edición para el cliente activo
 // ============================================================
 
 function init() {
+    // Restaurar consultora si la seleccionó antes
+    const savedConsultora = localStorage.getItem('upturn_dash_consultora');
+    if (savedConsultora) {
+        consultoraActiva = savedConsultora;
+        document.getElementById('sidebarConsultora').textContent = savedConsultora;
+        const sel = document.getElementById('consultoraSelect');
+        if (sel) sel.value = savedConsultora;
+    }
     if (!SCRIPT_URL) showScreen('config');
     else cargarTodosClientes();
     actualizarConfigUI();
@@ -758,6 +766,7 @@ function actualizarConfigUI() {
 function seleccionarConsultora() {
     consultoraActiva = document.getElementById('consultoraSelect').value;
     document.getElementById('sidebarConsultora').textContent = consultoraActiva || '—';
+    if (consultoraActiva) localStorage.setItem('upturn_dash_consultora', consultoraActiva);
 }
 
 // ============================================================
@@ -956,14 +965,20 @@ function cargarVersionHistorial(idx, btn) {
 }
 
 function renderDetalleStats() {
-    const masReciente = clienteActivo.registros[clienteActivo.registros.length - 1];
-    const { cumplimiento, estado, estadoClass } = calcularCumplimiento(masReciente);
+    // Usar respuestasEdicion (estado en vivo) para calcular cumplimiento
+    const registroVivo = {};
+    Object.keys(MODULOS).forEach(mid => {
+        MODULOS[mid].preguntas.forEach(q => {
+            registroVivo[q.id] = (respuestasEdicion[mid] && respuestasEdicion[mid][q.id]) ? respuestasEdicion[mid][q.id] : '';
+        });
+    });
+    const { cumplimiento, estado, estadoClass } = calcularCumplimiento(registroVivo);
 
     let totalRespondidas = 0, totalPreguntas = 0, totalNos = 0;
     Object.values(MODULOS).forEach(modulo => {
         modulo.preguntas.forEach(q => {
             totalPreguntas++;
-            const val = masReciente[q.id] || '';
+            const val = registroVivo[q.id] || '';
             if (val) totalRespondidas++;
             if (val === 'no') totalNos++;
         });
@@ -1066,8 +1081,11 @@ function responderEnDetalle(moduloId, preguntaId, respuesta) {
 
 async function guardarRegistroDetalle() {
     if (!clienteActivo) return;
+    // Intentar leer el select directamente por si acaso
+    const selVal = document.getElementById('consultoraSelect') ? document.getElementById('consultoraSelect').value : '';
+    if (selVal) consultoraActiva = selVal;
     if (!consultoraActiva) {
-        showToast('Selecciona tu nombre antes de guardar', 'err');
+        showToast('Selecciona tu nombre en la esquina superior derecha', 'err');
         return;
     }
 
