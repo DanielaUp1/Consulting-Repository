@@ -1709,7 +1709,7 @@ const MODULOS = {
 
 const EMPRESA_KEY = 'upturn_auditoria_empresa';
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqjz0hfUxwVkY3T_h9B5o47099XKghNEl3NIsDU07litqGUFHNPVXaev6XU1ZjrRT0/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9N3ho1XtC_AfxgjAhiQOMS1uhCQIqi3zljJQzYtXjaQblS33mnmGng2Yom2F2TWaK/exec';
 
 let respuestas = {};
 let currentModuloId = null;
@@ -1741,14 +1741,34 @@ function validarCamposIdentificacion() {
     btn.style.cursor = (nombreValido && correoValido) ? 'pointer' : 'not-allowed';
 }
 
+function jsonpFetch(url) {
+    return new Promise((resolve, reject) => {
+        const cbName = 'cb_' + Math.random().toString(36).slice(2);
+        const script = document.createElement('script');
+        const timeout = setTimeout(() => {
+            delete window[cbName];
+            document.body.removeChild(script);
+            reject(new Error('timeout'));
+        }, 10000);
+        window[cbName] = function(data) {
+            clearTimeout(timeout);
+            delete window[cbName];
+            document.body.removeChild(script);
+            resolve(data);
+        };
+        script.src = url + '&callback=' + cbName;
+        script.onerror = () => { clearTimeout(timeout); reject(new Error('script error')); };
+        document.body.appendChild(script);
+    });
+}
+
 async function identificarEmpresa() {
     const nombre = document.getElementById('empresaInput').value.trim();
     const correo = document.getElementById('correoInput').value.trim();
     if (!nombre || !correo) { validarCamposIdentificacion(); return; }
     mostrarStatus('saving', 'Buscando...');
     try {
-        const r = await fetch(SCRIPT_URL + '?action=search&empresa=' + encodeURIComponent(nombre));
-        const d = await r.json();
+        const d = await jsonpFetch(SCRIPT_URL + '?action=search&empresa=' + encodeURIComponent(nombre));
         if (d.ok && d.registros.length > 0) {
             const encontrado = d.registros[0].empresa;
             historialRegistros = d.registros;
@@ -1841,11 +1861,38 @@ async function guardarProgreso() {
     }).join(', ');
     payload.notas = '';
     try {
-        const r = await fetch(SCRIPT_URL, {method:'POST', body: JSON.stringify(payload)});
-        const d = await r.json();
-        if (d.ok) mostrarStatus('saved', 'Guardado · ' + d.periodo);
-        else mostrarStatus('error', 'Error al guardar');
+        // Enviar vía formulario oculto para evitar CORS en POST
+        await postViaForm(SCRIPT_URL, payload);
+        mostrarStatus('saved', 'Guardado ✓');
     } catch(e) { mostrarStatus('error', 'Sin conexión'); }
+}
+
+function postViaForm(url, payload) {
+    return new Promise((resolve) => {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = url;
+        form.target = '_guardar_frame';
+        form.style.display = 'none';
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'payload';
+        input.value = JSON.stringify(payload);
+        form.appendChild(input);
+        let iframe = document.getElementById('_guardar_frame');
+        if (!iframe) {
+            iframe = document.createElement('iframe');
+            iframe.name = '_guardar_frame';
+            iframe.id = '_guardar_frame';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+        }
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+        // Esperar brevemente y confirmar optimista (iframe POST no devuelve respuesta cross-origin)
+        setTimeout(() => resolve({ ok: true }), 1500);
+    });
 }
 
 function mostrarStatus(tipo, msg) {
