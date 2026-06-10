@@ -1741,55 +1741,24 @@ function validarCamposIdentificacion() {
     btn.style.cursor = (nombreValido && correoValido) ? 'pointer' : 'not-allowed';
 }
 
-function jsonpFetch(url) {
-    return new Promise((resolve, reject) => {
-        const cbName = 'cb_' + Math.random().toString(36).slice(2);
-        const script = document.createElement('script');
-        const timeout = setTimeout(() => {
-            delete window[cbName];
-            document.body.removeChild(script);
-            reject(new Error('timeout'));
-        }, 10000);
-        window[cbName] = function(data) {
-            clearTimeout(timeout);
-            delete window[cbName];
-            document.body.removeChild(script);
-            resolve(data);
-        };
-        script.src = url + '&callback=' + cbName;
-        script.onerror = () => { clearTimeout(timeout); reject(new Error('script error')); };
-        document.body.appendChild(script);
-    });
-}
-
-async function identificarEmpresa() {
+function identificarEmpresa() {
     const nombre = document.getElementById('empresaInput').value.trim();
     const correo = document.getElementById('correoInput').value.trim();
     if (!nombre || !correo) { validarCamposIdentificacion(); return; }
-    mostrarStatus('saving', 'Buscando...');
-    try {
-        const d = await jsonpFetch(SCRIPT_URL + '?action=search&empresa=' + encodeURIComponent(nombre));
-        if (d.ok && d.registros.length > 0) {
-            const encontrado = d.registros[0].empresa;
-            historialRegistros = d.registros;
-            if (encontrado.toLowerCase() !== nombre.toLowerCase()) {
-                document.getElementById('modalEmpresaFound').textContent = encontrado;
-                document.getElementById('modalConfirmEmpresa').classList.add('show');
-            } else {
-                activarEmpresa(encontrado, correo, d.registros);
-            }
-        } else {
-            activarEmpresa(nombre, correo, []);
-        }
-    } catch(e) { mostrarStatus('error', 'Error de conexión. Intenta de nuevo en unos segundos.'); }
+
+    // Cargar historial desde localStorage (mismo navegador/dispositivo)
+    const cacheKey = 'upturn_auditoria_respuestas_' + nombre.toLowerCase().replace(/\s+/g, '_');
+    const cached = localStorage.getItem(cacheKey);
+    let registrosCached = [];
+    if (cached) {
+        try { registrosCached = JSON.parse(cached); } catch(e) { registrosCached = []; }
+    }
+    activarEmpresa(nombre, correo, registrosCached);
 }
 
 function confirmarEmpresaExistente() {
-    const nombre = document.getElementById('modalEmpresaFound').textContent;
-    const correo = document.getElementById('correoInput').value.trim();
-    document.getElementById('empresaInput').value = nombre;
+    // Modal ya no se usa — se mantiene por compatibilidad
     document.getElementById('modalConfirmEmpresa').classList.remove('show');
-    activarEmpresa(nombre, correo, historialRegistros);
 }
 
 function cerrarModalEmpresa() {
@@ -1802,13 +1771,16 @@ function activarEmpresa(nombre, correo, registros) {
     localStorage.setItem(EMPRESA_KEY, nombre);
     if (registros.length > 0) {
         cargarRespuestasDesdeRegistro(registros[registros.length - 1]);
-        mostrarHistorial(registros);
+        mostrarHistorialLocal(registros);
     }
     document.getElementById('btnGuardarProgreso').disabled = false;
     document.getElementById('btnGuardarProgresoTabla').disabled = false;
     updateHeader();
     renderBadges();
-    mostrarStatus('saved', registros.length > 0 ? registros.length + ' registros cargados' : 'Empresa nueva');
+    const msg = registros.length > 0
+        ? '✓ ' + registros.length + ' sesión(es) cargada(s) desde este dispositivo'
+        : '✓ Empresa registrada — puedes comenzar';
+    mostrarStatus('saved', msg);
 }
 
 function cargarRespuestasDesdeRegistro(reg) {
@@ -1824,15 +1796,17 @@ function cargarRespuestasDesdeRegistro(reg) {
     renderBadges(); updateTablaMaestra();
 }
 
-function mostrarHistorial(registros) {
+function mostrarHistorialLocal(registros) {
     const panel = document.getElementById('historialPanel');
     const lista  = document.getElementById('historialLista');
     document.getElementById('historialEmpresaNombre').textContent = empresaActiva;
     lista.innerHTML = registros.map((r, i) => {
-        const fecha = new Date(r.timestamp).toLocaleDateString('es-PR', {year:'numeric',month:'short',day:'numeric'});
+        const fecha = r.timestamp
+            ? new Date(r.timestamp).toLocaleDateString('es-PR', {year:'numeric',month:'short',day:'numeric'})
+            : 'Sesión ' + (i + 1);
         const activo = i === registros.length - 1;
         return '<div class="historial-row">'
-            + '<span class="periodo">' + r.periodo + '</span>'
+            + '<span class="periodo">' + (r.periodo || 'Local') + '</span>'
             + '<span class="fecha">' + fecha + '</span>'
             + '<button onclick="cargarRegistroHistorial(' + i + ')" '
             + (activo ? 'style="background:var(--gray-200);color:var(--gray-700);"' : '') + '>'
@@ -1844,7 +1818,7 @@ function mostrarHistorial(registros) {
 
 function cargarRegistroHistorial(idx) {
     cargarRespuestasDesdeRegistro(historialRegistros[idx]);
-    mostrarHistorial(historialRegistros);
+    mostrarHistorialLocal(historialRegistros);
 }
 
 async function guardarProgreso() {
@@ -1861,38 +1835,32 @@ async function guardarProgreso() {
     }).join(', ');
     payload.notas = '';
     try {
-        // Enviar vía formulario oculto para evitar CORS en POST
-        await postViaForm(SCRIPT_URL, payload);
-        mostrarStatus('saved', 'Guardado ✓');
+        const r = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        const d = await r.json();
+        if (d.ok) {
+            // Guardar snapshot en localStorage para historial local
+            guardarSnapshotLocal(payload);
+            mostrarStatus('saved', 'Guardado ✓ · ' + (d.periodo || ''));
+        } else {
+            mostrarStatus('error', 'Error al guardar');
+        }
     } catch(e) { mostrarStatus('error', 'Sin conexión'); }
 }
 
-function postViaForm(url, payload) {
-    return new Promise((resolve) => {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = url;
-        form.target = '_guardar_frame';
-        form.style.display = 'none';
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'payload';
-        input.value = JSON.stringify(payload);
-        form.appendChild(input);
-        let iframe = document.getElementById('_guardar_frame');
-        if (!iframe) {
-            iframe = document.createElement('iframe');
-            iframe.name = '_guardar_frame';
-            iframe.id = '_guardar_frame';
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
-        }
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
-        // Esperar brevemente y confirmar optimista (iframe POST no devuelve respuesta cross-origin)
-        setTimeout(() => resolve({ ok: true }), 1500);
-    });
+function guardarSnapshotLocal(payload) {
+    const cacheKey = 'upturn_auditoria_respuestas_' + empresaActiva.toLowerCase().replace(/\s+/g, '_');
+    let registros = [];
+    try { registros = JSON.parse(localStorage.getItem(cacheKey)) || []; } catch(e) { registros = []; }
+    const snapshot = Object.assign({}, payload, { timestamp: new Date().toISOString() });
+    registros.push(snapshot);
+    // Guardar máximo 8 snapshots por empresa
+    if (registros.length > 8) registros = registros.slice(-8);
+    localStorage.setItem(cacheKey, JSON.stringify(registros));
+    historialRegistros = registros;
+    mostrarHistorialLocal(registros);
 }
 
 function mostrarStatus(tipo, msg) {
