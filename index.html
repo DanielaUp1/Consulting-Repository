@@ -96,7 +96,7 @@ body { background:var(--navy); color:var(--white); font-family:'Poppins',sans-se
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field-label { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--white-soft); }
 .field-label .req { color: var(--blue); margin-left: 2px; }
-select, input[type="text"], input[type="number"], textarea {
+select, input[type="text"], input[type="number"], input[type="date"], textarea {
   background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px;
   color: var(--white); font-family: 'Poppins',sans-serif; font-size: 12px;
   padding: 10px 14px; outline: none; transition: border-color 0.15s; width: 100%;
@@ -108,6 +108,17 @@ textarea { resize: vertical; min-height: 60px; }
 .time-input-wrap { position: relative; display: flex; align-items: center; }
 input[type="number"] { padding-right: 40px; font-size: 16px; font-weight: 600; color: var(--gold); }
 .time-unit { position: absolute; right: 14px; font-size: 10px; color: var(--white-soft); font-weight: 500; pointer-events: none; }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(2) hue-rotate(190deg); cursor: pointer; opacity: 0.7; }
+input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+input[type="date"]::-webkit-datetime-edit { color: var(--white); }
+input[type="date"]::-webkit-datetime-edit-fields-wrapper { color: var(--white); }
+input[type="date"]::-webkit-datetime-edit-text { color: var(--white-soft); }
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field { color: var(--white); }
+input[type="date"]::-webkit-datetime-edit-month-field:focus,
+input[type="date"]::-webkit-datetime-edit-day-field:focus,
+input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46,109,255,0.25); border-radius: 3px; }
 
 /* ── ACTIVITY PILLS ── */
 .activity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
