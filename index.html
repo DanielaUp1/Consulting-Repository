@@ -286,6 +286,7 @@ input[type="number"] { padding-right: 40px; font-size: 16px; font-weight: 600; c
           <option value="">— selecciona —</option>
           <option>Essential</option><option>Empower</option>
           <option>Complete</option><option>Legacy</option>
+          <option>N/A</option>
         </select>
       </div>
     </div>
@@ -346,7 +347,7 @@ input[type="number"] { padding-right: 40px; font-size: 16px; font-weight: 600; c
       </div>
       <div class="field">
         <div class="field-label">Fecha <span class="req">*</span></div>
-        <input type="text" id="f-date">
+        <input type="date" id="f-date">
       </div>
       <div class="field">
         <div class="field-label">Duración <span class="req">*</span></div>
@@ -521,7 +522,11 @@ function setDate() {
   const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
   document.getElementById('today-day').textContent  = now.getDate();
   document.getElementById('today-rest').textContent = `${days[now.getDay()]} ${months[now.getMonth()]} ${now.getFullYear()}`;
-  document.getElementById('f-date').value = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+  // date input requires YYYY-MM-DD
+  const yyyy = now.getFullYear();
+  const mm   = String(now.getMonth()+1).padStart(2,'0');
+  const dd   = String(now.getDate()).padStart(2,'0');
+  document.getElementById('f-date').value = `${yyyy}-${mm}-${dd}`;
 }
 
 // ── Status dot ──────────────────────────────────────────
