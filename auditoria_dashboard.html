@@ -427,9 +427,373 @@ td .empresa-nombre { font-weight: 600; color: var(--white); font-size: 14px; }
     border-bottom: 1px solid var(--border);
     margin: 16px 0 8px;
 }
+
+/* ============================================================
+   DASHBOARD CLIENTE — MODAL + PDF
+   ============================================================ */
+
+.dash-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 500;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 24px;
+}
+.dash-overlay.open { display: flex; }
+
+.dash-modal {
+    background: #F7F8FA;
+    color: #111827;
+    width: 100%;
+    max-width: 860px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    position: relative;
+}
+
+/* Barra de control (solo visible en pantalla, no en PDF) */
+.dash-controls {
+    background: #1A1A2E;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.dash-controls span {
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-right: 4px;
+}
+.dash-period-btn {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: transparent;
+    color: rgba(255,255,255,0.7);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.dash-period-btn:hover { border-color: #2E6DFF; color: white; }
+.dash-period-btn.active { background: #2E6DFF; border-color: #2E6DFF; color: white; }
+.dash-controls-right { margin-left: auto; display: flex; gap: 8px; }
+.dash-btn-pdf {
+    padding: 7px 18px;
+    background: #FAB727;
+    color: #0A1520;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.dash-btn-pdf:hover { background: #e6a520; }
+.dash-btn-close {
+    padding: 7px 14px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.dash-btn-close:hover { background: rgba(255,255,255,0.2); }
+
+/* ---- CONTENIDO DEL REPORTE ---- */
+#dashContent {
+    background: #F7F8FA;
+    padding: 0;
+}
+
+/* CABECERA REPORTE */
+.dash-header {
+    background: #0A1520;
+    padding: 36px 40px 28px;
+    position: relative;
+    overflow: hidden;
+}
+.dash-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(46,109,255,0.25) 0%, transparent 70%);
+    border-radius: 50%;
+}
+.dash-header-brand {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #2E6DFF;
+    margin-bottom: 16px;
+}
+.dash-header-empresa {
+    font-size: 28px;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.1;
+    margin-bottom: 6px;
+}
+.dash-header-meta {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+.dash-header-meta span { display: flex; align-items: center; gap: 6px; }
+
+/* SCORE GENERAL */
+.dash-score-section {
+    padding: 28px 40px;
+    background: white;
+    border-bottom: 1px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+.dash-score-ring {
+    flex-shrink: 0;
+    width: 110px;
+    height: 110px;
+}
+.dash-score-info { flex: 1; }
+.dash-score-num {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.dash-score-label {
+    font-size: 13px;
+    color: #6B7280;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+}
+.dash-score-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.dash-pill {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.dash-pill-ok   { background: #D1FAE5; color: #065F46; }
+.dash-pill-no   { background: #FEE2E2; color: #991B1B; }
+.dash-pill-pend { background: #FEF3C7; color: #92400E; }
+.dash-pill-na   { background: #F3F4F6; color: #374151; }
+
+/* SECCIÓN PERÍODO (si hay comparativa) */
+.dash-periodos-nav {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #E5E7EB;
+    padding: 0 40px;
+    background: white;
+}
+.dash-periodo-tab {
+    padding: 12px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #9CA3AF;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    cursor: default;
+}
+.dash-periodo-tab.activo {
+    color: #2E6DFF;
+    border-bottom-color: #2E6DFF;
+}
+
+/* MÓDULOS */
+.dash-modulos-section {
+    padding: 28px 40px;
+    background: #F7F8FA;
+}
+.dash-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #9CA3AF;
+    margin-bottom: 16px;
+}
+.dash-modulos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 8px;
+}
+.dash-modulo-card {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 18px 16px;
+}
+.dash-modulo-nombre {
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 14px;
+    line-height: 1.3;
+}
+.dash-modulo-ring-wrap { display: flex; align-items: center; gap: 12px; }
+.dash-modulo-ring { width: 52px; height: 52px; flex-shrink: 0; }
+.dash-modulo-stats { font-size: 11px; color: #6B7280; line-height: 1.8; }
+.dash-modulo-pct { font-size: 20px; font-weight: 800; color: #111827; line-height: 1; }
+
+/* PENDIENTES */
+.dash-pendientes-section {
+    padding: 0 40px 36px;
+    background: #F7F8FA;
+}
+.dash-pendientes-grupo {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+.dash-pendientes-grupo-header {
+    padding: 12px 18px;
+    background: #F9FAFB;
+    border-bottom: 1px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.dash-pendientes-grupo-nombre {
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+}
+.dash-pendientes-grupo-count {
+    font-size: 11px;
+    font-weight: 700;
+    color: #9CA3AF;
+}
+.dash-pendiente-row {
+    padding: 10px 18px;
+    border-bottom: 1px solid #F3F4F6;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    color: #374151;
+    line-height: 1.5;
+}
+.dash-pendiente-row:last-child { border-bottom: none; }
+.dash-tag {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    margin-top: 1px;
+}
+.dash-tag-no   { background: #FEE2E2; color: #991B1B; }
+.dash-tag-pend { background: #FEF3C7; color: #92400E; }
+
+/* PIE DEL REPORTE */
+.dash-footer {
+    background: #0A1520;
+    padding: 18px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.dash-footer-brand {
+    font-size: 12px;
+    font-weight: 800;
+    color: #2E6DFF;
+    letter-spacing: 0.1em;
+}
+.dash-footer-meta { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+/* COMPARATIVA — tabla de períodos */
+.dash-comparativa {
+    padding: 0 40px 28px;
+    background: #F7F8FA;
+}
+.dash-comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #E5E7EB;
+    font-size: 12px;
+}
+.dash-comp-table th {
+    padding: 10px 14px;
+    background: #F9FAFB;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9CA3AF;
+    border-bottom: 1px solid #E5E7EB;
+}
+.dash-comp-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #F3F4F6;
+    color: #374151;
+    font-weight: 500;
+}
+.dash-comp-table tr:last-child td { border-bottom: none; }
+.dash-comp-pct {
+    font-weight: 800;
+    font-size: 13px;
+}
+
+/* PRINT / PDF */
+@media print {
+    body * { visibility: hidden !important; }
+    .dash-overlay, .dash-overlay * { visibility: visible !important; }
+    .dash-overlay { position: absolute; top: 0; left: 0; padding: 0; background: white !important; }
+    .dash-modal { box-shadow: none; border-radius: 0; max-width: 100%; }
+    .dash-controls { display: none !important; }
+    .dash-overlay.open { display: block; }
+}
 </style>
 </head>
 <body>
+
+<!-- DASHBOARD CLIENTE — OVERLAY/MODAL -->
+<div class="dash-overlay" id="dashOverlay">
+    <!-- Barra de control -->
+    <div class="dash-modal">
+        <div class="dash-controls" id="dashControls">
+            <span>Período:</span>
+            <div id="dashPeriodBtns" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+            <div class="dash-controls-right">
+                <button class="dash-btn-pdf" onclick="descargarDashPDF()">⬇ Descargar PDF</button>
+                <button class="dash-btn-close" onclick="cerrarDashboard()">✕ Cerrar</button>
+            </div>
+        </div>
+        <!-- Contenido del reporte (se regenera dinámicamente) -->
+        <div id="dashContent"></div>
+    </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -517,6 +881,7 @@ td .empresa-nombre { font-weight: 600; color: var(--white); font-size: 14px; }
         <div class="topbar">
             <button class="btn btn-secondary btn-sm" onclick="showScreen('clientes')">← Volver</button>
             <div style="display:flex;gap:10px;">
+                <button class="btn btn-secondary btn-sm" onclick="abrirDashboardCliente()">📊 Dashboard cliente</button>
                 <button class="btn btn-gold btn-sm" id="btnGuardarDetalle" onclick="guardarRegistroDetalle()" disabled>
                     💾 Guardar sesión
                 </button>
@@ -710,13 +1075,13 @@ let respuestasEdicion = {}; // respuestas en edición para el cliente activo
 // ============================================================
 
 function init() {
-    // Restaurar consultora si la seleccionó antes
-    const savedConsultora = localStorage.getItem('upturn_dash_consultora');
-    if (savedConsultora) {
-        consultoraActiva = savedConsultora;
-        document.getElementById('sidebarConsultora').textContent = savedConsultora;
+    // Restaurar consultora guardada
+    const saved = localStorage.getItem('upturn_dash_consultora');
+    if (saved) {
+        consultoraActiva = saved;
         const sel = document.getElementById('consultoraSelect');
-        if (sel) sel.value = savedConsultora;
+        if (sel) sel.value = saved;
+        document.getElementById('sidebarConsultora').textContent = saved;
     }
     if (!SCRIPT_URL) showScreen('config');
     else cargarTodosClientes();
@@ -765,8 +1130,8 @@ function actualizarConfigUI() {
 
 function seleccionarConsultora() {
     consultoraActiva = document.getElementById('consultoraSelect').value;
+    localStorage.setItem('upturn_dash_consultora', consultoraActiva);
     document.getElementById('sidebarConsultora').textContent = consultoraActiva || '—';
-    if (consultoraActiva) localStorage.setItem('upturn_dash_consultora', consultoraActiva);
 }
 
 // ============================================================
@@ -965,20 +1330,14 @@ function cargarVersionHistorial(idx, btn) {
 }
 
 function renderDetalleStats() {
-    // Usar respuestasEdicion (estado en vivo) para calcular cumplimiento
-    const registroVivo = {};
-    Object.keys(MODULOS).forEach(mid => {
-        MODULOS[mid].preguntas.forEach(q => {
-            registroVivo[q.id] = (respuestasEdicion[mid] && respuestasEdicion[mid][q.id]) ? respuestasEdicion[mid][q.id] : '';
-        });
-    });
-    const { cumplimiento, estado, estadoClass } = calcularCumplimiento(registroVivo);
+    const masReciente = clienteActivo.registros[clienteActivo.registros.length - 1];
+    const { cumplimiento, estado, estadoClass } = calcularCumplimiento(masReciente);
 
     let totalRespondidas = 0, totalPreguntas = 0, totalNos = 0;
     Object.values(MODULOS).forEach(modulo => {
         modulo.preguntas.forEach(q => {
             totalPreguntas++;
-            const val = registroVivo[q.id] || '';
+            const val = masReciente[q.id] || '';
             if (val) totalRespondidas++;
             if (val === 'no') totalNos++;
         });
@@ -1081,11 +1440,8 @@ function responderEnDetalle(moduloId, preguntaId, respuesta) {
 
 async function guardarRegistroDetalle() {
     if (!clienteActivo) return;
-    // Intentar leer el select directamente por si acaso
-    const selVal = document.getElementById('consultoraSelect') ? document.getElementById('consultoraSelect').value : '';
-    if (selVal) consultoraActiva = selVal;
     if (!consultoraActiva) {
-        showToast('Selecciona tu nombre en la esquina superior derecha', 'err');
+        showToast('Selecciona tu nombre antes de guardar', 'err');
         return;
     }
 
@@ -1247,6 +1603,375 @@ function renderResumenTabla() {
             <td>${tendencia}</td>
         </tr>`;
     }).join('');
+}
+
+// ============================================================
+// DASHBOARD CLIENTE — LÓGICA COMPLETA
+// ============================================================
+
+let dashModoComparativa = false; // true = Q1|Q2|Q3|Q4 en paralelo
+let dashPeriodosSeleccionados = []; // para comparativa: qué períodos mostrar
+
+function abrirDashboardCliente() {
+    if (!clienteActivo || clienteActivo.registros.length === 0) {
+        showToast('Sin registros para este cliente', 'err');
+        return;
+    }
+
+    // Detectar períodos disponibles
+    const periodosDisponibles = [...new Set(clienteActivo.registros.map(r => r.periodo).filter(Boolean))];
+    periodosDisponibles.sort(); // Q1 < Q2 < Q3 < Q4
+
+    // Iniciar: si hay más de un período ofrecemos la comparativa
+    dashModoComparativa = periodosDisponibles.length > 1;
+    dashPeriodosSeleccionados = dashModoComparativa ? [...periodosDisponibles] : [periodosDisponibles[0]];
+
+    // Construir botones de selección de período
+    renderDashPeriodBtns(periodosDisponibles);
+    renderDashContent();
+
+    document.getElementById('dashOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarDashboard() {
+    document.getElementById('dashOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function renderDashPeriodBtns(periodosDisponibles) {
+    const container = document.getElementById('dashPeriodBtns');
+    // Botón "Comparativa" si hay más de 1
+    let html = '';
+    if (periodosDisponibles.length > 1) {
+        html += `<button class="dash-period-btn ${dashModoComparativa ? 'active' : ''}" onclick="seleccionarDashPeriodo('comparativa', this)">Comparativa</button>`;
+    }
+    periodosDisponibles.forEach(p => {
+        const isActive = !dashModoComparativa && dashPeriodosSeleccionados.includes(p);
+        html += `<button class="dash-period-btn ${isActive ? 'active' : ''}" onclick="seleccionarDashPeriodo('${p}', this)">${p}</button>`;
+    });
+    container.innerHTML = html;
+}
+
+function seleccionarDashPeriodo(valor, btn) {
+    const periodosDisponibles = [...new Set(clienteActivo.registros.map(r => r.periodo).filter(Boolean))].sort();
+    if (valor === 'comparativa') {
+        dashModoComparativa = true;
+        dashPeriodosSeleccionados = [...periodosDisponibles];
+    } else {
+        dashModoComparativa = false;
+        dashPeriodosSeleccionados = [valor];
+    }
+    renderDashPeriodBtns(periodosDisponibles);
+    renderDashContent();
+}
+
+// Obtener el registro más reciente de un período específico
+function getRegistroPorPeriodo(periodo) {
+    const rows = clienteActivo.registros.filter(r => r.periodo === periodo);
+    return rows.length > 0 ? rows[rows.length - 1] : null;
+}
+
+// Calcular stats para un registro dado
+function calcDashStats(registro) {
+    let totalSi = 0, totalNo = 0, totalNA = 0, totalSinRespuesta = 0, totalPreguntas = 0;
+    const pendientesPorModulo = {};
+
+    Object.values(MODULOS).forEach(modulo => {
+        const pendientes = [];
+        modulo.preguntas.forEach(q => {
+            totalPreguntas++;
+            const val = registro ? (registro[q.id] || '') : '';
+            if (val === 'si')      totalSi++;
+            else if (val === 'no') { totalNo++; pendientes.push({ id: q.id, pregunta: q.pregunta, tipo: 'no' }); }
+            else if (val === 'naplica') totalNA++;
+            else                   { totalSinRespuesta++; pendientes.push({ id: q.id, pregunta: q.pregunta, tipo: 'pend' }); }
+        });
+        if (pendientes.length > 0) {
+            pendientesPorModulo[modulo.id] = { nombre: modulo.nombre, pendientes };
+        }
+    });
+
+    const denom = totalPreguntas - totalNA;
+    const cumplimiento = denom === 0 ? 0 : Math.round((totalSi / denom) * 100);
+
+    return { totalSi, totalNo, totalNA, totalSinRespuesta, totalPreguntas, cumplimiento, pendientesPorModulo };
+}
+
+function calcDashStatsModulo(modulo, registro) {
+    let si = 0, na = 0, no = 0, sinR = 0;
+    modulo.preguntas.forEach(q => {
+        const val = registro ? (registro[q.id] || '') : '';
+        if (val === 'si')     si++;
+        else if (val === 'naplica') na++;
+        else if (val === 'no') no++;
+        else sinR++;
+    });
+    const denom = modulo.preguntas.length - na;
+    const pct = denom === 0 ? 0 : Math.round((si / denom) * 100);
+    return { si, na, no, sinR, pct, total: modulo.preguntas.length };
+}
+
+// Color semáforo
+function colorPct(pct) {
+    if (pct >= 80) return '#059669';
+    if (pct >= 50) return '#D97706';
+    return '#DC2626';
+}
+
+// SVG ring donut mini
+function svgRing(pct, color, size = 52, stroke = 6) {
+    const r = (size / 2) - stroke;
+    const circ = 2 * Math.PI * r;
+    const offset = circ - (pct / 100) * circ;
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+        <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#E5E7EB" stroke-width="${stroke}"/>
+        <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
+            stroke-dasharray="${circ}" stroke-dashoffset="${offset}"
+            stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"/>
+        <text x="${size/2}" y="${size/2 + 4}" text-anchor="middle" font-size="${size < 70 ? 11 : 18}" font-weight="800" fill="${color}">${pct}%</text>
+    </svg>`;
+}
+
+function renderDashContent() {
+    const empresa = clienteActivo.empresa;
+    const hoy = new Date().toLocaleDateString('es-PR', { year: 'numeric', month: 'long', day: 'numeric' });
+    const consultora = clienteActivo.registros[clienteActivo.registros.length - 1]?.consultora || '';
+    const tier = clienteActivo.registros[clienteActivo.registros.length - 1]?.tipo_cliente || '';
+
+    let html = '';
+
+    // ---- CABECERA ----
+    const periodoLabel = dashModoComparativa
+        ? dashPeriodosSeleccionados.join(' · ')
+        : dashPeriodosSeleccionados[0];
+
+    html += `
+    <div class="dash-header">
+        <div class="dash-header-brand">UPTURN · Reporte de Auditoría</div>
+        <div class="dash-header-empresa">${empresa}</div>
+        <div class="dash-header-meta">
+            <span>📅 ${hoy}</span>
+            <span>🗂 Período: ${periodoLabel}</span>
+            ${tier ? `<span>🏷 ${tier}</span>` : ''}
+            ${consultora ? `<span>👤 ${consultora}</span>` : ''}
+        </div>
+    </div>`;
+
+    if (dashModoComparativa) {
+        // ---- MODO COMPARATIVA ----
+        html += renderDashComparativa();
+    } else {
+        // ---- MODO UN PERÍODO ----
+        const periodo = dashPeriodosSeleccionados[0];
+        const registro = getRegistroPorPeriodo(periodo);
+        const stats = calcDashStats(registro);
+        html += renderDashUnPeriodo(stats, registro, periodo);
+    }
+
+    // ---- PIE ----
+    html += `
+    <div class="dash-footer">
+        <div class="dash-footer-brand">UPTURN HR Services</div>
+        <div class="dash-footer-meta">Confidencial · Uso interno del cliente</div>
+    </div>`;
+
+    document.getElementById('dashContent').innerHTML = html;
+}
+
+function renderDashUnPeriodo(stats, registro, periodo) {
+    const c = colorPct(stats.cumplimiento);
+    let html = '';
+
+    // Score general
+    html += `
+    <div class="dash-score-section">
+        <div class="dash-score-ring">${svgRing(stats.cumplimiento, c, 110, 10)}</div>
+        <div class="dash-score-info">
+            <div class="dash-score-num" style="color:${c};">${stats.cumplimiento}%</div>
+            <div class="dash-score-label">Cumplimiento general · ${periodo}</div>
+            <div class="dash-score-pills">
+                <span class="dash-pill dash-pill-ok">✓ ${stats.totalSi} cumplidos</span>
+                <span class="dash-pill dash-pill-no">✗ ${stats.totalNo} brechas</span>
+                ${stats.totalSinRespuesta > 0 ? `<span class="dash-pill dash-pill-pend">⚠ ${stats.totalSinRespuesta} pendientes</span>` : ''}
+                ${stats.totalNA > 0 ? `<span class="dash-pill dash-pill-na">— ${stats.totalNA} N/A</span>` : ''}
+            </div>
+        </div>
+    </div>`;
+
+    // Módulos
+    html += `<div class="dash-modulos-section">
+        <div class="dash-section-title">Resultados por módulo</div>
+        <div class="dash-modulos-grid">`;
+
+    Object.values(MODULOS).forEach(modulo => {
+        const ms = calcDashStatsModulo(modulo, registro);
+        const mc = colorPct(ms.pct);
+        html += `
+        <div class="dash-modulo-card">
+            <div class="dash-modulo-nombre">${modulo.nombre}</div>
+            <div class="dash-modulo-ring-wrap">
+                <div class="dash-modulo-ring">${svgRing(ms.pct, mc, 52, 5)}</div>
+                <div class="dash-modulo-stats">
+                    <div class="dash-modulo-pct" style="color:${mc};">${ms.pct}%</div>
+                    ${ms.no > 0 ? `<div style="color:#DC2626;">✗ ${ms.no} brechas</div>` : ''}
+                    ${ms.sinR > 0 ? `<div style="color:#D97706;">⚠ ${ms.sinR} sin resp.</div>` : ''}
+                    ${ms.na > 0 ? `<div style="color:#9CA3AF;">— ${ms.na} N/A</div>` : ''}
+                </div>
+            </div>
+        </div>`;
+    });
+    html += `</div></div>`;
+
+    // Pendientes
+    const hayPendientes = Object.keys(stats.pendientesPorModulo).length > 0;
+    if (hayPendientes) {
+        html += `<div class="dash-pendientes-section">
+            <div class="dash-section-title" style="padding: 0 0 12px;">Áreas de acción requerida</div>`;
+
+        Object.values(stats.pendientesPorModulo).forEach(({ nombre, pendientes }) => {
+            const nos = pendientes.filter(p => p.tipo === 'no').length;
+            const pends = pendientes.filter(p => p.tipo === 'pend').length;
+            let countLabel = [];
+            if (nos > 0) countLabel.push(`${nos} brecha${nos > 1 ? 's' : ''}`);
+            if (pends > 0) countLabel.push(`${pends} pendiente${pends > 1 ? 's' : ''}`);
+
+            html += `
+            <div class="dash-pendientes-grupo">
+                <div class="dash-pendientes-grupo-header">
+                    <span class="dash-pendientes-grupo-nombre">${nombre}</span>
+                    <span class="dash-pendientes-grupo-count">${countLabel.join(' · ')}</span>
+                </div>`;
+
+            pendientes.forEach(p => {
+                const tagClass = p.tipo === 'no' ? 'dash-tag-no' : 'dash-tag-pend';
+                const tagLabel = p.tipo === 'no' ? 'Brecha' : 'Pendiente';
+                html += `
+                <div class="dash-pendiente-row">
+                    <span class="dash-tag ${tagClass}">${tagLabel}</span>
+                    <span>${p.pregunta}</span>
+                </div>`;
+            });
+
+            html += `</div>`;
+        });
+
+        html += `</div>`;
+    } else {
+        html += `<div class="dash-pendientes-section">
+            <div style="background:white;border:1px solid #E5E7EB;border-radius:12px;padding:28px;text-align:center;">
+                <div style="font-size:28px;margin-bottom:8px;">✅</div>
+                <div style="font-size:14px;font-weight:700;color:#059669;">Sin brechas registradas en este período</div>
+                <div style="font-size:12px;color:#9CA3AF;margin-top:4px;">Todas las preguntas respondidas con cumplimiento</div>
+            </div>
+        </div>`;
+    }
+
+    return html;
+}
+
+function renderDashComparativa() {
+    let html = '';
+
+    // Tabs de períodos activos
+    html += `<div class="dash-periodos-nav">`;
+    dashPeriodosSeleccionados.forEach(p => {
+        html += `<div class="dash-periodo-tab activo">${p}</div>`;
+    });
+    html += `</div>`;
+
+    // Tabla comparativa por módulo × período
+    html += `<div class="dash-comparativa">
+        <div class="dash-section-title" style="padding-top:20px;">Cumplimiento por módulo y período</div>
+        <table class="dash-comp-table">
+            <thead><tr>
+                <th>Módulo</th>
+                ${dashPeriodosSeleccionados.map(p => `<th>${p}</th>`).join('')}
+                <th>Tendencia</th>
+            </tr></thead>
+            <tbody>`;
+
+    Object.values(MODULOS).forEach(modulo => {
+        html += `<tr><td style="font-weight:600;">${modulo.nombre}</td>`;
+        const pcts = [];
+        dashPeriodosSeleccionados.forEach(p => {
+            const reg = getRegistroPorPeriodo(p);
+            const ms = calcDashStatsModulo(modulo, reg);
+            pcts.push(ms.pct);
+            const c = colorPct(ms.pct);
+            html += `<td><span class="dash-comp-pct" style="color:${c};">${reg ? ms.pct + '%' : '—'}</span></td>`;
+        });
+        // Tendencia simple
+        const validos = pcts.filter((_, i) => getRegistroPorPeriodo(dashPeriodosSeleccionados[i]));
+        let tend = '—', tendColor = '#9CA3AF';
+        if (validos.length >= 2) {
+            const diff = validos[validos.length-1] - validos[validos.length-2];
+            if (diff > 0) { tend = '↑ Mejora'; tendColor = '#059669'; }
+            else if (diff < 0) { tend = '↓ Baja'; tendColor = '#DC2626'; }
+            else { tend = '→ Estable'; tendColor = '#9CA3AF'; }
+        }
+        html += `<td style="color:${tendColor};font-weight:700;">${tend}</td></tr>`;
+    });
+
+    // Fila total
+    html += `<tr style="background:#F9FAFB;"><td style="font-weight:800;">TOTAL</td>`;
+    dashPeriodosSeleccionados.forEach(p => {
+        const reg = getRegistroPorPeriodo(p);
+        if (!reg) { html += `<td>—</td>`; return; }
+        const stats = calcDashStats(reg);
+        const c = colorPct(stats.cumplimiento);
+        html += `<td><span class="dash-comp-pct" style="color:${c};">${stats.cumplimiento}%</span></td>`;
+    });
+    html += `<td></td></tr>`;
+
+    html += `</tbody></table></div>`;
+
+    // Pendientes consolidados (unión de todos los períodos seleccionados)
+    // Mostrar las del período más reciente disponible
+    const ultimoPeriodo = dashPeriodosSeleccionados[dashPeriodosSeleccionados.length - 1];
+    const ultimoReg = getRegistroPorPeriodo(ultimoPeriodo);
+    const statsUltimo = calcDashStats(ultimoReg);
+    const hayPend = Object.keys(statsUltimo.pendientesPorModulo).length > 0;
+
+    html += `<div style="padding: 0 0 8px;">
+        <div class="dash-section-title" style="padding-top:4px;">Áreas de acción al cierre de ${ultimoPeriodo}</div>`;
+
+    if (hayPend) {
+        Object.values(statsUltimo.pendientesPorModulo).forEach(({ nombre, pendientes }) => {
+            const nos = pendientes.filter(p => p.tipo === 'no').length;
+            const pends = pendientes.filter(p => p.tipo === 'pend').length;
+            let countLabel = [];
+            if (nos > 0) countLabel.push(`${nos} brecha${nos > 1 ? 's' : ''}`);
+            if (pends > 0) countLabel.push(`${pends} pendiente${pends > 1 ? 's' : ''}`);
+
+            html += `<div class="dash-pendientes-grupo">
+                <div class="dash-pendientes-grupo-header">
+                    <span class="dash-pendientes-grupo-nombre">${nombre}</span>
+                    <span class="dash-pendientes-grupo-count">${countLabel.join(' · ')}</span>
+                </div>`;
+            pendientes.forEach(p => {
+                const tagClass = p.tipo === 'no' ? 'dash-tag-no' : 'dash-tag-pend';
+                const tagLabel = p.tipo === 'no' ? 'Brecha' : 'Pendiente';
+                html += `<div class="dash-pendiente-row">
+                    <span class="dash-tag ${tagClass}">${tagLabel}</span>
+                    <span>${p.pregunta}</span>
+                </div>`;
+            });
+            html += `</div>`;
+        });
+    } else {
+        html += `<div style="background:white;border:1px solid #E5E7EB;border-radius:12px;padding:20px;text-align:center;">
+            <div style="font-size:13px;font-weight:700;color:#059669;">✅ Sin brechas en ${ultimoPeriodo}</div>
+        </div>`;
+    }
+    html += `</div>`;
+
+    return html;
+}
+
+function descargarDashPDF() {
+    showToast('Preparando PDF...', 'ok');
+    setTimeout(() => window.print(), 300);
 }
 
 // ============================================================
