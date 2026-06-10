@@ -1835,18 +1835,17 @@ async function guardarProgreso() {
     }).join(', ');
     payload.notas = '';
     try {
-        const r = await fetch(SCRIPT_URL, {
+        // Usar no-cors con FormData — mismo patrón que el tracker de consultoras
+        const form = new FormData();
+        form.append('payload', JSON.stringify(payload));
+        await fetch(SCRIPT_URL, {
             method: 'POST',
-            body: JSON.stringify(payload)
+            mode: 'no-cors',
+            body: form
         });
-        const d = await r.json();
-        if (d.ok) {
-            // Guardar snapshot en localStorage para historial local
-            guardarSnapshotLocal(payload);
-            mostrarStatus('saved', 'Guardado ✓ · ' + (d.periodo || ''));
-        } else {
-            mostrarStatus('error', 'Error al guardar');
-        }
+        // no-cors no devuelve respuesta legible — asumimos éxito si no hubo excepción
+        guardarSnapshotLocal(payload);
+        mostrarStatus('saved', 'Guardado ✓');
     } catch(e) { mostrarStatus('error', 'Sin conexión'); }
 }
 
