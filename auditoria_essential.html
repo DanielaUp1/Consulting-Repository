@@ -1843,6 +1843,27 @@ function cargarRegistroHistorial(idx) {
 
 async function guardarProgreso() {
     if (!empresaActiva) { alert('Primero identifica tu empresa.'); return; }
+
+    // Comparar con último snapshot guardado — evitar duplicados
+    const cacheKey = 'upturn_auditoria_respuestas_' + empresaActiva.toLowerCase().replace(/\s+/g, '_');
+    let registrosExistentes = [];
+    try { registrosExistentes = JSON.parse(localStorage.getItem(cacheKey)) || []; } catch(e) {}
+    if (registrosExistentes.length > 0) {
+        const ultimo = registrosExistentes[registrosExistentes.length - 1];
+        const respActuales = {};
+        Object.keys(MODULOS).forEach(mid => {
+            MODULOS[mid].preguntas.forEach(q => {
+                respActuales[q.id] = (respuestas[mid] && respuestas[mid][q.id]) ? respuestas[mid][q.id] : '';
+            });
+        });
+        const sinCambios = Object.keys(respActuales).every(k => (ultimo[k] || '') === respActuales[k]);
+        if (sinCambios) {
+            mostrarStatus('saved', 'Sin cambios nuevos');
+            mostrarMensajeSinCambios();
+            return;
+        }
+    }
+
     mostrarStatus('saving', 'Guardando...');
     const payload = { empresa: empresaActiva, tipo_cliente: 'Essential', consultora: '' };
     Object.keys(MODULOS).forEach(mid => {
@@ -1913,6 +1934,28 @@ function mostrarConfirmacionGuardado() {
         confBottom.style.color = '#155724';
         setTimeout(() => { confBottom.style.display = 'none'; }, 5000);
     }
+}
+
+function mostrarMensajeSinCambios() {
+    const confInicio = document.getElementById('confirmacionGuardadoInicio');
+    if (confInicio) {
+        confInicio.textContent = 'ℹ️ No hay cambios nuevos desde el último guardado';
+        confInicio.style.display = 'block';
+        confInicio.style.background = '#fff3cd';
+        confInicio.style.color = '#856404';
+        confInicio.style.border = '1px solid #ffc107';
+        setTimeout(() => { confInicio.style.display = 'none'; }, 4000);
+    }
+    ['confirmGuardadoModuloTop','confirmGuardadoModuloBottom'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = 'Sin cambios nuevos';
+            el.style.display = 'inline-block';
+            el.style.background = '#fff3cd';
+            el.style.color = '#856404';
+            setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+    });
 }
 
 async function guardarProgresoDesdeModulo(origen) {
