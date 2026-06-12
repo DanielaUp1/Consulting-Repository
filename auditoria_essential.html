@@ -1049,8 +1049,9 @@
         <button id="btnBuscarEmpresa" class="btn-guardar-progreso" onclick="identificarEmpresa()" style="background:var(--primary);margin-top:0;opacity:0.45;cursor:not-allowed;" disabled>Buscar mi empresa</button>
         <!-- Confirmación inline de identificación -->
         <div id="confirmacionIdentificacion" style="display:none;margin-top:12px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;"></div>
-        <div class="historial-panel" id="historialPanel">
-          <strong>Historial — <span id="historialEmpresaNombre"></span></strong>
+        <!-- historial interno — no visible al cliente Essential -->
+        <div id="historialPanel" style="display:none;">
+          <span id="historialEmpresaNombre"></span>
           <div id="historialLista"></div>
         </div>
       </div>
@@ -1780,20 +1781,19 @@ function cerrarModalEmpresa() {
 function activarEmpresa(nombre, correo, registros) {
     empresaActiva = nombre; correoActivo = correo;
     localStorage.setItem(EMPRESA_KEY, nombre);
-    historialRegistros = registros; // asignar siempre para que cargarRegistroHistorial funcione
+    historialRegistros = registros;
+    // Cargar último snapshot silenciosamente — sin mostrar historial al cliente
     if (registros.length > 0) {
         cargarRespuestasDesdeRegistro(registros[registros.length - 1]);
-        mostrarHistorialLocal(registros);
     }
     document.getElementById('btnGuardarProgreso').disabled = false;
     document.getElementById('btnGuardarProgresoTabla').disabled = false;
     updateHeader();
     renderBadges();
     const msg = registros.length > 0
-        ? '✓ ' + registros.length + ' sesión(es) anterior(es) cargada(s)'
+        ? '✓ Progreso anterior cargado — puedes continuar'
         : '✓ Empresa registrada — puedes comenzar';
     mostrarStatus('saved', msg);
-    // Confirmación inline dentro del cuadro de identificación
     const confId = document.getElementById('confirmacionIdentificacion');
     if (confId) {
         confId.textContent = msg;
@@ -1802,6 +1802,9 @@ function activarEmpresa(nombre, correo, registros) {
         confId.style.color = '#155724';
         confId.style.border = '1px solid #c3e6cb';
     }
+    // Ocultar panel de historial — no necesario para cliente Essential
+    const panel = document.getElementById('historialPanel');
+    if (panel) panel.classList.remove('show');
 }
 
 function cargarRespuestasDesdeRegistro(reg) {
@@ -1908,8 +1911,7 @@ function guardarSnapshotLocal(payload) {
     if (registros.length > 8) registros = registros.slice(-8);
     localStorage.setItem(cacheKey, JSON.stringify(registros));
     historialRegistros = registros;
-    mostrarHistorialLocal(registros);
-    // Confirmación visible abajo del botón guardar en inicio
+    // No mostrar historial al cliente — solo confirmar guardado
     mostrarConfirmacionGuardado();
 }
 
