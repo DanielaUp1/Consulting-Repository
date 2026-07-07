@@ -402,6 +402,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
 
 <!-- ═══ VIEW: DASHBOARD ═══ -->
 <div id="view-dashboard" class="view">
+
+  <!-- FILTROS -->
   <div class="filter-bar">
     <select class="filter-select" id="dash-filter-consultant" onchange="renderDashboard()">
       <option value="all">Todas las consultoras</option>
@@ -411,73 +413,105 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
     <select class="filter-select" id="dash-filter-tier" onchange="renderDashboard()">
       <option value="all">Todos los tiers</option>
       <option>Essential</option><option>Empower</option>
-      <option>Complete</option><option>Legacy</option>
+      <option>Complete</option><option>Legacy</option><option>N/A</option>
     </select>
-    <select class="filter-select" id="dash-filter-billed" onchange="renderDashboard()">
-      <option value="all">Facturado y no facturado</option>
-      <option value="si">Solo facturado (en vivo)</option>
-      <option value="no">Solo interno (no facturado)</option>
+    <select class="filter-select" id="dash-filter-period" onchange="renderDashboard()">
+      <option value="all">Todo el período</option>
+      <option value="7">Últimos 7 días</option>
+      <option value="14">Últimas 2 semanas</option>
+      <option value="30">Último mes</option>
     </select>
-    <button class="sync-btn" style="margin-left:auto" onclick="syncNow()">↻ Actualizar datos</button>
+    <button class="sync-btn" style="margin-left:auto" onclick="syncNow()">↻ Actualizar</button>
   </div>
 
-  <div class="kpi-grid">
-    <div class="kpi-card"><div class="kpi-label">Total horas</div><div class="kpi-value" id="kpi-total" style="color:var(--gold)">—</div><div class="kpi-sub">registradas</div></div>
-    <div class="kpi-card"><div class="kpi-label">En vivo (facturadas)</div><div class="kpi-value" id="kpi-billed" style="color:var(--blue)">—</div><div class="kpi-sub">tiempo con cliente</div></div>
-    <div class="kpi-card"><div class="kpi-label">Trabajo interno</div><div class="kpi-value" id="kpi-internal" style="color:var(--complete)">—</div><div class="kpi-sub">no facturado</div></div>
-    <div class="kpi-card"><div class="kpi-label">% trabajo invisible</div><div class="kpi-value" id="kpi-ratio" style="color:var(--orange)">—</div><div class="kpi-sub">del total registrado</div></div>
-    <div class="kpi-card"><div class="kpi-label">Registros</div><div class="kpi-value" id="kpi-count" style="color:var(--legacy)">—</div><div class="kpi-sub">entradas totales</div></div>
+  <!-- ── CAPA 1: VISIBLE VS INVISIBLE ── -->
+  <div class="eyebrow">Capa 1 · ¿En qué se va el tiempo?</div>
+
+  <!-- KPIs principales -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+    <div class="kpi-card" style="border-top:2px solid var(--gold)">
+      <div class="kpi-label">Total horas registradas</div>
+      <div class="kpi-value" id="kpi-total" style="color:var(--gold)">—</div>
+      <div class="kpi-sub" id="kpi-registros">— registros</div>
+    </div>
+    <div class="kpi-card" style="border-top:2px solid var(--blue)">
+      <div class="kpi-label">Visible · con cliente</div>
+      <div class="kpi-value" id="kpi-billed" style="color:var(--blue)">—</div>
+      <div class="kpi-sub" id="kpi-billed-pct">— del total</div>
+    </div>
+    <div class="kpi-card" style="border-top:2px solid var(--complete)">
+      <div class="kpi-label">Invisible · trabajo interno</div>
+      <div class="kpi-value" id="kpi-internal" style="color:var(--complete)">—</div>
+      <div class="kpi-sub" id="kpi-internal-pct">— del total</div>
+    </div>
+    <div class="kpi-card" style="border-top:2px solid var(--orange)">
+      <div class="kpi-label">Ratio invisible / visible</div>
+      <div class="kpi-value" id="kpi-ratio" style="color:var(--orange)">—</div>
+      <div class="kpi-sub">horas internas por cada h. con cliente</div>
+    </div>
   </div>
 
-  <div class="dash-grid">
+  <!-- Barra proporcional visible/invisible -->
+  <div class="full-card" style="margin-bottom:20px;padding:18px 22px;">
+    <div class="dash-card-title" style="margin-bottom:14px">Proporción visible vs. invisible · total del equipo</div>
+    <div style="display:flex;height:28px;border-radius:6px;overflow:hidden;margin-bottom:10px;" id="ratio-bar">
+      <div style="background:var(--blue);height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;transition:width 0.4s;" id="ratio-bar-visible"></div>
+      <div style="background:var(--complete);height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--navy);transition:width 0.4s;" id="ratio-bar-internal"></div>
+    </div>
+    <div style="display:flex;gap:20px;">
+      <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--white-soft)"><span style="width:10px;height:10px;border-radius:2px;background:var(--blue);display:inline-block"></span>Visible (con cliente)</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--white-soft)"><span style="width:10px;height:10px;border-radius:2px;background:var(--complete);display:inline-block"></span>Invisible (trabajo interno)</div>
+    </div>
+  </div>
+
+  <!-- Actividades: visible vs invisible desglosado -->
+  <div class="dash-grid" style="margin-bottom:20px;">
     <div class="dash-card">
-      <div class="dash-card-title">Horas por tipo de actividad</div>
+      <div class="dash-card-title">Actividades · horas totales <span style="color:var(--white-soft);font-weight:400;text-transform:none;letter-spacing:0">ranking</span></div>
       <div id="activity-breakdown"><div class="loading-state">Sin datos</div></div>
     </div>
     <div class="dash-card">
-      <div class="dash-card-title">Horas por consultora</div>
-      <div id="consultant-breakdown"><div class="loading-state">Sin datos</div></div>
+      <div class="dash-card-title">Visible vs. invisible · por actividad</div>
+      <div id="activity-vi-breakdown"><div class="loading-state">Sin datos</div></div>
     </div>
   </div>
 
-  <div class="full-card">
-    <div class="dash-card-title">Contraste: modelo estimado vs. horas reales registradas · por tier</div>
-    <table class="model-table">
-      <thead>
-        <tr>
-          <th style="text-align:left">Tier</th>
-          <th>Modelo h/año<br><span style="font-weight:400;opacity:0.6">(estimado)</span></th>
-          <th>Real registrado<br><span style="font-weight:400;opacity:0.6">(promedio/cliente)</span></th>
-          <th>Delta</th>
-          <th>Actividad top</th>
-          <th>Clientes</th>
-        </tr>
-      </thead>
-      <tbody id="model-comparison-body">
-        <tr><td colspan="6" style="text-align:center;padding:24px;opacity:0.5;font-style:italic">Aparece cuando haya registros por tier</td></tr>
-      </tbody>
-    </table>
+  <!-- ── CAPA 2: DISPARIDAD ── -->
+  <div class="eyebrow" style="margin-top:8px">Capa 2 · ¿Dónde hay disparidad? <span id="data-warning" style="color:var(--orange);font-size:9px;text-transform:none;letter-spacing:0;font-weight:400;font-style:italic"></span></div>
+
+  <!-- Por consultora -->
+  <div class="dash-grid" style="margin-bottom:20px;">
+    <div class="dash-card">
+      <div class="dash-card-title">Horas por consultora · visible vs. invisible</div>
+      <div id="consultant-breakdown"><div class="loading-state">Sin datos</div></div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card-title">Duración promedio por actividad · por consultora</div>
+      <div id="consultant-activity-avg"><div class="loading-state">Sin datos suficientes · mínimo 5 registros por consultora</div></div>
+    </div>
   </div>
 
-  <div class="full-card">
-    <div class="dash-card-title">Horas por cliente · mayor a menor</div>
+  <!-- Por cliente / tier -->
+  <div class="full-card" style="margin-bottom:20px;">
+    <div class="dash-card-title">Horas por cliente · visible vs. invisible <span style="color:var(--white-soft);font-weight:400;text-transform:none;letter-spacing:0">ordenado por total</span></div>
     <div id="client-breakdown"><div class="loading-state">Sin datos</div></div>
   </div>
 
-  <div class="eyebrow">Señales automáticas</div>
-  <div class="insight-grid" id="insights-grid">
-    <div class="insight-card warn"><div class="insight-label">En espera de datos</div><div class="insight-value">—</div><div class="insight-desc">Las señales aparecen con suficientes registros.</div></div>
-    <div class="insight-card warn"><div class="insight-label">En espera de datos</div><div class="insight-value">—</div><div class="insight-desc">Actividad con más trabajo invisible.</div></div>
-    <div class="insight-card warn"><div class="insight-label">En espera de datos</div><div class="insight-value">—</div><div class="insight-desc">Consultora con mayor carga registrada.</div></div>
+  <!-- Actividad más costosa por tier -->
+  <div class="full-card" style="margin-bottom:20px;">
+    <div class="dash-card-title">Actividad más costosa en horas · por tier de servicio</div>
+    <div id="tier-activity-breakdown"><div class="loading-state">Sin datos suficientes · se necesitan registros en múltiples tiers</div></div>
   </div>
 
+  <!-- EXPORT -->
   <div class="export-area">
     <div class="export-text">
-      <strong>Exportar CSV para análisis externo</strong>
-      Descarga todos los registros para cruzar con el Modelo de Horas o compartir con Gamaliel.
+      <strong>Exportar datos para sesión de análisis</strong>
+      CSV con todos los registros para trabajar con Natalia o presentar a Gamaliel.
     </div>
     <button class="export-btn" onclick="exportCSV()">Descargar CSV →</button>
   </div>
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -487,7 +521,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
 // CONFIG
 // ═══════════════════════════════════════════════════════
 const SCRIPT_URL_KEY = 'upturn_script_url';
-const MODEL_HOURS    = { Essential: 98.5, Empower: 211, Complete: 483, Legacy: null };
+
 const TIER_COLORS    = { Essential: '#2E6DFF', Empower: '#FAB727', Complete: '#4ECDC4', Legacy: '#A78BFA' };
 const ACT_COLORS     = ['#2E6DFF','#FAB727','#4ECDC4','#A78BFA','#FF6B6B','#FF9F43','#4CAF82','#6895FD','#E8A0BF','#93C6E7','#B5EAD7','#C7B8EA'];
 
@@ -696,14 +730,26 @@ function renderRecentLogs() {
 
 // ── Dashboard ─────────────────────────────────────────────
 function getFiltered() {
-  const fc = document.getElementById('dash-filter-consultant')?.value || 'all';
-  const ft = document.getElementById('dash-filter-tier')?.value || 'all';
-  const fb = document.getElementById('dash-filter-billed')?.value || 'all';
+  const fc = document.getElementById("dash-filter-consultant")?.value || "all";
+  const ft = document.getElementById("dash-filter-tier")?.value || "all";
+  const fp = document.getElementById("dash-filter-period")?.value || "all";
+  const now = new Date();
   return allLogs.filter(l => {
-    const con  = l.Consultora || l.consultora || '';
-    const tier = l.Tier || l.tier || '';
-    const bil  = l.Facturada || l.facturada || '';
-    return (fc==='all'||con===fc) && (ft==='all'||tier===ft) && (fb==='all'||bil===fb);
+    const conV  = l.Consultora || l.consultora || "";
+    const tierV = l.Tier || l.tier || "";
+    const conOk  = fc==="all" || conV===fc;
+    const tierOk = ft==="all" || tierV===ft;
+    let periodOk = true;
+    if(fp !== "all"){
+      const days = parseInt(fp);
+      const dateStr = l.Fecha || l.fecha || "";
+      if(dateStr){
+        const parts = dateStr.split(/[-/]/);
+        const logDate = parts.length===3 ? new Date(parts[0].length===4 ? dateStr : parts[2]+"-"+parts[1]+"-"+parts[0]) : new Date(dateStr);
+        if(!isNaN(logDate)) periodOk = (now - logDate) / 86400000 <= days;
+      }
+    }
+    return conOk && tierOk && periodOk;
   });
 }
 
@@ -719,83 +765,191 @@ function renderDashboard() {
   const total    = fl.reduce((s,l)=>s+h(l),0);
   const billed   = fl.filter(l=>bil(l)==='si').reduce((s,l)=>s+h(l),0);
   const internal = fl.filter(l=>bil(l)!=='si').reduce((s,l)=>s+h(l),0);
-  const ratio    = total>0 ? Math.round(internal/total*100) : 0;
+  const billedPct   = total>0 ? Math.round(billed/total*100) : 0;
+  const internalPct = total>0 ? Math.round(internal/total*100) : 0;
+  // ratio: horas internas por cada hora visible
+  const ratioVI = billed>0 ? (internal/billed).toFixed(1) : '—';
 
-  document.getElementById('kpi-total').textContent    = total.toFixed(1)+'h';
-  document.getElementById('kpi-billed').textContent   = billed.toFixed(1)+'h';
-  document.getElementById('kpi-internal').textContent = internal.toFixed(1)+'h';
-  document.getElementById('kpi-ratio').textContent    = total>0 ? ratio+'%' : '—';
-  document.getElementById('kpi-count').textContent    = fl.length;
+  // ── KPIs ──
+  document.getElementById('kpi-total').textContent      = total>0 ? total.toFixed(1)+'h' : '—';
+  document.getElementById('kpi-registros').textContent  = fl.length+' registros';
+  document.getElementById('kpi-billed').textContent     = total>0 ? billed.toFixed(1)+'h' : '—';
+  document.getElementById('kpi-billed-pct').textContent = total>0 ? billedPct+'% del total' : '—';
+  document.getElementById('kpi-internal').textContent   = total>0 ? internal.toFixed(1)+'h' : '—';
+  document.getElementById('kpi-internal-pct').textContent = total>0 ? internalPct+'% del total' : '—';
+  document.getElementById('kpi-ratio').textContent      = total>0 ? ratioVI+'×' : '—';
 
-  // Activity bars
+  // ── Barra proporcional ──
+  if(total>0){
+    document.getElementById('ratio-bar-visible').style.width  = billedPct+'%';
+    document.getElementById('ratio-bar-visible').textContent  = billedPct>8 ? billedPct+'%' : '';
+    document.getElementById('ratio-bar-internal').style.width = internalPct+'%';
+    document.getElementById('ratio-bar-internal').textContent = internalPct>8 ? internalPct+'%' : '';
+  }
+
+  // ── Indicador de confianza de datos en Capa 2 ──
+  const MIN_RECORDS = 10;
+  const warn = document.getElementById('data-warning');
+  if(fl.length < MIN_RECORDS){
+    warn.textContent = `— disponible con ${MIN_RECORDS} registros mínimo (ahora: ${fl.length})`;
+  } else {
+    warn.textContent = '';
+  }
+
+  // ── CAPA 1a: Actividades · ranking total ──
   const byAct = {};
-  fl.forEach(l => { byAct[act(l)] = (byAct[act(l)]||0)+h(l); });
-  const actSorted = Object.entries(byAct).sort((a,b)=>b[1]-a[1]);
-  const maxAct = actSorted[0]?.[1] || 1;
+  fl.forEach(l => {
+    if(!byAct[act(l)]) byAct[act(l)] = {total:0, billed:0, internal:0};
+    byAct[act(l)].total    += h(l);
+    byAct[act(l)][bil(l)==='si'?'billed':'internal'] += h(l);
+  });
+  const actSorted = Object.entries(byAct).sort((a,b)=>b[1].total-a[1].total);
+  const maxAct = actSorted[0]?.[1].total || 1;
   document.getElementById('activity-breakdown').innerHTML = actSorted.length
-    ? actSorted.map(([a,hrs],i) => `<div class="bar-row"><div class="bar-label">${a}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(hrs/maxAct*100)}%;background:${ACT_COLORS[i%ACT_COLORS.length]}"></div></div><div class="bar-value">${hrs.toFixed(1)}h</div></div>`).join('')
+    ? actSorted.map(([a,d],i) => `
+        <div class="bar-row" style="margin-bottom:12px">
+          <div class="bar-label" style="min-width:180px;font-size:10px">${a}</div>
+          <div style="flex:1">
+            <div class="bar-track"><div class="bar-fill" style="width:${Math.round(d.total/maxAct*100)}%;background:${ACT_COLORS[i%ACT_COLORS.length]}"></div></div>
+          </div>
+          <div class="bar-value" style="min-width:36px">${d.total.toFixed(1)}h</div>
+        </div>`).join('')
     : '<div class="loading-state">Sin datos</div>';
 
-  // Consultant bars
+  // ── CAPA 1b: Visible vs invisible por actividad ──
+  document.getElementById('activity-vi-breakdown').innerHTML = actSorted.length
+    ? actSorted.map(([a,d]) => {
+        const bp = d.total>0 ? Math.round(d.billed/d.total*100) : 0;
+        const ip = 100-bp;
+        return `<div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:10px;color:var(--white-soft)">${a}</span>
+            <span style="font-size:9px;color:var(--white-soft)">${d.billed.toFixed(1)}h vis · ${d.internal.toFixed(1)}h inv</span>
+          </div>
+          <div style="display:flex;height:6px;border-radius:3px;overflow:hidden;background:var(--white-dim)">
+            <div style="width:${bp}%;background:var(--blue);height:100%"></div>
+            <div style="width:${ip}%;background:var(--complete);height:100%"></div>
+          </div>
+        </div>`;}).join('')
+    : '<div class="loading-state">Sin datos</div>';
+
+  // ── CAPA 2a: Por consultora · visible vs invisible ──
   const byCon = {};
-  fl.forEach(l => { const k=con(l); if(!byCon[k])byCon[k]={hrs:0,clients:new Set()}; byCon[k].hrs+=h(l); byCon[k].clients.add(cli(l)); });
-  const conSorted = Object.entries(byCon).sort((a,b)=>b[1].hrs-a[1].hrs);
-  const maxCon = conSorted[0]?.[1].hrs || 1;
   const conColors = ['#2E6DFF','#FAB727','#4ECDC4','#A78BFA'];
+  fl.forEach(l => {
+    const k=con(l);
+    if(!byCon[k]) byCon[k]={total:0,billed:0,internal:0,clients:new Set(),acts:{}};
+    byCon[k].total    += h(l);
+    byCon[k][bil(l)==='si'?'billed':'internal'] += h(l);
+    byCon[k].clients.add(cli(l));
+    if(!byCon[k].acts[act(l)]) byCon[k].acts[act(l)] = [];
+    byCon[k].acts[act(l)].push(h(l));
+  });
+  const conSorted = Object.entries(byCon).sort((a,b)=>b[1].total-a[1].total);
+  const maxCon = conSorted[0]?.[1].total || 1;
   document.getElementById('consultant-breakdown').innerHTML = conSorted.length
-    ? conSorted.map(([c,d],i)=>`<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><span style="font-size:12px;font-weight:600;color:var(--white)">${c}</span><span style="font-size:10px;color:var(--white-soft)">${d.hrs.toFixed(1)}h · ${d.clients.size} clientes</span></div><div class="bar-track" style="height:8px"><div class="bar-fill" style="width:${Math.round(d.hrs/maxCon*100)}%;background:${conColors[i%4]}"></div></div></div>`).join('')
+    ? conSorted.map(([c,d],i) => {
+        const bp2 = d.total>0 ? Math.round(d.billed/d.total*100) : 0;
+        const ip2 = 100-bp2;
+        return `<div style="margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+            <span style="font-size:12px;font-weight:600;color:${conColors[i%4]}">${c}</span>
+            <span style="font-size:10px;color:var(--white-soft)">${d.total.toFixed(1)}h · ${d.clients.size} clientes</span>
+          </div>
+          <div style="display:flex;height:10px;border-radius:4px;overflow:hidden;margin-bottom:3px">
+            <div style="width:${bp2}%;background:var(--blue)"></div>
+            <div style="width:${ip2}%;background:var(--complete)"></div>
+          </div>
+          <div style="display:flex;gap:12px">
+            <span style="font-size:9px;color:var(--blue-tint)">${d.billed.toFixed(1)}h visible</span>
+            <span style="font-size:9px;color:var(--complete)">${d.internal.toFixed(1)}h invisible</span>
+          </div>
+        </div>`;}).join('')
     : '<div class="loading-state">Sin datos</div>';
 
-  // Model comparison
-  const tiers = ['Essential','Empower','Complete','Legacy'];
-  const byTier = {};
-  tiers.forEach(t=>byTier[t]={hrs:0,clients:new Set(),acts:{}});
-  fl.forEach(l=>{const t=tier(l);if(byTier[t]){byTier[t].hrs+=h(l);byTier[t].clients.add(cli(l));byTier[t].acts[act(l)]=(byTier[t].acts[act(l)]||0)+h(l);}});
-  document.getElementById('model-comparison-body').innerHTML = tiers.map(t=>{
-    const d=byTier[t]; const cnt=d.clients.size; const avg=cnt>0?d.hrs/cnt:0;
-    const model=MODEL_HOURS[t]; const delta=model&&avg>0?avg-model:null;
-    const topAct=Object.entries(d.acts).sort((a,b)=>b[1]-a[1])[0];
-    return `<tr>
-      <td><span style="display:inline-flex;align-items:center;gap:6px;font-weight:600;color:${TIER_COLORS[t]||'#888'}"><span style="width:8px;height:8px;border-radius:50%;background:${TIER_COLORS[t]||'#888'};display:inline-block"></span>${t}</span></td>
-      <td style="opacity:0.6">${model?model+'h':'—'}</td>
-      <td style="color:var(--white);font-weight:600">${avg>0?avg.toFixed(1)+'h':'—'}</td>
-      <td>${delta!==null&&avg>0?`<span class="${delta>5?'delta-pos':delta<-5?'delta-neg':''}">${delta>0?'+':''}${delta.toFixed(1)}h</span>`:'<span style="opacity:0.4">—</span>'}</td>
-      <td style="font-size:10px;opacity:0.6">${topAct?topAct[0]:'—'}</td>
-      <td style="color:var(--white)">${cnt}</td>
-    </tr>`;
-  }).join('');
+  // ── CAPA 2b: Promedio por actividad por consultora ──
+  // Solo muestra si hay suficientes datos
+  if(fl.length < MIN_RECORDS){
+    document.getElementById('consultant-activity-avg').innerHTML =
+      `<div class="loading-state" style="font-size:10px;color:var(--orange)">Disponible con ${MIN_RECORDS} registros mínimo · ahora: ${fl.length}</div>`;
+  } else {
+    // Top 5 actividades más frecuentes
+    const topActs = actSorted.slice(0,5).map(([a])=>a);
+    const rows = topActs.map(a => {
+      const cols = conSorted.map(([c,d]) => {
+        const entries = d.acts[a] || [];
+        if(!entries.length) return `<td style="text-align:center;opacity:0.3;font-size:10px">—</td>`;
+        const avg = entries.reduce((s,v)=>s+v,0)/entries.length;
+        const color = avg > 2 ? 'var(--orange)' : avg > 1 ? 'var(--gold)' : 'var(--green)';
+        return `<td style="text-align:center;font-size:11px;font-weight:600;color:${color}">${avg.toFixed(1)}h<br><span style="font-size:8px;font-weight:400;opacity:0.6">${entries.length} reg.</span></td>`;
+      }).join('');
+      return `<tr><td style="font-size:10px;color:var(--white-soft);padding:8px 6px">${a}</td>${cols}</tr>`;
+    }).join('');
+    const headers = conSorted.map(([c],i)=>`<th style="text-align:center;font-size:9px;color:${conColors[i%4]}">${c.split(' ')[0]}</th>`).join('');
+    document.getElementById('consultant-activity-avg').innerHTML = `
+      <div style="font-size:9px;color:var(--white-soft);margin-bottom:10px">Promedio de horas por registro · top 5 actividades · color: <span style="color:var(--green)">≤1h</span> · <span style="color:var(--gold)">1-2h</span> · <span style="color:var(--orange)">+2h</span></div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr><th style="text-align:left;font-size:9px;color:var(--white-soft);padding:6px">Actividad</th>${headers}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
 
-  // Client breakdown
+  // ── CAPA 2c: Por cliente · visible vs invisible ──
   const byClient={};
-  fl.forEach(l=>{const k=cli(l);if(!byClient[k])byClient[k]={hrs:0,tier:tier(l),billed:0,internal:0};byClient[k].hrs+=h(l);bil(l)==='si'?byClient[k].billed+=h(l):byClient[k].internal+=h(l);});
-  const cliSorted=Object.entries(byClient).sort((a,b)=>b[1].hrs-a[1].hrs).slice(0,15);
-  const maxCli=cliSorted[0]?.[1].hrs||1;
+  fl.forEach(l=>{
+    const k=cli(l);
+    if(!byClient[k]) byClient[k]={total:0,tier:tier(l),billed:0,internal:0};
+    byClient[k].total   += h(l);
+    byClient[k][bil(l)==='si'?'billed':'internal'] += h(l);
+  });
+  const cliSorted=Object.entries(byClient).sort((a,b)=>b[1].total-a[1].total).slice(0,15);
+  const maxCli=cliSorted[0]?.[1].total||1;
   document.getElementById('client-breakdown').innerHTML = cliSorted.length
-    ? `<div style="display:flex;flex-direction:column;gap:10px">${cliSorted.map(([c,d])=>`<div style="display:flex;align-items:center;gap:12px"><div style="min-width:160px;font-size:11px;color:var(--white)">${c}</div><span style="font-size:9px;font-weight:700;color:${TIER_COLORS[d.tier]||'#888'};min-width:60px">${d.tier}</span><div style="flex:1;height:6px;background:var(--white-dim);border-radius:3px;overflow:hidden"><div style="height:100%;border-radius:3px;width:${Math.round(d.hrs/maxCli*100)}%;background:${TIER_COLORS[d.tier]||'#888'}"></div></div><div style="font-size:12px;font-weight:700;color:var(--white);min-width:48px;text-align:right">${d.hrs.toFixed(1)}h</div><div style="font-size:9px;color:var(--blue-tint);min-width:76px">${d.billed.toFixed(1)}h fact.</div><div style="font-size:9px;color:var(--white-soft);min-width:76px">${d.internal.toFixed(1)}h int.</div></div>`).join('')}</div>`
+    ? `<div style="display:flex;flex-direction:column;gap:10px">${cliSorted.map(([c,d])=>{
+        const bp3=d.total>0?Math.round(d.billed/d.total*100):0;
+        return `<div style="display:grid;grid-template-columns:160px 60px 1fr 44px 80px 80px;gap:10px;align-items:center">
+          <div style="font-size:11px;color:var(--white);font-weight:500">${c}</div>
+          <span style="font-size:9px;font-weight:700;color:${TIER_COLORS[d.tier]||'#888'}">${d.tier}</span>
+          <div style="display:flex;height:6px;border-radius:3px;overflow:hidden;background:var(--white-dim)">
+            <div style="width:${bp3}%;background:var(--blue)"></div>
+            <div style="width:${100-bp3}%;background:var(--complete)"></div>
+          </div>
+          <div style="font-size:12px;font-weight:700;color:var(--white);text-align:right">${d.total.toFixed(1)}h</div>
+          <div style="font-size:9px;color:var(--blue-tint)">${d.billed.toFixed(1)}h vis.</div>
+          <div style="font-size:9px;color:var(--complete)">${d.internal.toFixed(1)}h inv.</div>
+        </div>`;}).join('')}</div>`
     : '<div class="loading-state">Sin datos</div>';
 
-  // Insights
-  if(fl.length>=5){
-    const byActInt={};
-    fl.forEach(l=>{if(bil(l)!=='si')byActInt[act(l)]=(byActInt[act(l)]||0)+h(l);});
-    const topInt=Object.entries(byActInt).sort((a,b)=>b[1]-a[1])[0];
-    const topConEntry=conSorted[0];
-    const rType=ratio>60?'alert':ratio>40?'warn':'good';
-    document.getElementById('insights-grid').innerHTML=`
-      <div class="insight-card ${rType}">
-        <div class="insight-label">${ratio>60?'Trabajo invisible alto':ratio>40?'Ratio a vigilar':'Ratio saludable'}</div>
-        <div class="insight-value">${ratio}%</div>
-        <div class="insight-desc">del total registrado es trabajo interno no facturado. Modelo estimaba ~70% Essential y ~50% Complete.</div>
-      </div>
-      <div class="insight-card ${topInt?(topInt[1]>20?'alert':'warn'):'warn'}">
-        <div class="insight-label">Mayor carga interna</div>
-        <div class="insight-value">${topInt?topInt[1].toFixed(1)+'h':'—'}</div>
-        <div class="insight-desc">${topInt?`"${topInt[0]}" tiene más horas internas. Candidata a sistematización.`:'Sin datos aún.'}</div>
-      </div>
-      <div class="insight-card ${topConEntry?'warn':'warn'}">
-        <div class="insight-label">Mayor carga registrada</div>
-        <div class="insight-value">${topConEntry?topConEntry[1].hrs.toFixed(1)+'h':'—'}</div>
-        <div class="insight-desc">${topConEntry?`${topConEntry[0]} lleva más horas registradas. Compara con las demás para ver si hay desequilibrio.`:'Sin datos.'}</div>
+  // ── CAPA 2d: Actividad más costosa por tier ──
+  const byTierAct = {};
+  fl.forEach(l=>{
+    const t=tier(l); const a=act(l);
+    if(!byTierAct[t]) byTierAct[t]={};
+    if(!byTierAct[t][a]) byTierAct[t][a]={total:0,count:0};
+    byTierAct[t][a].total += h(l);
+    byTierAct[t][a].count++;
+  });
+  const tierList = Object.keys(byTierAct);
+  if(!tierList.length){
+    document.getElementById('tier-activity-breakdown').innerHTML='<div class="loading-state">Sin datos</div>';
+  } else {
+    document.getElementById('tier-activity-breakdown').innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(${Math.min(tierList.length,4)},1fr);gap:14px">
+        ${tierList.map(t=>{
+          const acts = Object.entries(byTierAct[t]).sort((a,b)=>b[1].total-a[1].total).slice(0,5);
+          const maxT = acts[0]?.[1].total||1;
+          return `<div>
+            <div style="font-size:10px;font-weight:700;color:${TIER_COLORS[t]||'#888'};margin-bottom:10px;text-transform:uppercase;letter-spacing:0.1em">${t}</div>
+            ${acts.map(([a,d])=>`
+              <div style="margin-bottom:8px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+                  <span style="font-size:9px;color:var(--white-soft)">${a}</span>
+                  <span style="font-size:9px;font-weight:600;color:var(--white)">${d.total.toFixed(1)}h</span>
+                </div>
+                <div class="bar-track"><div class="bar-fill" style="width:${Math.round(d.total/maxT*100)}%;background:${TIER_COLORS[t]||'#888'}"></div></div>
+                <div style="font-size:8px;color:var(--white-soft);margin-top:2px">${d.count} registros · prom. ${(d.total/d.count).toFixed(1)}h c/u</div>
+              </div>`).join('')}
+          </div>`;}).join('')}
       </div>`;
   }
 }
