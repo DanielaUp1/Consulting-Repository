@@ -536,6 +536,8 @@ const CONSULTANT_TARGETS = {
   'Natalia Reyes':   {cliente:100, interno:60},
   'Kalia Torres':    {cliente:100, interno:60}
 };
+// Capacidad total de trabajo por mes — igual para las 4, es el techo de horas disponibles del rol (128+32 = 100+60 = 160).
+const TOTAL_CAPACITY_MONTHLY = 160;
 // Clasificación fija de actividades (igual que los grupos de pills del formulario)
 const CLIENT_ACTIVITIES = ['Preparación de sesión en vivo','Sesión en vivo con cliente','Documentación post-sesión',
   'Llamadas telefónicas','Visita','Reclutamiento','Adiestramientos','Consulta legal','Diagnóstico regulatorio',
@@ -1013,38 +1015,53 @@ function renderClientCompliance(){
     }).join('')}
     </div>`;
 }
-// ── Comparación directa · consultora vs. consultora (mismo gráfico, escala compartida) ──
+// ── Comparación directa · consultora vs. consultora (con capacidad y metas explícitas) ──
 function renderConsultantComparison(fl){
   const CONSULT_LIST = ['Natalia Reyes','Michelle Camacho','Janice Alicea','Kalia Torres'];
   const conColors = {'Natalia Reyes':'#2E6DFF','Michelle Camacho':'#FAB727','Janice Alicea':'#4ECDC4','Kalia Torres':'#A78BFA'};
   const days = rangeDays();
+  const factor = days/30.44;
+  const capacityProrated = TOTAL_CAPACITY_MONTHLY * factor;
   const data = CONSULT_LIST.map(c=>{
     const logs = fl.filter(l=>con(l)===c);
     const cliente = logs.filter(l=>bil(l)==='si').reduce((s,l)=>s+h(l),0);
     const interno  = logs.filter(l=>bil(l)!=='si').reduce((s,l)=>s+h(l),0);
-    const t = CONSULTANT_TARGETS[c];
-    const targetCliente = t ? t.cliente * (days/30.44) : null;
-    return {c, cliente, interno, targetCliente};
+    const t = CONSULTANT_TARGETS[c] || {cliente:0,interno:0};
+    const metaCliente = t.cliente * factor;
+    const metaInterno = t.interno * factor;
+    const total = cliente + interno;
+    return {c, cliente, interno, metaCliente, metaInterno, total};
   });
-  const maxVal = Math.max(...data.map(d=>Math.max(d.cliente,d.interno,d.targetCliente||0)), 1);
-  const BAR_H = 180;
+  const BAR_H = 190;
+  const maxVal = Math.max(...data.map(d=>Math.max(d.cliente,d.metaCliente,d.interno,d.metaInterno)), capacityProrated, 1);
+  const capPx = Math.min(capacityProrated/maxVal*BAR_H, BAR_H);
   document.getElementById('consultant-comparison').innerHTML = `
     <div style="font-size:9px;color:var(--white-soft);margin-bottom:16px">
-      Barra sólida = horas con cliente · barra clara = horas internas · línea punteada = meta de horas con cliente
-      (prorrateada a ${days} día(s), dato de rol dado por Natalia). Todas sobre la misma escala para comparar directo.
+      Capacidad total del rol: <strong style="color:var(--white)">${TOTAL_CAPACITY_MONTHLY}h/mes</strong> para las 4 —
+      línea gris continua marca ese techo prorrateado a ${days} día(s) (${capacityProrated.toFixed(1)}h).
+      Barra sólida = horas reales con cliente (línea punteada = su meta) · barra clara = horas reales internas (línea punteada = su meta).
+      Janice y Michelle: meta 128h cliente / 32h interno · Natalia y Kalia: meta 100h cliente / 60h interno.
     </div>
-    <div style="display:flex;justify-content:space-around;align-items:flex-end;gap:16px;padding:0 10px 10px;border-bottom:1px solid var(--border)">
+    <div style="position:relative;display:flex;justify-content:space-around;align-items:flex-end;gap:16px;padding:0 10px 10px;border-bottom:1px solid var(--border)">
+      <div style="position:absolute;left:6px;right:6px;bottom:${capPx+10}px;border-top:2px solid var(--white-soft)"></div>
+      <div style="position:absolute;left:6px;top:${BAR_H-capPx-10}px;font-size:8px;color:var(--white-soft)">techo ${capacityProrated.toFixed(0)}h</div>
     ${data.map(d=>{
-      const targetPx = d.targetCliente ? Math.min(d.targetCliente/maxVal*BAR_H, BAR_H) : null;
+      const metaClientePx = Math.min(d.metaCliente/maxVal*BAR_H, BAR_H);
+      const metaInternoPx = Math.min(d.metaInterno/maxVal*BAR_H, BAR_H);
+      const clienteOver = d.metaCliente>0 && d.cliente > d.metaCliente;
+      const internoOver = d.metaInterno>0 && d.interno > d.metaInterno;
       return `
       <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
-        <div style="position:relative;display:flex;align-items:flex-end;gap:6px;height:${BAR_H}px">
-          ${targetPx!==null ? `<div style="position:absolute;left:-4px;right:-4px;bottom:${targetPx}px;border-top:2px dashed var(--white-soft)"></div>` : ''}
-          <div title="Con cliente: ${d.cliente.toFixed(1)}h" style="width:28px;height:${Math.max(d.cliente/maxVal*BAR_H,2)}px;background:${conColors[d.c]};border-radius:4px 4px 0 0"></div>
-          <div title="Interno: ${d.interno.toFixed(1)}h" style="width:28px;height:${Math.max(d.interno/maxVal*BAR_H,2)}px;background:${conColors[d.c]};opacity:0.35;border-radius:4px 4px 0 0"></div>
+        <div style="position:relative;display:flex;align-items:flex-end;gap:6px;height:${BAR_H}px;margin-top:10px">
+          <div style="position:absolute;left:-3px;width:29px;bottom:${metaClientePx}px;border-top:2px dashed ${conColors[d.c]}"></div>
+          <div style="position:absolute;left:31px;width:29px;bottom:${metaInternoPx}px;border-top:2px dashed ${conColors[d.c]}"></div>
+          <div title="Con cliente: ${d.cliente.toFixed(1)}h · meta ${d.metaCliente.toFixed(1)}h" style="width:28px;height:${Math.max(d.cliente/maxVal*BAR_H,2)}px;background:${conColors[d.c]};border-radius:4px 4px 0 0;${clienteOver?'box-shadow:0 0 0 2px var(--red) inset;':''}"></div>
+          <div title="Interno: ${d.interno.toFixed(1)}h · meta ${d.metaInterno.toFixed(1)}h" style="width:28px;height:${Math.max(d.interno/maxVal*BAR_H,2)}px;background:${conColors[d.c]};opacity:0.35;border-radius:4px 4px 0 0;${internoOver?'box-shadow:0 0 0 2px var(--red) inset;':''}"></div>
         </div>
         <div style="font-size:10px;color:var(--white);font-weight:700">${d.c}</div>
-        <div style="font-size:9px;color:var(--white-soft);text-align:center">${d.cliente.toFixed(1)}h cliente · ${d.interno.toFixed(1)}h interno</div>
+        <div style="font-size:9px;color:${clienteOver?'var(--red)':'var(--white-soft)'};text-align:center">${d.cliente.toFixed(1)}h cliente <span style="opacity:0.7">/ meta ${d.metaCliente.toFixed(1)}h</span></div>
+        <div style="font-size:9px;color:${internoOver?'var(--red)':'var(--white-soft)'};text-align:center">${d.interno.toFixed(1)}h interno <span style="opacity:0.7">/ meta ${d.metaInterno.toFixed(1)}h</span></div>
+        <div style="font-size:9px;font-weight:600;color:${d.total>capacityProrated?'var(--red)':'var(--green)'};text-align:center">${d.total.toFixed(1)}h de ${capacityProrated.toFixed(1)}h disponibles (${capacityProrated>0?Math.round(d.total/capacityProrated*100):0}%)</div>
       </div>`;}).join('')}
     </div>`;
 }
