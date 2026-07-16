@@ -33,7 +33,6 @@
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { background:var(--navy); color:var(--white); font-family:'Poppins',sans-serif; font-size:13px; min-height:100vh; }
-
 /* ── CONFIG BANNER ── */
 .config-banner {
   background: rgba(250,183,39,0.12);
@@ -51,7 +50,6 @@ body { background:var(--navy); color:var(--white); font-family:'Poppins',sans-se
 .config-input { background: var(--input-bg); border: 1px solid rgba(250,183,39,0.4); border-radius: 6px; color: var(--white); font-family: 'Poppins',sans-serif; font-size: 10px; padding: 6px 10px; width: 420px; }
 .config-save-btn { background: var(--gold); color: var(--navy); border: none; border-radius: 6px; padding: 7px 16px; font-family: 'Poppins',sans-serif; font-size: 10px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 .config-save-btn:hover { opacity: 0.85; }
-
 /* ── TOP BAR ── */
 .top-bar {
   background: var(--navy-mid); border-bottom: 1px solid var(--border);
@@ -71,15 +69,12 @@ body { background:var(--navy); color:var(--white); font-family:'Poppins',sans-se
 .view-btn { padding: 7px 18px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; cursor: pointer; border: none; background: transparent; color: var(--white-soft); font-family: 'Poppins',sans-serif; transition: all 0.15s; }
 .view-btn.active { background: var(--blue); color: var(--white); }
 .view-btn:hover:not(.active) { background: var(--hover); color: var(--white); }
-
 /* ── VIEWS ── */
 .view { display: none; padding: 32px; }
 .view.active { display: block; }
-
 /* ── SECTION EYEBROW ── */
 .eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--blue-tint); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
 .eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
 /* ── LOG CARD ── */
 .log-card { background: var(--navy-card); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; margin-bottom: 24px; }
 .log-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
@@ -88,7 +83,6 @@ body { background:var(--navy); color:var(--white); font-family:'Poppins',sans-se
 .date-display { text-align: right; }
 .date-day { font-size: 28px; font-weight: 800; color: var(--blue); line-height: 1; }
 .date-rest { font-size: 11px; color: var(--white-soft); margin-top: 2px; }
-
 /* ── FORM ── */
 .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
 .form-row-2 { grid-template-columns: 1fr 1fr; }
@@ -119,14 +113,12 @@ input[type="date"]::-webkit-datetime-edit-year-field { color: var(--white); }
 input[type="date"]::-webkit-datetime-edit-month-field:focus,
 input[type="date"]::-webkit-datetime-edit-day-field:focus,
 input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46,109,255,0.25); border-radius: 3px; }
-
 /* ── ACTIVITY PILLS ── */
 .activity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
 .activity-pill { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; cursor: pointer; text-align: center; font-size: 10px; font-weight: 600; color: var(--white-soft); transition: all 0.15s; background: var(--input-bg); letter-spacing: 0.04em; line-height: 1.3; }
 .activity-pill:hover { border-color: var(--blue-tint); color: var(--white); background: rgba(46,109,255,0.08); }
 .activity-pill.selected { background: rgba(46,109,255,0.15); border-color: var(--blue); color: var(--blue-tint); }
 .activity-pill .pill-icon { display: block; font-size: 16px; margin-bottom: 4px; }
-
 /* ── SUBMIT ── */
 .submit-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
 .submit-btn { background: var(--blue); color: var(--white); border: none; border-radius: 8px; padding: 12px 32px; font-family: 'Poppins',sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 8px; }
@@ -134,16 +126,13 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
 .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .clear-btn { background: transparent; color: var(--white-soft); border: 1px solid var(--border); border-radius: 8px; padding: 12px 20px; font-family: 'Poppins',sans-serif; font-size: 11px; cursor: pointer; transition: all 0.15s; }
 .clear-btn:hover { color: var(--red); border-color: var(--red); }
-
 /* ── SPINNER ── */
 .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
 /* ── TOAST ── */
 .toast { position: fixed; bottom: 32px; right: 32px; padding: 14px 24px; border-radius: 10px; font-size: 13px; font-weight: 600; display: none; z-index: 999; }
 .toast.success { background: var(--green); color: var(--white); }
 .toast.error { background: var(--red); color: var(--white); }
-
 /* ── LOG TABLE ── */
 .log-table-wrap { background: var(--navy-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 .log-table { width: 100%; border-collapse: collapse; }
@@ -154,7 +143,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
 .hours-badge { display: inline-flex; align-items: center; justify-content: center; background: rgba(250,183,39,0.15); color: var(--gold); font-size: 13px; font-weight: 700; border-radius: 6px; padding: 3px 10px; min-width: 48px; }
 .delete-btn { background: transparent; border: none; color: rgba(255,107,107,0.4); cursor: pointer; font-size: 14px; padding: 4px 8px; border-radius: 6px; transition: all 0.15s; }
 .delete-btn:hover { color: var(--red); background: var(--red-soft); }
-
 /* ── DASHBOARD ── */
 .kpi-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; margin-bottom: 28px; }
 .kpi-card { background: var(--navy-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 16px; }
@@ -170,8 +158,11 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
 .bar-track { flex:1; height:6px; background:var(--white-dim); border-radius:3px; overflow:hidden; }
 .bar-fill { height:100%; border-radius:3px; }
 .bar-value { font-size:11px; font-weight:600; color:var(--white); min-width:44px; text-align:right; }
-.filter-bar { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.filter-bar { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; align-items:center; }
 .filter-select { padding:8px 12px; font-size:11px; min-width:160px; }
+.filter-date-group { display:flex; align-items:center; gap:6px; background:var(--navy-card); border:1px solid var(--border); border-radius:8px; padding:4px 10px; }
+.filter-date-group span { font-size:10px; color:var(--white-soft); }
+.filter-date-group input[type="date"] { min-width:140px; padding:6px 8px; font-size:11px; border:none; background:transparent; }
 .export-area { background:var(--navy-mid); border:1px solid var(--border); border-radius:12px; padding:20px 24px; display:flex; justify-content:space-between; align-items:center; margin-top:20px; }
 .export-text { font-size:12px; color:var(--white-soft); }
 .export-text strong { color:var(--white); display:block; margin-bottom:2px; }
@@ -201,7 +192,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
 </style>
 </head>
 <body>
-
 <!-- CONFIG BANNER -->
 <div class="config-banner" id="config-banner">
   <div class="config-text">
@@ -213,7 +203,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
     <button class="config-save-btn" onclick="saveScriptUrl()">Guardar y conectar</button>
   </div>
 </div>
-
 <!-- TOP BAR -->
 <div class="top-bar">
   <div class="brand">
@@ -233,7 +222,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
     </div>
   </div>
 </div>
-
 <!-- ═══ VIEW: REGISTER ═══ -->
 <div id="view-register" class="view active">
   <div class="log-card">
@@ -247,7 +235,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
         <div class="date-rest" id="today-rest"></div>
       </div>
     </div>
-
     <div class="eyebrow">1 · Contexto</div>
     <div class="form-row">
       <div class="field">
@@ -301,9 +288,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
         </select>
       </div>
     </div>
-
     <div class="eyebrow" style="margin-top:20px">2 · Tipo de actividad <span style="color:var(--white-soft);text-transform:none;letter-spacing:0;font-weight:400;font-size:9px">— selecciona una *</span></div>
-
     <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-tint);margin-bottom:8px;">Actividades · Cliente</div>
     <div class="activity-grid" id="activity-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px;">
       <div class="activity-pill" data-activity="Preparación de sesión en vivo" onclick="selectActivity(this)"><span class="pill-icon">📋</span>Preparación de sesión en vivo</div>
@@ -319,7 +304,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       <div class="activity-pill" data-activity="Monitoreo / alertas del ciclo" onclick="selectActivity(this)"><span class="pill-icon">📊</span>Monitoreo / alertas del ciclo</div>
       <div class="activity-pill" data-activity="Onboarding / bienvenida" onclick="selectActivity(this)"><span class="pill-icon">🚀</span>Onboarding / bienvenida</div>
     </div>
-
     <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">Actividades · UP (internas)</div>
     <div class="activity-grid" style="grid-template-columns:repeat(4,1fr);">
       <div class="activity-pill" data-activity="Business Update" onclick="selectActivity(this)"><span class="pill-icon">📣</span>Business Update</div>
@@ -342,7 +326,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       <div class="activity-pill" data-activity="Onboarding / bienvenida UP" onclick="selectActivity(this)"><span class="pill-icon">🚀</span>Onboarding / bienvenida UP</div>
       <div class="activity-pill" data-activity="Creación y desarrollo de documentos" onclick="selectActivity(this)"><span class="pill-icon">📄</span>Creación y desarrollo de documentos</div>
     </div>
-
     <div class="eyebrow" style="margin-top:20px">3 · Detalle</div>
     <div class="form-row form-row-4">
       <div class="field">
@@ -375,12 +358,10 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
         </select>
       </div>
     </div>
-
     <div class="field" style="margin-top:4px">
       <div class="field-label">Notas <span style="color:var(--white-soft);text-transform:none;font-weight:400;font-size:9px">— ¿qué hiciste? ¿qué fue lento? ¿qué podría sistematizarse?</span></div>
       <textarea id="f-notes" placeholder="Ej: Preparé agenda de Paso 03 para Contactica — tomé 45 min buscando plantilla de Matriz de Competencias. Podría ser template preconfigurado por industria."></textarea>
     </div>
-
     <div class="submit-row">
       <button class="clear-btn" onclick="clearForm()">Limpiar</button>
       <div style="display:flex;gap:12px;align-items:center">
@@ -392,17 +373,14 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       </div>
     </div>
   </div>
-
   <!-- RECENT LOGS -->
   <div class="eyebrow">Registros recientes <span style="color:var(--white-soft);text-transform:none;letter-spacing:0;font-weight:400">(últimos 20)</span></div>
   <div id="recent-logs-wrap">
     <div class="loading-state">Cargando registros...</div>
   </div>
 </div>
-
 <!-- ═══ VIEW: DASHBOARD ═══ -->
 <div id="view-dashboard" class="view">
-
   <!-- FILTROS -->
   <div class="filter-bar">
     <select class="filter-select" id="dash-filter-consultant" onchange="renderDashboard()">
@@ -415,18 +393,16 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       <option>Essential</option><option>Empower</option>
       <option>Complete</option><option>Legacy</option><option>N/A</option>
     </select>
-    <select class="filter-select" id="dash-filter-period" onchange="renderDashboard()">
-      <option value="all">Todo el período</option>
-      <option value="7">Últimos 7 días</option>
-      <option value="14">Últimas 2 semanas</option>
-      <option value="30">Último mes</option>
-    </select>
+    <div class="filter-date-group">
+      <span>Desde</span>
+      <input type="date" id="dash-filter-from" onchange="renderDashboard()">
+      <span>hasta</span>
+      <input type="date" id="dash-filter-to" onchange="renderDashboard()">
+    </div>
     <button class="sync-btn" style="margin-left:auto" onclick="syncNow()">↻ Actualizar</button>
   </div>
-
-  <!-- ── CAPA 1: VISIBLE VS INVISIBLE ── -->
+  <!-- ── CAPA 1: TRABAJO CON CLIENTE VS. INTERNO ── -->
   <div class="eyebrow">Capa 1 · ¿En qué se va el tiempo?</div>
-
   <!-- KPIs principales -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
     <div class="kpi-card" style="border-top:2px solid var(--gold)">
@@ -435,54 +411,50 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       <div class="kpi-sub" id="kpi-registros">— registros</div>
     </div>
     <div class="kpi-card" style="border-top:2px solid var(--blue)">
-      <div class="kpi-label">Visible · con cliente</div>
+      <div class="kpi-label">Trabajo con cliente</div>
       <div class="kpi-value" id="kpi-billed" style="color:var(--blue)">—</div>
       <div class="kpi-sub" id="kpi-billed-pct">— del total</div>
     </div>
     <div class="kpi-card" style="border-top:2px solid var(--complete)">
-      <div class="kpi-label">Invisible · trabajo interno</div>
+      <div class="kpi-label">Trabajo interno</div>
       <div class="kpi-value" id="kpi-internal" style="color:var(--complete)">—</div>
       <div class="kpi-sub" id="kpi-internal-pct">— del total</div>
     </div>
     <div class="kpi-card" style="border-top:2px solid var(--orange)">
-      <div class="kpi-label">Ratio invisible / visible</div>
+      <div class="kpi-label">Ratio interno / cliente</div>
       <div class="kpi-value" id="kpi-ratio" style="color:var(--orange)">—</div>
       <div class="kpi-sub">horas internas por cada h. con cliente</div>
     </div>
   </div>
-
-  <!-- Barra proporcional visible/invisible -->
+  <!-- Barra proporcional cliente/interno -->
   <div class="full-card" style="margin-bottom:20px;padding:18px 22px;">
-    <div class="dash-card-title" style="margin-bottom:14px">Proporción visible vs. invisible · total del equipo</div>
+    <div class="dash-card-title" style="margin-bottom:14px">Proporción trabajo con cliente vs. interno · total del equipo</div>
     <div style="display:flex;height:28px;border-radius:6px;overflow:hidden;margin-bottom:10px;" id="ratio-bar">
       <div style="background:var(--blue);height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;transition:width 0.4s;" id="ratio-bar-visible"></div>
       <div style="background:var(--complete);height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--navy);transition:width 0.4s;" id="ratio-bar-internal"></div>
     </div>
     <div style="display:flex;gap:20px;">
-      <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--white-soft)"><span style="width:10px;height:10px;border-radius:2px;background:var(--blue);display:inline-block"></span>Visible (con cliente)</div>
-      <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--white-soft)"><span style="width:10px;height:10px;border-radius:2px;background:var(--complete);display:inline-block"></span>Invisible (trabajo interno)</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--white-soft)"><span style="width:10px;height:10px;border-radius:2px;background:var(--blue);display:inline-block"></span>Trabajo con cliente</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--white-soft)"><span style="width:10px;height:10px;border-radius:2px;background:var(--complete);display:inline-block"></span>Trabajo interno</div>
     </div>
   </div>
-
-  <!-- Actividades: visible vs invisible desglosado -->
+  <!-- Actividades -->
   <div class="dash-grid" style="margin-bottom:20px;">
     <div class="dash-card">
       <div class="dash-card-title">Actividades · horas totales <span style="color:var(--white-soft);font-weight:400;text-transform:none;letter-spacing:0">ranking</span></div>
       <div id="activity-breakdown"><div class="loading-state">Sin datos</div></div>
     </div>
     <div class="dash-card">
-      <div class="dash-card-title">Visible vs. invisible · por actividad</div>
+      <div class="dash-card-title">Registro de actividades · interno y con cliente</div>
       <div id="activity-vi-breakdown"><div class="loading-state">Sin datos</div></div>
     </div>
   </div>
-
   <!-- ── CAPA 2: DISPARIDAD ── -->
   <div class="eyebrow" style="margin-top:8px">Capa 2 · ¿Dónde hay disparidad? <span id="data-warning" style="color:var(--orange);font-size:9px;text-transform:none;letter-spacing:0;font-weight:400;font-style:italic"></span></div>
-
   <!-- Por consultora -->
   <div class="dash-grid" style="margin-bottom:20px;">
     <div class="dash-card">
-      <div class="dash-card-title">Horas por consultora · visible vs. invisible</div>
+      <div class="dash-card-title">Horas por consultora · trabajo con cliente vs. interno</div>
       <div id="consultant-breakdown"><div class="loading-state">Sin datos</div></div>
     </div>
     <div class="dash-card">
@@ -490,19 +462,26 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       <div id="consultant-activity-avg"><div class="loading-state">Sin datos suficientes · mínimo 5 registros por consultora</div></div>
     </div>
   </div>
-
-  <!-- Por cliente / tier -->
+  <!-- Por cliente -->
   <div class="full-card" style="margin-bottom:20px;">
-    <div class="dash-card-title">Horas por cliente · visible vs. invisible <span style="color:var(--white-soft);font-weight:400;text-transform:none;letter-spacing:0">ordenado por total</span></div>
+    <div class="dash-card-title">Horas por cliente · cumplimiento de contrato</div>
     <div id="client-breakdown"><div class="loading-state">Sin datos</div></div>
   </div>
-
   <!-- Actividad más costosa por tier -->
   <div class="full-card" style="margin-bottom:20px;">
-    <div class="dash-card-title">Actividad más costosa en horas · por tier de servicio</div>
+    <div class="dash-card-title">Actividad más costosa en horas · por tier de servicio <span style="color:var(--white-soft);font-weight:400;text-transform:none;letter-spacing:0">Essential · Empower · Complete</span></div>
     <div id="tier-activity-breakdown"><div class="loading-state">Sin datos suficientes · se necesitan registros en múltiples tiers</div></div>
   </div>
-
+  <!-- ── CAPA 3: COMPARACIÓN Y COBERTURA ── -->
+  <div class="eyebrow" style="margin-top:8px">Capa 3 · Comparación y cobertura</div>
+  <div class="full-card" style="margin-bottom:20px;">
+    <div class="dash-card-title">Comparación directa · consultora vs. consultora</div>
+    <div id="consultant-comparison"><div class="loading-state">Sin datos</div></div>
+  </div>
+  <div class="full-card" style="margin-bottom:20px;">
+    <div class="dash-card-title">Clientes sin interacción <span style="color:var(--white-soft);font-weight:400;text-transform:none;letter-spacing:0">en el rango de fechas seleccionado</span></div>
+    <div id="clients-no-activity"><div class="loading-state">Sin datos</div></div>
+  </div>
   <!-- EXPORT -->
   <div class="export-area">
     <div class="export-text">
@@ -511,32 +490,82 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
     </div>
     <button class="export-btn" onclick="exportCSV()">Descargar CSV →</button>
   </div>
-
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
 // ═══════════════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════════════
 const SCRIPT_URL_KEY = 'upturn_script_url';
-
 const TIER_COLORS    = { Essential: '#2E6DFF', Empower: '#FAB727', Complete: '#4ECDC4', Legacy: '#A78BFA' };
 const ACT_COLORS     = ['#2E6DFF','#FAB727','#4ECDC4','#A78BFA','#FF6B6B','#FF9F43','#4CAF82','#6895FD','#E8A0BF','#93C6E7','#B5EAD7','#C7B8EA'];
+
+// Roster de clientes (excluye UPTURN, que es trabajo interno) — mismo listado que el formulario
+const CLIENT_ROSTER = [
+  {name:'Cabrera Auto',tier:'Essential'},{name:'Fulcro',tier:'Essential'},{name:'Kayaking PR',tier:'Essential'},
+  {name:'JC González',tier:'Essential'},{name:'Pet Health',tier:'Essential'},{name:'Med Transport',tier:'Essential'},
+  {name:'IG Builders Corp.',tier:'Essential'},{name:'Cenegenics',tier:'Essential'},{name:'Pharma Xpress',tier:'Essential'},
+  {name:'MPS Precast',tier:'Essential'},{name:'PRENT',tier:'Essential'},
+  {name:'Auto Service Equipment',tier:'Empower'},{name:'Los Paseos',tier:'Empower'},
+  {name:'ADV',tier:'Complete'},{name:'Contactica',tier:'Complete'},{name:'Able Sales PR',tier:'Complete'},
+  {name:'Tolic',tier:'Complete'},{name:'Solar Roots',tier:'Complete'},{name:'ROV Engineering',tier:'Complete'},
+  {name:'CMV',tier:'Legacy'},{name:'American Storage',tier:'Legacy'},{name:'Banditech',tier:'Legacy'},
+  {name:'Beryllium',tier:'Legacy'},{name:'Bless Therapy',tier:'Legacy'},{name:'Caribe Drones',tier:'Legacy'},
+  {name:'Dr. Lisandro Montalvo',tier:'Legacy'},{name:'Fortuño',tier:'Legacy'},{name:'IO Automation',tier:'Legacy'},
+  {name:'La Patria',tier:'Legacy'},{name:'López Luna Insurance',tier:'Legacy'},{name:'Neuronita',tier:'Legacy'},
+  {name:'Ojo X Ojo',tier:'Legacy'},{name:'PDF Corp',tier:'Legacy'},{name:'PR Water Management',tier:'Legacy'},
+  {name:'RANA',tier:'Legacy'},{name:'RC Group',tier:'Legacy'},{name:'Sun Flowers',tier:'Legacy'},
+  {name:'Villa Verde Inn',tier:'Legacy'}
+];
+// Horas contratadas por MES por cliente — tomado de "Detalle por cliente" (UPTURN_Horas_Consultoras_Julio2026).
+// null = no hay dato de contrato disponible (Cenegenics y ROV Engineering no aparecen en esa hoja).
+const CLIENT_CONTRACT_HOURS = {
+  'Cabrera Auto':1,'Fulcro':1,'Kayaking PR':1,'JC González':1,'Pet Health':1,'Med Transport':1,
+  'IG Builders Corp.':1,'Cenegenics':null,'Pharma Xpress':1,'MPS Precast':1,'PRENT':1,
+  'Auto Service Equipment':10,'Los Paseos':10,
+  'ADV':20,'Contactica':20,'Able Sales PR':20,'Tolic':1,'Solar Roots':20,'ROV Engineering':null,
+  'CMV':36,'American Storage':10,'Banditech':16,'Beryllium':20,'Bless Therapy':10,'Caribe Drones':5,
+  'Dr. Lisandro Montalvo':10,'Fortuño':5,'IO Automation':25,'La Patria':12,'López Luna Insurance':15,
+  'Neuronita':10,'Ojo X Ojo':10,'PDF Corp':50,'PR Water Management':5,'RANA':20,'RC Group':48,
+  'Sun Flowers':12,'Villa Verde Inn':10
+};
+// Metas de rol por consultora (horas/mes), dato de Natalia — usado como referencia en la comparación directa.
+const CONSULTANT_TARGETS = {
+  'Janice Alicea':   {cliente:128, interno:32},
+  'Michelle Camacho':{cliente:128, interno:32},
+  'Natalia Reyes':   {cliente:100, interno:60},
+  'Kalia Torres':    {cliente:100, interno:60}
+};
+// Clasificación fija de actividades (igual que los grupos de pills del formulario)
+const CLIENT_ACTIVITIES = ['Preparación de sesión en vivo','Sesión en vivo con cliente','Documentación post-sesión',
+  'Llamadas telefónicas','Visita','Reclutamiento','Adiestramientos','Consulta legal','Diagnóstico regulatorio',
+  'Customización plantillas','Monitoreo / alertas del ciclo','Onboarding / bienvenida'];
+const INTERNAL_ACTIVITIES = ['Business Update','CX','Marketing','Apoyo con casos de clientes','DCP','DCP - Preparación',
+  'Facturación','UP - Nómina','Learning Day','Atención de leads','One to One Consulting','One to One G',
+  'Q&A / Respuestas en UPSPACE','UPSPACE','Reunión interna UP','Proyectos especiales','TGC',
+  'Onboarding / bienvenida UP','Creación y desarrollo de documentos'];
 
 let allLogs = [];
 let selectedActivity = '';
 let scriptUrl = '';
-
 // ── Init ────────────────────────────────────────────────
 function init() {
   scriptUrl = localStorage.getItem(SCRIPT_URL_KEY) || '';
   setDate();
+  setDashboardDefaults();
   checkConfig();
   loadLogs();
 }
-
+function setDashboardDefaults(){
+  const now = new Date();
+  const first = new Date(now.getFullYear(), now.getMonth(), 1);
+  const pad = n => String(n).padStart(2,'0');
+  const toStr = (d) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const f = document.getElementById('dash-filter-from');
+  const t = document.getElementById('dash-filter-to');
+  if(f && !f.value) f.value = toStr(first);
+  if(t && !t.value) t.value = toStr(now);
+}
 function checkConfig() {
   const banner = document.getElementById('config-banner');
   if (scriptUrl) {
@@ -546,7 +575,6 @@ function checkConfig() {
     banner.classList.remove('hidden');
   }
 }
-
 function saveScriptUrl() {
   const val = document.getElementById('script-url-input').value.trim();
   if (!val || !val.startsWith('https://script.google.com')) {
@@ -559,7 +587,6 @@ function saveScriptUrl() {
   showToast('Conectado — cargando datos...', 'success');
   loadLogs();
 }
-
 // ── Date ────────────────────────────────────────────────
 function setDate() {
   const now = new Date();
@@ -573,7 +600,6 @@ function setDate() {
   const dd   = String(now.getDate()).padStart(2,'0');
   document.getElementById('f-date').value = `${yyyy}-${mm}-${dd}`;
 }
-
 // ── Status dot ──────────────────────────────────────────
 function setStatus(state, text) {
   const dot  = document.getElementById('status-dot');
@@ -581,7 +607,6 @@ function setStatus(state, text) {
   dot.className = 'status-dot' + (state === 'ok' ? '' : state === 'syncing' ? ' syncing' : ' offline');
   txt.textContent = text;
 }
-
 // ── Load logs from Sheet ─────────────────────────────────
 async function loadLogs() {
   if (!scriptUrl) {
@@ -607,9 +632,7 @@ async function loadLogs() {
     showToast('No se pudo conectar al Sheet — verifica la URL', 'error');
   }
 }
-
 async function syncNow() { await loadLogs(); }
-
 // ── Submit ───────────────────────────────────────────────
 async function submitLog() {
   const consultant = document.getElementById('f-consultant').value;
@@ -617,13 +640,11 @@ async function submitLog() {
   const tier       = document.getElementById('f-tier').value;
   const hours      = parseFloat(document.getElementById('f-hours').value);
   const errEl      = document.getElementById('form-error');
-
   if (!consultant || !client || !tier || !selectedActivity || !hours || hours <= 0) {
     errEl.style.display = 'inline';
     setTimeout(() => errEl.style.display = 'none', 3000);
     return;
   }
-
   const payload = {
     fecha:      document.getElementById('f-date').value,
     consultora: consultant,
@@ -635,7 +656,6 @@ async function submitLog() {
     facturada:  document.getElementById('f-billed').value,
     notas:      document.getElementById('f-notes').value,
   };
-
   // UI: loading state
   const btn     = document.getElementById('submit-btn');
   const txt     = document.getElementById('submit-text');
@@ -643,7 +663,6 @@ async function submitLog() {
   btn.disabled = true;
   txt.textContent = 'Guardando...';
   spinner.style.display = 'block';
-
   if (!scriptUrl) {
     // Offline mode: store locally with warning
     allLogs.unshift({ ...payload, ID: Date.now(), Timestamp: new Date().toISOString(), _offline: true });
@@ -653,7 +672,6 @@ async function submitLog() {
     showToast('Guardado localmente — conecta el Sheet para sincronizar', 'error');
     return;
   }
-
   try {
     const res  = await fetch(scriptUrl, {
       method: 'POST',
@@ -674,13 +692,11 @@ async function submitLog() {
     resetSubmitBtn();
   }
 }
-
 function resetSubmitBtn() {
   document.getElementById('submit-btn').disabled = false;
   document.getElementById('submit-text').textContent = 'Registrar actividad →';
   document.getElementById('submit-spinner').style.display = 'none';
 }
-
 // ── Delete ───────────────────────────────────────────────
 async function deleteLog(id) {
   if (!scriptUrl) {
@@ -696,7 +712,6 @@ async function deleteLog(id) {
     showToast('Error al eliminar', 'error');
   }
 }
-
 // ── Render: recent logs ──────────────────────────────────
 function renderRecentLogs() {
   const wrap = document.getElementById('recent-logs-wrap');
@@ -727,39 +742,49 @@ function renderRecentLogs() {
       </table>
     </div>`;
 }
-
 // ── Dashboard ─────────────────────────────────────────────
+function inRange(dateStr, from, to){
+  if(!dateStr) return false;
+  const parts = dateStr.split(/[-/]/);
+  const d = parts.length===3 ? new Date(parts[0].length===4 ? dateStr : parts[2]+'-'+parts[1]+'-'+parts[0]) : new Date(dateStr);
+  if(isNaN(d)) return false;
+  if(from && d < new Date(from)) return false;
+  if(to && d > new Date(to+'T23:59:59')) return false;
+  return true;
+}
+// Respeta los 3 filtros (consultora, tier, fechas) — para KPIs, actividades y vista por consultora
 function getFiltered() {
   const fc = document.getElementById("dash-filter-consultant")?.value || "all";
   const ft = document.getElementById("dash-filter-tier")?.value || "all";
-  const fp = document.getElementById("dash-filter-period")?.value || "all";
-  const now = new Date();
+  const from = document.getElementById("dash-filter-from")?.value || "";
+  const to   = document.getElementById("dash-filter-to")?.value || "";
   return allLogs.filter(l => {
-    const conV  = l.Consultora || l.consultora || "";
-    const tierV = l.Tier || l.tier || "";
-    const conOk  = fc==="all" || conV===fc;
-    const tierOk = ft==="all" || tierV===ft;
-    let periodOk = true;
-    if(fp !== "all"){
-      const days = parseInt(fp);
-      const dateStr = l.Fecha || l.fecha || "";
-      if(dateStr){
-        const parts = dateStr.split(/[-/]/);
-        const logDate = parts.length===3 ? new Date(parts[0].length===4 ? dateStr : parts[2]+"-"+parts[1]+"-"+parts[0]) : new Date(dateStr);
-        if(!isNaN(logDate)) periodOk = (now - logDate) / 86400000 <= days;
-      }
-    }
-    return conOk && tierOk && periodOk;
+    const conOk  = fc==="all" || con(l)===fc;
+    const tierOk = ft==="all" || tier(l)===ft;
+    const dateOk = inRange(l.Fecha||l.fecha||"", from, to);
+    return conOk && tierOk && dateOk;
   });
 }
-
+// Sólo respeta el rango de fechas — para los paneles a nivel de cliente (cumplimiento y sin interacción),
+// donde filtrar por consultora no tiene sentido (un cliente no debería aparecer "sin interacción" sólo
+// porque filtraste el dashboard a otra consultora).
+function getFilteredByDate(){
+  const from = document.getElementById("dash-filter-from")?.value || "";
+  const to   = document.getElementById("dash-filter-to")?.value || "";
+  return allLogs.filter(l => inRange(l.Fecha||l.fecha||"", from, to));
+}
 function h(l) { return parseFloat(l.Horas||l.horas||0); }
 function tier(l) { return l.Tier||l.tier||''; }
 function act(l)  { return l.Actividad||l.actividad||''; }
 function con(l)  { return l.Consultora||l.consultora||''; }
 function bil(l)  { return l.Facturada||l.facturada||''; }
 function cli(l)  { return l.Cliente||l.cliente||''; }
-
+function rangeDays(){
+  const from = document.getElementById('dash-filter-from')?.value || '';
+  const to   = document.getElementById('dash-filter-to')?.value || '';
+  if(from && to) return Math.max(1, Math.round((new Date(to) - new Date(from))/86400000) + 1);
+  return 30;
+}
 function renderDashboard() {
   const fl       = getFiltered();
   const total    = fl.reduce((s,l)=>s+h(l),0);
@@ -767,9 +792,8 @@ function renderDashboard() {
   const internal = fl.filter(l=>bil(l)!=='si').reduce((s,l)=>s+h(l),0);
   const billedPct   = total>0 ? Math.round(billed/total*100) : 0;
   const internalPct = total>0 ? Math.round(internal/total*100) : 0;
-  // ratio: horas internas por cada hora visible
+  // ratio: horas internas por cada hora con cliente
   const ratioVI = billed>0 ? (internal/billed).toFixed(1) : '—';
-
   // ── KPIs ──
   document.getElementById('kpi-total').textContent      = total>0 ? total.toFixed(1)+'h' : '—';
   document.getElementById('kpi-registros').textContent  = fl.length+' registros';
@@ -778,7 +802,6 @@ function renderDashboard() {
   document.getElementById('kpi-internal').textContent   = total>0 ? internal.toFixed(1)+'h' : '—';
   document.getElementById('kpi-internal-pct').textContent = total>0 ? internalPct+'% del total' : '—';
   document.getElementById('kpi-ratio').textContent      = total>0 ? ratioVI+'×' : '—';
-
   // ── Barra proporcional ──
   if(total>0){
     document.getElementById('ratio-bar-visible').style.width  = billedPct+'%';
@@ -786,7 +809,6 @@ function renderDashboard() {
     document.getElementById('ratio-bar-internal').style.width = internalPct+'%';
     document.getElementById('ratio-bar-internal').textContent = internalPct>8 ? internalPct+'%' : '';
   }
-
   // ── Indicador de confianza de datos en Capa 2 ──
   const MIN_RECORDS = 10;
   const warn = document.getElementById('data-warning');
@@ -795,7 +817,6 @@ function renderDashboard() {
   } else {
     warn.textContent = '';
   }
-
   // ── CAPA 1a: Actividades · ranking total ──
   const byAct = {};
   fl.forEach(l => {
@@ -815,25 +836,9 @@ function renderDashboard() {
           <div class="bar-value" style="min-width:36px">${d.total.toFixed(1)}h</div>
         </div>`).join('')
     : '<div class="loading-state">Sin datos</div>';
-
-  // ── CAPA 1b: Visible vs invisible por actividad ──
-  document.getElementById('activity-vi-breakdown').innerHTML = actSorted.length
-    ? actSorted.map(([a,d]) => {
-        const bp = d.total>0 ? Math.round(d.billed/d.total*100) : 0;
-        const ip = 100-bp;
-        return `<div style="margin-bottom:12px">
-          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-            <span style="font-size:10px;color:var(--white-soft)">${a}</span>
-            <span style="font-size:9px;color:var(--white-soft)">${d.billed.toFixed(1)}h vis · ${d.internal.toFixed(1)}h inv</span>
-          </div>
-          <div style="display:flex;height:6px;border-radius:3px;overflow:hidden;background:var(--white-dim)">
-            <div style="width:${bp}%;background:var(--blue);height:100%"></div>
-            <div style="width:${ip}%;background:var(--complete);height:100%"></div>
-          </div>
-        </div>`;}).join('')
-    : '<div class="loading-state">Sin datos</div>';
-
-  // ── CAPA 2a: Por consultora · visible vs invisible ──
+  // ── CAPA 1b: Registro de actividades · interno y con cliente (listas separadas por tipo fijo) ──
+  renderActivityLists(fl);
+  // ── CAPA 2a: Por consultora · trabajo con cliente vs. interno ──
   const byCon = {};
   const conColors = ['#2E6DFF','#FAB727','#4ECDC4','#A78BFA'];
   fl.forEach(l => {
@@ -846,7 +851,6 @@ function renderDashboard() {
     byCon[k].acts[act(l)].push(h(l));
   });
   const conSorted = Object.entries(byCon).sort((a,b)=>b[1].total-a[1].total);
-  const maxCon = conSorted[0]?.[1].total || 1;
   document.getElementById('consultant-breakdown').innerHTML = conSorted.length
     ? conSorted.map(([c,d],i) => {
         const bp2 = d.total>0 ? Math.round(d.billed/d.total*100) : 0;
@@ -861,19 +865,16 @@ function renderDashboard() {
             <div style="width:${ip2}%;background:var(--complete)"></div>
           </div>
           <div style="display:flex;gap:12px">
-            <span style="font-size:9px;color:var(--blue-tint)">${d.billed.toFixed(1)}h visible</span>
-            <span style="font-size:9px;color:var(--complete)">${d.internal.toFixed(1)}h invisible</span>
+            <span style="font-size:9px;color:var(--blue-tint)">${d.billed.toFixed(1)}h con cliente</span>
+            <span style="font-size:9px;color:var(--complete)">${d.internal.toFixed(1)}h interno</span>
           </div>
         </div>`;}).join('')
     : '<div class="loading-state">Sin datos</div>';
-
   // ── CAPA 2b: Promedio por actividad por consultora ──
-  // Solo muestra si hay suficientes datos
   if(fl.length < MIN_RECORDS){
     document.getElementById('consultant-activity-avg').innerHTML =
       `<div class="loading-state" style="font-size:10px;color:var(--orange)">Disponible con ${MIN_RECORDS} registros mínimo · ahora: ${fl.length}</div>`;
   } else {
-    // Top 5 actividades más frecuentes
     const topActs = actSorted.slice(0,5).map(([a])=>a);
     const rows = topActs.map(a => {
       const cols = conSorted.map(([c,d]) => {
@@ -893,49 +894,25 @@ function renderDashboard() {
         <tbody>${rows}</tbody>
       </table>`;
   }
-
-  // ── CAPA 2c: Por cliente · visible vs invisible ──
-  const byClient={};
-  fl.forEach(l=>{
-    const k=cli(l);
-    if(!byClient[k]) byClient[k]={total:0,tier:tier(l),billed:0,internal:0};
-    byClient[k].total   += h(l);
-    byClient[k][bil(l)==='si'?'billed':'internal'] += h(l);
-  });
-  const cliSorted=Object.entries(byClient).sort((a,b)=>b[1].total-a[1].total).slice(0,15);
-  const maxCli=cliSorted[0]?.[1].total||1;
-  document.getElementById('client-breakdown').innerHTML = cliSorted.length
-    ? `<div style="display:flex;flex-direction:column;gap:10px">${cliSorted.map(([c,d])=>{
-        const bp3=d.total>0?Math.round(d.billed/d.total*100):0;
-        return `<div style="display:grid;grid-template-columns:160px 60px 1fr 44px 80px 80px;gap:10px;align-items:center">
-          <div style="font-size:11px;color:var(--white);font-weight:500">${c}</div>
-          <span style="font-size:9px;font-weight:700;color:${TIER_COLORS[d.tier]||'#888'}">${d.tier}</span>
-          <div style="display:flex;height:6px;border-radius:3px;overflow:hidden;background:var(--white-dim)">
-            <div style="width:${bp3}%;background:var(--blue)"></div>
-            <div style="width:${100-bp3}%;background:var(--complete)"></div>
-          </div>
-          <div style="font-size:12px;font-weight:700;color:var(--white);text-align:right">${d.total.toFixed(1)}h</div>
-          <div style="font-size:9px;color:var(--blue-tint)">${d.billed.toFixed(1)}h vis.</div>
-          <div style="font-size:9px;color:var(--complete)">${d.internal.toFixed(1)}h inv.</div>
-        </div>`;}).join('')}</div>`
-    : '<div class="loading-state">Sin datos</div>';
-
-  // ── CAPA 2d: Actividad más costosa por tier ──
+  // ── CAPA 2c: Horas por cliente · cumplimiento de contrato ──
+  renderClientCompliance();
+  // ── CAPA 2d: Actividad más costosa por tier (sólo Essential / Empower / Complete) ──
   const byTierAct = {};
   fl.forEach(l=>{
     const t=tier(l); const a=act(l);
+    if(!['Essential','Empower','Complete'].includes(t)) return;
     if(!byTierAct[t]) byTierAct[t]={};
     if(!byTierAct[t][a]) byTierAct[t][a]={total:0,count:0};
     byTierAct[t][a].total += h(l);
     byTierAct[t][a].count++;
   });
-  const tierList = Object.keys(byTierAct);
-  if(!tierList.length){
+  const tierOrder = ['Essential','Empower','Complete'].filter(t=>byTierAct[t]);
+  if(!tierOrder.length){
     document.getElementById('tier-activity-breakdown').innerHTML='<div class="loading-state">Sin datos</div>';
   } else {
     document.getElementById('tier-activity-breakdown').innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(${Math.min(tierList.length,4)},1fr);gap:14px">
-        ${tierList.map(t=>{
+      <div style="display:grid;grid-template-columns:repeat(${tierOrder.length},1fr);gap:14px">
+        ${tierOrder.map(t=>{
           const acts = Object.entries(byTierAct[t]).sort((a,b)=>b[1].total-a[1].total).slice(0,5);
           const maxT = acts[0]?.[1].total||1;
           return `<div>
@@ -952,15 +929,158 @@ function renderDashboard() {
           </div>`;}).join('')}
       </div>`;
   }
+  // ── CAPA 3: comparación directa + clientes sin interacción ──
+  renderConsultantComparison(fl);
+  renderClientsWithoutActivity();
 }
-
+// ── Registro de actividades · interno y con cliente (reemplaza el panel visible/invisible por actividad) ──
+function renderActivityLists(fl){
+  const byType = {cliente:{}, interno:{}};
+  fl.forEach(l=>{
+    const a = act(l);
+    const type = CLIENT_ACTIVITIES.includes(a) ? 'cliente'
+               : INTERNAL_ACTIVITIES.includes(a) ? 'interno'
+               : (bil(l)==='si' ? 'cliente' : 'interno'); // fallback si aparece una actividad no catalogada
+    if(!byType[type][a]) byType[type][a] = 0;
+    byType[type][a] += h(l);
+  });
+  function renderList(dict, color){
+    const sorted = Object.entries(dict).sort((a,b)=>b[1]-a[1]);
+    if(!sorted.length) return '<div class="loading-state" style="padding:12px 0">Sin datos</div>';
+    const max = sorted[0][1] || 1;
+    return sorted.map(([a,v]) => `
+      <div class="bar-row" style="margin-bottom:10px">
+        <div class="bar-label" style="min-width:170px;font-size:10px">${a}</div>
+        <div style="flex:1"><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/max*100)}%;background:${color}"></div></div></div>
+        <div class="bar-value" style="min-width:36px">${v.toFixed(1)}h</div>
+      </div>`).join('');
+  }
+  document.getElementById('activity-vi-breakdown').innerHTML = `
+    <div style="margin-bottom:20px">
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Trabajo interno</div>
+      ${renderList(byType.interno, 'var(--complete)')}
+    </div>
+    <div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-tint);margin-bottom:10px">Trabajo con cliente</div>
+      ${renderList(byType.cliente, 'var(--blue)')}
+    </div>`;
+}
+// ── Horas por cliente · cumplimiento de contrato (reemplaza visible/invisible por cliente) ──
+function renderClientCompliance(){
+  const days = rangeDays();
+  const dateLogs = getFilteredByDate().filter(l=>cli(l)!=='UPTURN');
+  const byClient = {};
+  dateLogs.forEach(l=>{
+    const k = cli(l);
+    byClient[k] = (byClient[k]||0) + h(l);
+  });
+  const rows = CLIENT_ROSTER.map(c=>{
+    const real = byClient[c.name] || 0;
+    const monthly = CLIENT_CONTRACT_HOURS[c.name];
+    const expected = (monthly!=null) ? monthly * (days/30.44) : null;
+    const pct = (expected!=null && expected>0) ? Math.round(real/expected*100) : null;
+    return {...c, real, monthly, expected, pct};
+  });
+  rows.sort((a,b)=>{
+    if(a.pct===null && b.pct===null) return b.real-a.real;
+    if(a.pct===null) return 1;
+    if(b.pct===null) return -1;
+    return b.pct - a.pct;
+  });
+  document.getElementById('client-breakdown').innerHTML = `
+    <div style="font-size:9px;color:var(--white-soft);margin-bottom:14px">
+      Contrato mensual prorrateado a ${days} día(s) del rango seleccionado ·
+      <span style="color:var(--red)">excedido &gt;110%</span> ·
+      <span style="color:var(--green)">en rango 80–110%</span> ·
+      <span style="color:var(--orange)">por debajo &lt;80%</span> ·
+      <span style="color:#888">gris = sin contrato registrado</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+    ${rows.map(r=>{
+      let barColor = '#888', label = 'Sin contrato registrado';
+      if(r.pct!==null){
+        barColor = r.pct>110 ? 'var(--red)' : (r.pct<80 ? 'var(--orange)' : 'var(--green)');
+        label = r.pct + '% del contrato · meta ' + r.expected.toFixed(1) + 'h';
+      }
+      const barPct = r.pct!==null ? Math.min(r.pct,150)/150*100 : (r.real>0 ? 15 : 0);
+      return `<div style="display:grid;grid-template-columns:170px 60px 1fr 64px 190px;gap:10px;align-items:center">
+        <div style="font-size:11px;color:var(--white);font-weight:500">${r.name}</div>
+        <span style="font-size:9px;font-weight:700;color:${TIER_COLORS[r.tier]||'#888'}">${r.tier}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${barPct}%;background:${barColor}"></div></div>
+        <div style="font-size:12px;font-weight:700;color:var(--white);text-align:right">${r.real.toFixed(1)}h</div>
+        <div style="font-size:9px;color:${barColor}">${label}</div>
+      </div>`;
+    }).join('')}
+    </div>`;
+}
+// ── Comparación directa · consultora vs. consultora (mismo gráfico, escala compartida) ──
+function renderConsultantComparison(fl){
+  const CONSULT_LIST = ['Natalia Reyes','Michelle Camacho','Janice Alicea','Kalia Torres'];
+  const conColors = {'Natalia Reyes':'#2E6DFF','Michelle Camacho':'#FAB727','Janice Alicea':'#4ECDC4','Kalia Torres':'#A78BFA'};
+  const days = rangeDays();
+  const data = CONSULT_LIST.map(c=>{
+    const logs = fl.filter(l=>con(l)===c);
+    const cliente = logs.filter(l=>bil(l)==='si').reduce((s,l)=>s+h(l),0);
+    const interno  = logs.filter(l=>bil(l)!=='si').reduce((s,l)=>s+h(l),0);
+    const t = CONSULTANT_TARGETS[c];
+    const targetCliente = t ? t.cliente * (days/30.44) : null;
+    return {c, cliente, interno, targetCliente};
+  });
+  const maxVal = Math.max(...data.map(d=>Math.max(d.cliente,d.interno,d.targetCliente||0)), 1);
+  const BAR_H = 180;
+  document.getElementById('consultant-comparison').innerHTML = `
+    <div style="font-size:9px;color:var(--white-soft);margin-bottom:16px">
+      Barra sólida = horas con cliente · barra clara = horas internas · línea punteada = meta de horas con cliente
+      (prorrateada a ${days} día(s), dato de rol dado por Natalia). Todas sobre la misma escala para comparar directo.
+    </div>
+    <div style="display:flex;justify-content:space-around;align-items:flex-end;gap:16px;padding:0 10px 10px;border-bottom:1px solid var(--border)">
+    ${data.map(d=>{
+      const targetPx = d.targetCliente ? Math.min(d.targetCliente/maxVal*BAR_H, BAR_H) : null;
+      return `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+        <div style="position:relative;display:flex;align-items:flex-end;gap:6px;height:${BAR_H}px">
+          ${targetPx!==null ? `<div style="position:absolute;left:-4px;right:-4px;bottom:${targetPx}px;border-top:2px dashed var(--white-soft)"></div>` : ''}
+          <div title="Con cliente: ${d.cliente.toFixed(1)}h" style="width:28px;height:${Math.max(d.cliente/maxVal*BAR_H,2)}px;background:${conColors[d.c]};border-radius:4px 4px 0 0"></div>
+          <div title="Interno: ${d.interno.toFixed(1)}h" style="width:28px;height:${Math.max(d.interno/maxVal*BAR_H,2)}px;background:${conColors[d.c]};opacity:0.35;border-radius:4px 4px 0 0"></div>
+        </div>
+        <div style="font-size:10px;color:var(--white);font-weight:700">${d.c}</div>
+        <div style="font-size:9px;color:var(--white-soft);text-align:center">${d.cliente.toFixed(1)}h cliente · ${d.interno.toFixed(1)}h interno</div>
+      </div>`;}).join('')}
+    </div>`;
+}
+// ── Clientes sin interacción en el rango seleccionado ──
+function renderClientsWithoutActivity(){
+  const dateLogs = getFilteredByDate().filter(l=>cli(l)!=='UPTURN');
+  const activeSet = new Set(dateLogs.map(l=>cli(l)));
+  const inactive = CLIENT_ROSTER.filter(c=>!activeSet.has(c.name));
+  const lastByClient = {};
+  allLogs.forEach(l=>{
+    const k = cli(l);
+    const d = l.Fecha||l.fecha||'';
+    if(!d) return;
+    if(!lastByClient[k] || d > lastByClient[k]) lastByClient[k] = d;
+  });
+  document.getElementById('clients-no-activity').innerHTML = inactive.length
+    ? `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px">
+       ${inactive.map(c=>{
+         const last = lastByClient[c.name];
+         return `<div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;background:var(--input-bg)">
+           <div style="font-size:11px;font-weight:600;color:var(--white)">${c.name}</div>
+           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+             <span style="font-size:9px;font-weight:700;color:${TIER_COLORS[c.tier]||'#888'}">${c.tier}</span>
+             <span style="font-size:9px;color:${last?'var(--orange)':'var(--red)'}">${last ? 'Última: '+last : 'Nunca registrado'}</span>
+           </div>
+         </div>`;
+       }).join('')}
+       </div>`
+    : `<div class="loading-state" style="color:var(--green)">Todos los clientes tuvieron actividad en el rango seleccionado.</div>`;
+}
 // ── Helpers ───────────────────────────────────────────────
 function selectActivity(el) {
   document.querySelectorAll('.activity-pill').forEach(p=>p.classList.remove('selected'));
   el.classList.add('selected');
   selectedActivity = el.dataset.activity;
 }
-
 function switchView(v, btn) {
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.view-btn').forEach(el=>el.classList.remove('active'));
@@ -968,31 +1088,27 @@ function switchView(v, btn) {
   btn.classList.add('active');
   if(v==='dashboard') renderDashboard();
 }
-
 function clearForm() {
   ['f-consultant','f-client','f-tier','f-paso','f-hours','f-notes','f-billed'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.querySelectorAll('.activity-pill').forEach(p=>p.classList.remove('selected'));
   selectedActivity='';
   setDate();
 }
-
 function showToast(msg, type='success') {
   const t=document.getElementById('toast');
   t.textContent=msg; t.className='toast '+type; t.style.display='block';
   setTimeout(()=>t.style.display='none',3000);
 }
-
 function exportCSV() {
   if(!allLogs.length){showToast('Sin registros para exportar','error');return;}
   const headers=['ID','Timestamp','Fecha','Consultora','Cliente','Tier','Actividad','Paso_UPway','Horas','Facturada','Notas'];
   const rows=allLogs.map(l=>headers.map(h=>`"${(l[h]||'').toString().replace(/"/g,'""')}"`));
   const csv=[headers,...rows].map(r=>r.join(',')).join('\n');
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'}));
   a.download=`upturn_horas_${new Date().toISOString().split('T')[0]}.csv`;
   a.click();
 }
-
 init();
 </script>
 </body>
