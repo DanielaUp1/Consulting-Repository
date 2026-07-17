@@ -538,6 +538,40 @@ const CONSULTANT_TARGETS = {
 };
 // Capacidad total de trabajo por mes — igual para las 4, es el techo de horas disponibles del rol (128+32 = 100+60 = 160).
 const TOTAL_CAPACITY_MONTHLY = 160;
+// Consultora dueña de cada cuenta (de "Detalle por cliente"). Cenegenics y ROV Engineering no tienen dato — quedan sin asignar.
+const CLIENT_CONSULTANT = {
+  'Cabrera Auto':'Natalia Reyes','Fulcro':'Natalia Reyes','Kayaking PR':'Michelle Camacho',
+  'JC González':'Janice Alicea','Pet Health':'Natalia Reyes','Med Transport':'Janice Alicea',
+  'IG Builders Corp.':'Natalia Reyes','Cenegenics':null,'Pharma Xpress':'Natalia Reyes',
+  'MPS Precast':'Kalia Torres','PRENT':'Michelle Camacho',
+  'Auto Service Equipment':'Michelle Camacho','Los Paseos':'Kalia Torres',
+  'ADV':'Kalia Torres','Contactica':'Natalia Reyes','Tolic':'Janice Alicea',
+  'Solar Roots':'Natalia Reyes','ROV Engineering':null,
+  'CMV':'Kalia Torres','American Storage':'Janice Alicea','Banditech':'Michelle Camacho',
+  'Beryllium':'Janice Alicea','Bless Therapy':'Michelle Camacho','Caribe Drones':'Natalia Reyes',
+  'Dr. Lisandro Montalvo':'Natalia Reyes','Fortuño':'Michelle Camacho','IO Automation':'Michelle Camacho',
+  'La Patria':'Janice Alicea','López Luna Insurance':'Natalia Reyes','Neuronita':'Michelle Camacho',
+  'Ojo X Ojo':'Michelle Camacho','PDF Corp':'Janice Alicea','PR Water Management':'Janice Alicea',
+  'RANA':'Natalia Reyes','RC Group':'Kalia Torres','Sun Flowers':'Michelle Camacho','Villa Verde Inn':'Kalia Torres'
+};
+// Cuentas compartidas entre dos consultoras — se dividen las horas contratadas en partes iguales.
+const SHARED_CLIENTS = { 'Able Sales PR': ['Kalia Torres','Natalia Reyes'] };
+// Cartera contratada por consultora (horas/mes) = suma de horas contratadas de todos sus clientes asignados.
+// Se calcula, no se hardcodea, para que quede sincronizada si CLIENT_CONTRACT_HOURS cambia.
+function computePortfolio(){
+  const portfolio = {'Natalia Reyes':0,'Michelle Camacho':0,'Janice Alicea':0,'Kalia Torres':0};
+  CLIENT_ROSTER.forEach(c=>{
+    const hrs = CLIENT_CONTRACT_HOURS[c.name];
+    if(hrs==null) return;
+    if(SHARED_CLIENTS[c.name]){
+      SHARED_CLIENTS[c.name].forEach(cons=>{ if(portfolio[cons]!=null) portfolio[cons] += hrs/SHARED_CLIENTS[c.name].length; });
+    } else {
+      const cons = CLIENT_CONSULTANT[c.name];
+      if(cons && portfolio[cons]!=null) portfolio[cons] += hrs;
+    }
+  });
+  return portfolio;
+}
 // Clasificación fija de actividades (igual que los grupos de pills del formulario)
 const CLIENT_ACTIVITIES = ['Preparación de sesión en vivo','Sesión en vivo con cliente','Documentación post-sesión',
   'Llamadas telefónicas','Visita','Reclutamiento','Adiestramientos','Consulta legal','Diagnóstico regulatorio',
@@ -1022,6 +1056,7 @@ function renderConsultantComparison(fl){
   const days = rangeDays();
   const factor = days/30.44;
   const capacityProrated = TOTAL_CAPACITY_MONTHLY * factor;
+  const portfolio = computePortfolio();
   const data = CONSULT_LIST.map(c=>{
     const logs = fl.filter(l=>con(l)===c);
     const cliente = logs.filter(l=>bil(l)==='si').reduce((s,l)=>s+h(l),0);
@@ -1030,17 +1065,29 @@ function renderConsultantComparison(fl){
     const metaCliente = t.cliente * factor;
     const metaInterno = t.interno * factor;
     const total = cliente + interno;
-    return {c, cliente, interno, metaCliente, metaInterno, total};
+    const cartera = portfolio[c] || 0;
+    const brecha = cartera - t.cliente;
+    return {c, cliente, interno, metaCliente, metaInterno, total, tCliente:t.cliente, tInterno:t.interno, cartera, brecha};
   });
   const BAR_H = 190;
   const maxVal = Math.max(...data.map(d=>Math.max(d.cliente,d.metaCliente,d.interno,d.metaInterno)), capacityProrated, 1);
   const capPx = Math.min(capacityProrated/maxVal*BAR_H, BAR_H);
   document.getElementById('consultant-comparison').innerHTML = `
-    <div style="font-size:9px;color:var(--white-soft);margin-bottom:16px">
+    <div style="font-size:9px;color:var(--white-soft);margin-bottom:14px">
       Capacidad total del rol: <strong style="color:var(--white)">${TOTAL_CAPACITY_MONTHLY}h/mes</strong> para las 4 —
       línea gris continua marca ese techo prorrateado a ${days} día(s) (${capacityProrated.toFixed(1)}h).
       Barra sólida = horas reales con cliente (línea punteada = su meta) · barra clara = horas reales internas (línea punteada = su meta).
       Janice y Michelle: meta 128h cliente / 32h interno · Natalia y Kalia: meta 100h cliente / 60h interno.
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px">
+      ${data.map(d=>`
+        <div style="border:1px solid ${d.brecha>0?'rgba(255,107,107,0.35)':'var(--border)'};border-radius:8px;padding:10px 12px;background:${d.brecha>0?'var(--red-soft)':'var(--input-bg)'}">
+          <div style="font-size:9px;font-weight:700;color:${conColors[d.c]};margin-bottom:4px">${d.c} · cartera contratada</div>
+          <div style="font-size:16px;font-weight:800;color:var(--white)">${d.cartera.toFixed(1)}h<span style="font-size:9px;font-weight:400;color:var(--white-soft)">/mes</span></div>
+          <div style="font-size:9px;color:${d.brecha>0?'var(--red)':'var(--white-soft)'};margin-top:2px">
+            ${d.brecha>0 ? `+${d.brecha.toFixed(1)}h sobre su meta de ${d.tCliente}h — sobreasignación estructural` : `${Math.abs(d.brecha).toFixed(1)}h por debajo de su meta de ${d.tCliente}h`}
+          </div>
+        </div>`).join('')}
     </div>
     <div style="position:relative;display:flex;justify-content:space-around;align-items:flex-end;gap:16px;padding:0 10px 10px;border-bottom:1px solid var(--border)">
       <div style="position:absolute;left:6px;right:6px;bottom:${capPx+10}px;border-top:2px solid var(--white-soft)"></div>
@@ -1059,9 +1106,10 @@ function renderConsultantComparison(fl){
           <div title="Interno: ${d.interno.toFixed(1)}h · meta ${d.metaInterno.toFixed(1)}h" style="width:28px;height:${Math.max(d.interno/maxVal*BAR_H,2)}px;background:${conColors[d.c]};opacity:0.35;border-radius:4px 4px 0 0;${internoOver?'box-shadow:0 0 0 2px var(--red) inset;':''}"></div>
         </div>
         <div style="font-size:10px;color:var(--white);font-weight:700">${d.c}</div>
-        <div style="font-size:9px;color:${clienteOver?'var(--red)':'var(--white-soft)'};text-align:center">${d.cliente.toFixed(1)}h cliente <span style="opacity:0.7">/ meta ${d.metaCliente.toFixed(1)}h</span></div>
-        <div style="font-size:9px;color:${internoOver?'var(--red)':'var(--white-soft)'};text-align:center">${d.interno.toFixed(1)}h interno <span style="opacity:0.7">/ meta ${d.metaInterno.toFixed(1)}h</span></div>
+        <div style="font-size:9px;color:${clienteOver?'var(--red)':'var(--white-soft)'};text-align:center">${d.cliente.toFixed(1)}h cliente <span style="opacity:0.7">/ meta ${d.metaCliente.toFixed(1)}h (${d.tCliente}h/mes)</span></div>
+        <div style="font-size:9px;color:${internoOver?'var(--red)':'var(--white-soft)'};text-align:center">${d.interno.toFixed(1)}h interno <span style="opacity:0.7">/ meta ${d.metaInterno.toFixed(1)}h (${d.tInterno}h/mes)</span></div>
         <div style="font-size:9px;font-weight:600;color:${d.total>capacityProrated?'var(--red)':'var(--green)'};text-align:center">${d.total.toFixed(1)}h de ${capacityProrated.toFixed(1)}h disponibles (${capacityProrated>0?Math.round(d.total/capacityProrated*100):0}%)</div>
+        <div style="font-size:8px;color:var(--white-soft);opacity:0.6;text-align:center">capacidad 160h/mes</div>
       </div>`;}).join('')}
     </div>`;
 }
