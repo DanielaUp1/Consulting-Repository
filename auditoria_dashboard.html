@@ -1004,6 +1004,8 @@ td .empresa-nombre { font-weight: 600; color: var(--white); font-size: 14px; }
 // ============================================================
 
 const MODULOS = {
+
+    // ── MÓDULO 1: Reclutamiento y Selección ──────────────────────────
     reclutamiento: {
         id: 'reclutamiento',
         nombre: 'Reclutamiento y Selección',
@@ -1015,6 +1017,8 @@ const MODULOS = {
             { id: 'rec_004', pregunta: '¿La entrevista está libre de preguntas discriminatorias?', tieneNoAplica: false }
         ]
     },
+
+    // ── MÓDULO 2: Expedientes de Empleados ───────────────────────────
     expedientes: {
         id: 'expedientes',
         nombre: 'Expedientes de Empleados',
@@ -1026,37 +1030,99 @@ const MODULOS = {
             { id: 'medico',       nombre: 'Expediente médico' }
         ],
         preguntas: [
-            { id: 'exp_001', seccion: 'manejo',       pregunta: '¿Existe una política de retención y destrucción de expedientes?', tieneNoAplica: false },
-            { id: 'exp_002', seccion: 'manejo',       pregunta: '¿Se mantienen los expedientes en archivo cerrado y seguro?', tieneNoAplica: false },
-            { id: 'exp_003', seccion: 'manejo',       pregunta: '¿Los expedientes están segregados entre general y confidencial?', tieneNoAplica: false },
-            { id: 'exp_004', seccion: 'manejo',       pregunta: '¿Cuenta con política que regule el acceso de empleados a expedientes?', tieneNoAplica: false },
-            { id: 'exp_005', seccion: 'manejo',       pregunta: '¿Los expedientes de empleados inactivos se retienen de forma segura?', tieneNoAplica: false },
-            { id: 'exp_006', seccion: 'general',      pregunta: '¿Incluye la Solicitud de Empleo?', tieneNoAplica: false },
-            { id: 'exp_007', seccion: 'general',      pregunta: '¿Incluye la Oferta de Empleo firmada?', tieneNoAplica: false },
-            { id: 'exp_008', seccion: 'general',      pregunta: '¿Incluye consentimiento para prueba de dopaje?', tieneNoAplica: true },
-            { id: 'exp_009', seccion: 'general',      pregunta: '¿Incluye consentimiento para verificación de antecedentes?', tieneNoAplica: true },
-            { id: 'exp_010', seccion: 'general',      pregunta: '¿Incluye carta de orientación o acuse de recibo de documentos?', tieneNoAplica: false },
-            { id: 'exp_011', seccion: 'general',      pregunta: '¿Incluye el contrato de empleo o Carta de Términos y Condiciones?', tieneNoAplica: true },
-            { id: 'exp_012', seccion: 'general',      pregunta: '¿Incluye el Manual del Empleado firmado?', tieneNoAplica: false },
-            { id: 'exp_013', seccion: 'general',      pregunta: '¿Incluye evaluaciones de desempeño?', tieneNoAplica: false },
-            { id: 'exp_014', seccion: 'general',      pregunta: '¿Incluye cartas de ascenso, transferencia o cambio de posición?', tieneNoAplica: true },
-            { id: 'exp_015', seccion: 'general',      pregunta: '¿Incluye documentación disciplinaria?', tieneNoAplica: true },
-            { id: 'exp_016', seccion: 'general',      pregunta: '¿Incluye acuerdos de confidencialidad o no competencia?', tieneNoAplica: true },
-            { id: 'exp_017', seccion: 'general',      pregunta: '¿Incluye el Formulario I-9?', tieneNoAplica: false },
-            { id: 'exp_018', seccion: 'confidencial', pregunta: '¿Incluye documentación relacionada con investigaciones?', tieneNoAplica: true },
-            { id: 'exp_019', seccion: 'confidencial', pregunta: '¿Incluye certificado de nacimiento o documentación de ciudadanía?', tieneNoAplica: true },
-            { id: 'exp_020', seccion: 'confidencial', pregunta: '¿Incluye formulario del Seguro Social?', tieneNoAplica: false },
-            { id: 'exp_021', seccion: 'confidencial', pregunta: '¿Incluye el Formulario I-9 segregado del expediente general?', tieneNoAplica: false },
-            { id: 'exp_022', seccion: 'confidencial', pregunta: '¿Incluye formulario 499 (Certificado de Exención)?', tieneNoAplica: false },
-            { id: 'exp_023', seccion: 'confidencial', pregunta: '¿Incluye el registro del empleado según Ley 379?', tieneNoAplica: false },
-            { id: 'exp_024', seccion: 'confidencial', pregunta: '¿Incluye hoja de contactos de emergencia?', tieneNoAplica: false },
-            { id: 'exp_025', seccion: 'confidencial', pregunta: '¿Incluye autorización de depósito directo?', tieneNoAplica: true },
-            { id: 'exp_028', seccion: 'medico',       pregunta: '¿Contiene certificaciones médicas y excusas?', tieneNoAplica: false },
-            { id: 'exp_029', seccion: 'medico',       pregunta: '¿Incluye formularios de licencias médicas (SINOT, FMLA, etc.)?', tieneNoAplica: false },
-            { id: 'exp_030', seccion: 'medico',       pregunta: '¿Incluye documentación de acomodos razonables o ADA?', tieneNoAplica: false },
-            { id: 'exp_031', seccion: 'medico',       pregunta: '¿Se mantiene información médica sensible de empleados o familiares?', tieneNoAplica: false }
+            // Manejo de expedientes (5)
+            { id: 'exp_001', seccion: 'manejo', pregunta: '¿Existe una política de retención y destrucción de expedientes de empleados?', tieneNoAplica: false },
+            { id: 'exp_002', seccion: 'manejo', pregunta: '¿Se mantienen los expedientes en archivo cerrado y seguro, o se han desarrollado medidas de seguridad electrónica adecuadas?', tieneNoAplica: false },
+            { id: 'exp_003', seccion: 'manejo', pregunta: '¿Se mantienen los expedientes debidamente segregados entre archivo general, confidencial, médico y formularios I-9?', tieneNoAplica: false },
+            { id: 'exp_004', seccion: 'manejo', pregunta: '¿Cuenta la empresa con una política que regule el acceso de los empleados a los expedientes de personal?', tieneNoAplica: false },
+            { id: 'exp_005', seccion: 'manejo', pregunta: '¿Los expedientes de empleados inactivos se retienen de manera segura y separada por el tiempo requerido?', tieneNoAplica: false },
+            // Expediente general (17)
+            { id: 'exp_006', seccion: 'general', pregunta: '¿Incluye la Solicitud de Empleo?', tieneNoAplica: false },
+            { id: 'exp_007', seccion: 'general', pregunta: '¿Incluye la Oferta de Empleo firmada?', tieneNoAplica: false },
+            { id: 'exp_008', seccion: 'general', pregunta: '¿Incluye el consentimiento para realizar prueba de dopaje?', tieneNoAplica: true },
+            { id: 'exp_009', seccion: 'general', pregunta: '¿Incluye el consentimiento para realizar verificación de antecedentes (background check)?', tieneNoAplica: true },
+            { id: 'exp_010', seccion: 'general', pregunta: '¿Incluye el Contrato de Empleo firmado?', tieneNoAplica: false },
+            { id: 'exp_011', seccion: 'general', pregunta: '¿Incluye el acuse de recibo firmado del Manual del Empleado?', tieneNoAplica: false },
+            { id: 'exp_012', seccion: 'general', pregunta: '¿Incluye la descripción del puesto?', tieneNoAplica: false },
+            { id: 'exp_013', seccion: 'general', pregunta: '¿Contiene la información de contacto actualizada del empleado?', tieneNoAplica: false },
+            { id: 'exp_014', seccion: 'general', pregunta: '¿Contiene el acuerdo de reducción del periodo de tomar alimentos?', tieneNoAplica: true },
+            { id: 'exp_015', seccion: 'general', pregunta: '¿Contiene el resume del empleado?', tieneNoAplica: false },
+            { id: 'exp_016', seccion: 'general', pregunta: '¿Incluye el Certificado de Antecedentes Penales cuando es requerido?', tieneNoAplica: false },
+            { id: 'exp_017', seccion: 'general', pregunta: '¿Contiene las certificaciones y/o licencias profesionales requeridas?', tieneNoAplica: true },
+            { id: 'exp_018', seccion: 'general', pregunta: '¿Contiene las evaluaciones de desempeño, acciones disciplinarias y reconocimientos?', tieneNoAplica: false },
+            { id: 'exp_019', seccion: 'general', pregunta: '¿Incluye documentación de cambios en compensación, puesto, promociones o departamento?', tieneNoAplica: true },
+            { id: 'exp_020', seccion: 'general', pregunta: '¿Contiene la carta de renuncia y/o documentación de despido?', tieneNoAplica: true },
+            // Expediente confidencial (6)
+            { id: 'exp_021', seccion: 'confidencial', pregunta: '¿Se mantienen los Formularios I-9 debidamente completados, libres de errores y en carpeta separada?', tieneNoAplica: false },
+            { id: 'exp_022', seccion: 'confidencial', pregunta: '¿Incluye el formulario 499 (Certificado de Exención para la Retención)?', tieneNoAplica: false },
+            { id: 'exp_023', seccion: 'confidencial', pregunta: '¿Incluye la información del registro del empleado según la Ley 379?', tieneNoAplica: false },
+            { id: 'exp_024', seccion: 'confidencial', pregunta: '¿Incluye la hoja de contactos en casos de emergencia?', tieneNoAplica: false },
+            { id: 'exp_025', seccion: 'confidencial', pregunta: '¿Incluye la autorización de depósito directo?', tieneNoAplica: true },
+            // Expediente médico (4)
+            { id: 'exp_026', seccion: 'medico', pregunta: '¿Contiene certificaciones médicas, excusas o documentos emitidos por profesionales de la salud?', tieneNoAplica: false },
+            { id: 'exp_027', seccion: 'medico', pregunta: '¿Incluye formularios y comunicaciones relacionadas con licencias médicas (SINOT, CFSE, FMLA, etc.)?', tieneNoAplica: false },
+            { id: 'exp_028', seccion: 'medico', pregunta: '¿Incluye solicitudes y documentación relacionada con acomodos razonables o condiciones protegidas bajo ADA?', tieneNoAplica: false },
+            { id: 'exp_029', seccion: 'medico', pregunta: '¿Se mantiene cualquier otra información médica sensible del empleado o de sus familiares?', tieneNoAplica: false }
+        ]
+    },
+
+    // ── MÓDULO 3: Adiestramientos Regulatorios ───────────────────────
+    adiestramientos: {
+        id: 'adiestramientos',
+        nombre: 'Adiestramientos Regulatorios',
+        icon: '🎓',
+        preguntas: [
+            { id: 'adi_001', pregunta: '¿Se ofrece adiestramiento sobre prevención de hostigamiento sexual?', tieneNoAplica: false },
+            { id: 'adi_002', pregunta: '¿Se ofrece adiestramiento sobre prevención de acoso laboral?', tieneNoAplica: false },
+            { id: 'adi_003', pregunta: '¿Se ofrece adiestramiento sobre la Ley 54 – Violencia Doméstica?', tieneNoAplica: false },
+            { id: 'adi_004', pregunta: '¿Se imparte adiestramiento relacionado con la Ley Antidiscrimen?', tieneNoAplica: false },
+            { id: 'adi_005', pregunta: '¿Se cumplen los requisitos de adiestramiento y comunicación exigidos por OSHA para su industria?', tieneNoAplica: false }
+        ]
+    },
+
+    // ── MÓDULO 4: Afiches Regulatorios ───────────────────────────────
+    afiches: {
+        id: 'afiches',
+        nombre: 'Afiches Regulatorios',
+        icon: '📋',
+        secciones: [
+            { id: 'estatales', nombre: 'Afiches Estatales' },
+            { id: 'federales', nombre: 'Afiches Federales' }
+        ],
+        preguntas: [
+            // Estatales (9)
+            { id: 'afi_001', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal sobre Antidiscrimen?', tieneNoAplica: false },
+            { id: 'afi_002', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal del Negociado de Normas de Trabajo?', tieneNoAplica: false },
+            { id: 'afi_003', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal sobre SINOT?', tieneNoAplica: false },
+            { id: 'afi_004', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal sobre PR OSHA?', tieneNoAplica: false },
+            { id: 'afi_005', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal sobre Seguro Social?', tieneNoAplica: false },
+            { id: 'afi_006', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal sobre Carta de Derechos de la Mujer Trabajadora?', tieneNoAplica: false },
+            { id: 'afi_007', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal sobre el Seguro de Desempleo?', tieneNoAplica: false },
+            { id: 'afi_008', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal "¿Dónde está tu bebé?"?', tieneNoAplica: false },
+            { id: 'afi_009', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal "Lenguaje de Señas ante Emergencias en el Trabajo"?', tieneNoAplica: false },
+            // Federales (7)
+            { id: 'afi_010', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal sobre la Ley de Ausencia Familiar y Médica (FMLA)?', tieneNoAplica: true },
+            { id: 'afi_011', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal sobre Seguridad y Salud en el Trabajo (OSHA)?', tieneNoAplica: false },
+            { id: 'afi_012', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal "Conozca sus Derechos: Discriminación en el Empleo es Ilegal"?', tieneNoAplica: false },
+            { id: 'afi_013', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal sobre Salario Mínimo Federal bajo la Ley de Normas Justas de Trabajo?', tieneNoAplica: false },
+            { id: 'afi_014', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal sobre la protección al empleado contra la prueba del polígrafo?', tieneNoAplica: false },
+            { id: 'afi_015', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal sobre sus Derechos bajo USERRA?', tieneNoAplica: false },
+            { id: 'afi_016', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal sobre la Igualdad de las Trabajadoras Embarazadas (PWFA)?', tieneNoAplica: true }
+        ]
+    },
+
+    // ── MÓDULO 5: Pólizas Patronales ─────────────────────────────────
+    polizas: {
+        id: 'polizas',
+        nombre: 'Pólizas Patronales',
+        icon: '🛡️',
+        preguntas: [
+            { id: 'pol_001', pregunta: '¿Tiene una póliza vigente de la Corporación del Fondo del Seguro del Estado (CFSE)?', tieneNoAplica: false },
+            { id: 'pol_002', pregunta: '¿Tiene una póliza vigente del SINOT?', tieneNoAplica: false },
+            { id: 'pol_003', pregunta: '¿Tiene una póliza vigente del Seguro Choferil?', tieneNoAplica: true }
         ]
     }
+
 };
 
 // ============================================================
