@@ -947,6 +947,9 @@
             }
         }
     
+        .config-banner{background:#fff3cd;border:1px solid #ffc107;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#856404;display:none}
+        .config-banner input{width:100%;margin-top:8px;padding:8px 12px;border:1px solid #ffc107;border-radius:6px;font-size:13px}
+        .config-banner button{margin-top:8px;padding:6px 16px;background:#856404;color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px}
         .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center}
         .modal-overlay.show{display:flex}
         .modal-box{background:white;border-radius:12px;padding:28px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
@@ -1047,11 +1050,10 @@
           </div>
         </div>
         <button id="btnBuscarEmpresa" class="btn-guardar-progreso" onclick="identificarEmpresa()" style="background:var(--primary);margin-top:0;opacity:0.45;cursor:not-allowed;" disabled>Buscar mi empresa</button>
-        <!-- Confirmación inline de identificación -->
         <div id="confirmacionIdentificacion" style="display:none;margin-top:12px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;"></div>
-        <!-- historial interno — no visible al cliente Essential -->
-        <div id="historialPanel" style="display:none;">
-          <span id="historialEmpresaNombre"></span>
+        <div id="historialPanel" style="display:none;"><span id="historialEmpresaNombre"></span><div id="historialLista"></div></div>
+        <div class="historial-panel" id="historialPanel">
+          <strong>Historial — <span id="historialEmpresaNombre"></span></strong>
           <div id="historialLista"></div>
         </div>
       </div>
@@ -1106,7 +1108,6 @@
         <div class="progress-bar"><div class="progress-fill" id="moduleProgressFill" style="width:0%"></div></div>
         <span id="modulePercentage">0%</span>
       </div>
-      <!-- Guardar en TOP del módulo -->
       <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--gray-200);display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
         <button class="btn-guardar-progreso" onclick="guardarProgresoDesdeModulo('top')" id="btnGuardarModuloTop" style="margin-top:0;font-size:13px;padding:8px 16px;">💾 Guardar progreso hasta aquí</button>
         <span id="confirmGuardadoModuloTop" style="display:none;font-size:12px;font-weight:600;padding:5px 10px;border-radius:6px;"></span>
@@ -1120,7 +1121,6 @@
     </div>
     <div class="module-footer">
       <button class="btn btn-secondary" onclick="volverAlInicio()">← Regresar</button>
-      <!-- Guardar en BOTTOM del módulo -->
       <button class="btn-guardar-progreso" onclick="guardarProgresoDesdeModulo('bottom')" id="btnGuardarModuloBottom" style="margin-top:0;font-size:13px;padding:8px 16px;">💾 Guardar progreso hasta aquí</button>
       <span id="confirmGuardadoModuloBottom" style="display:none;font-size:12px;font-weight:600;padding:5px 10px;border-radius:6px;"></span>
       <button class="btn btn-primary" id="btnValidar" onclick="validarModulo()" disabled>Validar Módulo ✓</button>
@@ -1715,12 +1715,125 @@ const MODULOS = {
                         tieneNoAplica: false
                     }
                 ]
-            }
+            },
+
+        adiestramientos: {
+            id: 'adiestramientos',
+            nombre: 'Adiestramientos Regulatorios',
+            descripcion: 'Cumplimiento con los adiestramientos sobre hostigamiento, acoso, violencia doméstica, antidiscrimen y OSHA',
+            icon: '🎓',
+            linkValidar: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2159657024/posts/2198301882',
+            preguntas: [
+                {
+                    id: 'adi_001',
+                    pregunta: '¿Se ofrece adiestramiento sobre prevención de hostigamiento sexual?',
+                    checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','Se ofrece adiestramiento sobre hostigamiento sexual al menos una vez al año','El contenido incluye definiciones, conductas prohibidas, responsabilidades y proceso de querellas','Existe un protocolo escrito para la prevención y manejo de casos','El protocolo ha sido comunicado a todos los empleados','Los empleados conocen los canales internos para reportar una querella','Existe un procedimiento para atender y documentar querellas','Se implementan medidas provisionales cuando es necesario','Se realizan investigaciones imparciales, objetivas y confidenciales','Las investigaciones se completan dentro de los términos establecidos','Se documentan todas las etapas del proceso investigativo','Se implementan medidas correctivas cuando corresponde','La documentación se conserva en un expediente confidencial separado','Se garantiza confidencialidad y protección contra represalias'],
+                    accionNo: 'Implementar adiestramiento anual sobre hostigamiento sexual, establecer protocolo escrito, comunicarlo a todos los empleados y documentar el proceso de investigación y querellas.',
+                    linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2159657024/posts/2195741574',
+                    tieneNoAplica: false
+                },
+                {
+                    id: 'adi_002',
+                    pregunta: '¿Se ofrece adiestramiento sobre prevención de acoso laboral?',
+                    checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','Se ofrece adiestramiento sobre acoso laboral al menos una vez al año','El contenido incluye definiciones, ejemplos de conducta y proceso de reporte','Existe un protocolo escrito para el manejo de casos de acoso laboral','El protocolo ha sido comunicado a todos los empleados','Los empleados conocen cómo reportar una situación de acoso laboral','Existe un procedimiento para atender y documentar querellas','Se implementan medidas provisionales cuando la situación lo requiere','Se realizan investigaciones imparciales, confidenciales y dentro de los términos establecidos','Se emiten determinaciones basadas en evidencia documentada','Se implementan medidas correctivas o remediativas cuando corresponde','Toda la documentación se conserva en un expediente confidencial separado','Se garantiza confidencialidad y protección contra represalias'],
+                    accionNo: 'Implementar adiestramiento anual sobre acoso laboral, establecer protocolo escrito, documentar investigaciones y garantizar confidencialidad y protección contra represalias.',
+                    linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2159657024/posts/2195741574',
+                    tieneNoAplica: false
+                },
+                {
+                    id: 'adi_003',
+                    pregunta: '¿Se ofrece adiestramiento sobre la Ley 54 – Violencia Doméstica?',
+                    checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','Se ofrece adiestramiento sobre Ley 54 al menos una vez al año','El contenido incluye definiciones, ejemplos de conducta y proceso de reporte','Existe un protocolo escrito para el manejo de casos','El protocolo ha sido comunicado a todos los empleados','Los empleados conocen cómo reportar situaciones relacionadas','Existe un procedimiento para atender y documentar casos','Se implementan medidas provisionales cuando la situación lo requiere','Se realizan investigaciones imparciales y confidenciales','Se emiten determinaciones basadas en evidencia documentada','Se implementan medidas correctivas cuando corresponde','Toda la documentación se conserva en expediente confidencial separado','Se garantiza confidencialidad y protección contra represalias'],
+                    accionNo: 'Implementar adiestramiento sobre Ley 54, establecer protocolo de manejo de casos, documentar investigaciones y garantizar confidencialidad y protección contra represalias.',
+                    linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2159657024/posts/2198201764',
+                    tieneNoAplica: false
+                },
+                {
+                    id: 'adi_004',
+                    pregunta: '¿Se imparte adiestramiento relacionado con la Ley Antidiscrimen?',
+                    checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','Se ofrece adiestramiento sobre prevención del discrimen al menos una vez al año','El adiestramiento incluye categorías protegidas, ejemplos de discrimen y proceso de reporte','Existe una política escrita de igualdad de oportunidades en el empleo','La política ha sido comunicada a todos los empleados','Se promueve un ambiente de trabajo libre de discrimen','Los empleados conocen cómo reportar una situación de discrimen','Existe un procedimiento para atender y documentar querellas','Las querellas se atienden de manera inmediata, objetiva y confidencial','Se realizan investigaciones cuando corresponde','Se implementan medidas correctivas cuando se identifican situaciones de discrimen','Se documentan adecuadamente las acciones tomadas','Se garantiza confidencialidad y protección contra represalias'],
+                    accionNo: 'Implementar adiestramiento anual sobre Ley Antidiscrimen, establecer política escrita, documentar querellas e investigaciones y garantizar protección contra represalias.',
+                    linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2159657024/posts/2198204290',
+                    tieneNoAplica: false
+                },
+                {
+                    id: 'adi_005',
+                    pregunta: '¿Se cumplen los requisitos de adiestramiento y comunicación exigidos por OSHA para su industria?',
+                    checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','Se han identificado los riesgos presentes en la operación','Se revisaron los requisitos de adiestramiento OSHA aplicables a la industria','Existe un análisis de riesgos por tarea y por puesto de trabajo','Se ofrecen los adiestramientos de seguridad requeridos para cada función','Los empleados reciben orientación sobre los riesgos en el lugar de trabajo','Se comunican procedimientos de seguridad y planes de emergencia','Los empleados saben cómo protegerse y responder ante emergencias','Existe un Programa de Comunicación de Riesgos cuando aplica','Se mantiene evidencia de los adiestramientos ofrecidos','Se conserva accesible la documentación de seguridad requerida','Los programas se revisan y actualizan periódicamente'],
+                    accionNo: 'Identificar riesgos operacionales, revisar requisitos OSHA aplicables, ofrecer adiestramientos requeridos por función y mantener evidencia documentada de todos los adiestramientos.',
+                    linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2159657024/posts/2198291681',
+                    tieneNoAplica: false
+                }
+            ]
+        },
+
+        afiches: {
+            id: 'afiches',
+            nombre: 'Afiches Regulatorios',
+            descripcion: 'Verificación de la publicación y visibilidad de los afiches estatales y federales requeridos por ley en el lugar de trabajo',
+            icon: '📋',
+            linkValidar: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160416502/posts/2198831156',
+            secciones: [
+                { id: 'estatales', nombre: 'Afiches Estatales', preguntasCount: 9 },
+                { id: 'federales', nombre: 'Afiches Federales', preguntasCount: 7 }
+            ],
+            preguntas: [
+                { id: 'afi_001', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal sobre Antidiscrimen?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche Estatal sobre Antidiscrimen en su versión más reciente.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160404568/posts/2198823180', tieneNoAplica: false },
+                { id: 'afi_002', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal del Negociado de Normas de Trabajo?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche Estatal del Negociado de Normas de Trabajo en su versión más reciente.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160404568/posts/2198823331', tieneNoAplica: false },
+                { id: 'afi_003', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal sobre SINOT?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche Estatal sobre SINOT en su versión más reciente.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160404568/posts/2198823451', tieneNoAplica: false },
+                { id: 'afi_004', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal sobre PR OSHA?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche Estatal sobre PR OSHA en su versión más reciente.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160404568/posts/2198823530', tieneNoAplica: false },
+                { id: 'afi_005', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal sobre Seguro Social?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche Estatal sobre Seguro Social en su versión más reciente.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160404568/posts/2198823600', tieneNoAplica: false },
+                { id: 'afi_006', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal sobre Carta de Derechos de la Mujer Trabajadora?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche Estatal sobre Carta de Derechos de la Mujer Trabajadora.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160404568/posts/2198823600', tieneNoAplica: false },
+                { id: 'afi_007', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal sobre el Seguro de Desempleo?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso','Cuenta con el número de póliza y cuenta patronal actualizados'], accionNo: 'Obtener, publicar y mantener visible el afiche Estatal sobre Seguro de Desempleo con número de póliza y cuenta patronal actualizados.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160404568/posts/2198823600', tieneNoAplica: false },
+                { id: 'afi_008', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal "¿Dónde está tu bebé?"', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche Estatal "¿Dónde está tu bebé?" en su versión más reciente.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160404568/posts/2198823600', tieneNoAplica: false },
+                { id: 'afi_009', seccion: 'estatales', pregunta: '¿Tiene publicado y visible el afiche Estatal "Lenguaje de Señas ante Emergencias en el Trabajo"?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche de Lenguaje de Señas ante Emergencias en su versión más reciente.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160404568/posts/2198823600', tieneNoAplica: false },
+                { id: 'afi_010', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal sobre la Ley de Ausencia Familiar y Médica (FMLA)?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche federal sobre FMLA en su versión más reciente.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160416502/posts/2198857000', tieneNoAplica: true },
+                { id: 'afi_011', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal sobre Seguridad y Salud en el Trabajo (OSHA)?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche federal de OSHA sobre Seguridad y Salud en su versión más reciente.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160416502/posts/2198857000', tieneNoAplica: false },
+                { id: 'afi_012', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal "Conozca sus Derechos: Discriminación en el Empleo es Ilegal"?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche federal "Conozca sus Derechos: Discriminación en el Empleo es Ilegal".', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160416502/posts/2198858000', tieneNoAplica: false },
+                { id: 'afi_013', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal "Salario Mínimo Federal Bajo la Ley Normas Justas de Trabajo"?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche federal sobre Salario Mínimo Federal en su versión más reciente.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160416502/posts/2198860000', tieneNoAplica: false },
+                { id: 'afi_014', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal sobre la protección al empleado contra la prueba del polígrafo?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche federal sobre protección contra la prueba del polígrafo.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160416502/posts/2198860000', tieneNoAplica: false },
+                { id: 'afi_015', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal "Sus Derechos bajo USERRA"?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche federal sobre derechos bajo USERRA en su versión más reciente.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160416502/posts/2198860000', tieneNoAplica: false },
+                { id: 'afi_016', seccion: 'federales', pregunta: '¿Tiene publicado y visible el afiche federal sobre la Igualdad de las Trabajadoras Embarazadas (PWFA)?', checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','El afiche está publicado en su versión más reciente','Está disponible en el idioma predominante del equipo','Es accesible de forma física y/o digital según el caso'], accionNo: 'Obtener, publicar y mantener visible el afiche federal sobre Ley PWFA (Trabajadoras Embarazadas) en su versión más reciente.', linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160416502/posts/2198861000', tieneNoAplica: true }
+            ]
+        },
+
+        polizas: {
+            id: 'polizas',
+            nombre: 'Pólizas Patronales',
+            descripcion: 'Verificación de las pólizas patronales obligatorias: CFSE, SINOT y Seguro Choferil',
+            icon: '🛡️',
+            linkValidar: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160423351/posts/2198894000',
+            preguntas: [
+                {
+                    id: 'pol_001',
+                    pregunta: '¿Tiene una póliza vigente de la Corporación del Fondo del Seguro del Estado (CFSE)?',
+                    checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','La empresa cuenta con una póliza vigente de la CFSE','El Certificado de Vigencia se encuentra actualizado y disponible','La póliza ha sido renovada dentro de los términos establecidos','La información registrada ante la CFSE está actualizada','La clasificación patronal corresponde a las actividades que realmente realiza la empresa','La nómina reportada refleja la realidad operacional','Se han reportado oportunamente los cambios en la operación','La prima está al día o existe un plan de pago vigente','Se conserva copia de la póliza, Certificado de Vigencia y comprobantes de pago','La documentación está organizada y disponible para auditoría','La empresa conoce el procedimiento para reportar accidentes de trabajo','Los supervisores saben cómo actuar ante un accidente ocupacional','Los accidentes se reportan oportunamente a la CFSE','Se conserva evidencia de los casos reportados','Existe proceso para revisar anualmente la información antes de renovación'],
+                    accionNo: 'Obtener o renovar la póliza vigente de la CFSE, actualizar información patronal, verificar clasificación y nómina reportada, y establecer proceso de reporte de accidentes.',
+                    linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160423351/posts/2198891041',
+                    tieneNoAplica: false
+                },
+                {
+                    id: 'pol_002',
+                    pregunta: '¿Tiene una póliza vigente del SINOT?',
+                    checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','La empresa cuenta con cobertura vigente de SINOT','Se verificó si está cubierta por Plan Estatal o Plan Privado autorizado','La cobertura se encuentra vigente y ha sido renovada oportunamente','La información registrada ante el Departamento del Trabajo está actualizada','La cantidad de empleados reportada corresponde a la realidad','Se mantiene evidencia de los pagos realizados','Se conserva copia de la póliza o evidencia de cobertura vigente','La documentación está organizada y disponible para auditoría','Los supervisores conocen el procedimiento para orientar a empleados','La empresa informa oportunamente sobre el proceso de solicitud de beneficios','Cuando hay incapacidad no ocupacional, se sigue el procedimiento correspondiente'],
+                    accionNo: 'Obtener o renovar la cobertura vigente de SINOT, actualizar información patronal, documentar pagos y establecer procedimiento interno para orientar a empleados.',
+                    linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160423351/posts/2198893382',
+                    tieneNoAplica: false
+                },
+                {
+                    id: 'pol_003',
+                    pregunta: '¿Tiene una póliza vigente del Seguro Choferil?',
+                    checklistSi: ['Para estar en cumplimiento con este punto, validaste que:','Se evaluó si la empresa tiene empleados que conducen vehículos de forma usual y regular','Se verificó que las descripciones de puesto coinciden con las labores reales','Se determinó si la empresa está obligada conforme a la Ley Núm. 428 de 1950','La empresa cuenta con póliza vigente del Seguro Choferil cuando aplica','El certificado de vigencia está actualizado y disponible','Se conserva evidencia del pago o renovación más reciente','Se han notificado cambios que puedan afectar la cobertura','Se han identificado correctamente los empleados que cumplen la definición legal de chofer'],
+                    accionNo: 'Evaluar si algún empleado ejerce funciones de chofer de forma habitual conforme a Ley 428, obtener póliza cuando corresponda y mantener documentación actualizada.',
+                    linkCallao: 'https://www.upturnco.com/products/auditoria-en-recursos-humanos/categories/2160423351/posts/2198894000',
+                    tieneNoAplica: true
+                }
+            ]
+        }
         };
 
 
 const EMPRESA_KEY = 'upturn_auditoria_empresa';
-
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9N3ho1XtC_AfxgjAhiQOMS1uhCQIqi3zljJQzYtXjaQblS33mnmGng2Yom2F2TWaK/exec';
 
 let respuestas = {};
@@ -1742,12 +1855,8 @@ function validarCamposIdentificacion() {
     const nombre = document.getElementById('empresaInput').value.trim();
     const correo = document.getElementById('correoInput').value.trim();
     const btn = document.getElementById('btnBuscarEmpresa');
-    const nombreInput = document.getElementById('empresaInput');
-    const correoInput = document.getElementById('correoInput');
     const nombreValido = nombre.length > 0;
     const correoValido = correo.length > 0;
-    nombreInput.style.borderColor = (nombreValido || nombre.length === 0) ? '' : '#dc2626';
-    correoInput.style.borderColor = (correoValido || correo.length === 0) ? '' : '#dc2626';
     btn.disabled = !(nombreValido && correoValido);
     btn.style.opacity = (nombreValido && correoValido) ? '1' : '0.45';
     btn.style.cursor = (nombreValido && correoValido) ? 'pointer' : 'not-allowed';
@@ -1757,19 +1866,14 @@ function identificarEmpresa() {
     const nombre = document.getElementById('empresaInput').value.trim();
     const correo = document.getElementById('correoInput').value.trim();
     if (!nombre || !correo) { validarCamposIdentificacion(); return; }
-
-    // Cargar historial desde localStorage (mismo navegador/dispositivo)
     const cacheKey = 'upturn_auditoria_respuestas_' + nombre.toLowerCase().replace(/\s+/g, '_');
     const cached = localStorage.getItem(cacheKey);
     let registrosCached = [];
-    if (cached) {
-        try { registrosCached = JSON.parse(cached); } catch(e) { registrosCached = []; }
-    }
+    if (cached) { try { registrosCached = JSON.parse(cached); } catch(e) { registrosCached = []; } }
     activarEmpresa(nombre, correo, registrosCached);
 }
 
 function confirmarEmpresaExistente() {
-    // Modal ya no se usa — se mantiene por compatibilidad
     document.getElementById('modalConfirmEmpresa').classList.remove('show');
 }
 
@@ -1782,29 +1886,14 @@ function activarEmpresa(nombre, correo, registros) {
     empresaActiva = nombre; correoActivo = correo;
     localStorage.setItem(EMPRESA_KEY, nombre);
     historialRegistros = registros;
-    // Cargar último snapshot silenciosamente — sin mostrar historial al cliente
-    if (registros.length > 0) {
-        cargarRespuestasDesdeRegistro(registros[registros.length - 1]);
-    }
+    if (registros.length > 0) { cargarRespuestasDesdeRegistro(registros[registros.length - 1]); }
     document.getElementById('btnGuardarProgreso').disabled = false;
     document.getElementById('btnGuardarProgresoTabla').disabled = false;
-    updateHeader();
-    renderBadges();
-    const msg = registros.length > 0
-        ? '✓ Progreso anterior cargado — puedes continuar'
-        : '✓ Empresa registrada — puedes comenzar';
+    updateHeader(); renderBadges();
+    const msg = registros.length > 0 ? '✓ Progreso anterior cargado — puedes continuar' : '✓ Empresa registrada — puedes comenzar';
     mostrarStatus('saved', msg);
     const confId = document.getElementById('confirmacionIdentificacion');
-    if (confId) {
-        confId.textContent = msg;
-        confId.style.display = 'block';
-        confId.style.background = '#d4edda';
-        confId.style.color = '#155724';
-        confId.style.border = '1px solid #c3e6cb';
-    }
-    // Ocultar panel de historial — no necesario para cliente Essential
-    const panel = document.getElementById('historialPanel');
-    if (panel) panel.classList.remove('show');
+    if (confId) { confId.textContent = msg; confId.style.display = 'block'; confId.style.background = '#d4edda'; confId.style.color = '#155724'; confId.style.border = '1px solid #c3e6cb'; }
 }
 
 function cargarRespuestasDesdeRegistro(reg) {
@@ -1820,82 +1909,35 @@ function cargarRespuestasDesdeRegistro(reg) {
     renderBadges(); updateTablaMaestra();
 }
 
-function mostrarHistorialLocal(registros) {
-    const panel = document.getElementById('historialPanel');
-    const lista  = document.getElementById('historialLista');
-    document.getElementById('historialEmpresaNombre').textContent = empresaActiva;
-    const nota = '<p style="font-size:11px;color:var(--gray-600);margin-bottom:10px;">'
-        + 'Cada fila es una sesión guardada. Usa "Restaurar" para volver a las respuestas de esa fecha.</p>';
-    lista.innerHTML = nota + registros.map((r, i) => {
-        const fecha = r.timestamp
-            ? new Date(r.timestamp).toLocaleDateString('es-PR', {year:'numeric',month:'short',day:'numeric', hour:'2-digit', minute:'2-digit'})
-            : 'Sesión ' + (i + 1);
-        const activo = i === registros.length - 1;
-        // Contar respondidas en ese snapshot
-        let respondidas = 0;
-        Object.keys(MODULOS).forEach(mid => {
-            MODULOS[mid].preguntas.forEach(q => { if (r[q.id]) respondidas++; });
-        });
-        return '<div class="historial-row">'
-            + '<span class="periodo" style="min-width:80px;">' + (r.periodo || 'Q?') + '</span>'
-            + '<span class="fecha" style="flex:1;">' + fecha + ' · ' + respondidas + ' respuestas</span>'
-            + (activo
-                ? '<span style="font-size:12px;padding:4px 12px;background:var(--gray-200);color:var(--gray-700);border-radius:6px;font-weight:600;">Activo</span>'
-                : '<button onclick="cargarRegistroHistorial(' + i + ')" style="font-size:12px;padding:4px 12px;background:var(--bright);color:white;border:none;border-radius:6px;cursor:pointer;font-weight:600;">Restaurar</button>')
-            + '</div>';
-    }).join('');
-    panel.classList.add('show');
-}
-
 function cargarRegistroHistorial(idx) {
     cargarRespuestasDesdeRegistro(historialRegistros[idx]);
-    mostrarHistorialLocal(historialRegistros);
+    mostrarHistorial(historialRegistros);
 }
 
 async function guardarProgreso() {
     if (!empresaActiva) { alert('Primero identifica tu empresa.'); return; }
-
-    // Comparar con último snapshot guardado — evitar duplicados
+    // Verificar cambios vs último snapshot
     const cacheKey = 'upturn_auditoria_respuestas_' + empresaActiva.toLowerCase().replace(/\s+/g, '_');
     let registrosExistentes = [];
     try { registrosExistentes = JSON.parse(localStorage.getItem(cacheKey)) || []; } catch(e) {}
     if (registrosExistentes.length > 0) {
         const ultimo = registrosExistentes[registrosExistentes.length - 1];
         const respActuales = {};
-        Object.keys(MODULOS).forEach(mid => {
-            MODULOS[mid].preguntas.forEach(q => {
-                respActuales[q.id] = (respuestas[mid] && respuestas[mid][q.id]) ? respuestas[mid][q.id] : '';
-            });
-        });
+        Object.keys(MODULOS).forEach(mid => { MODULOS[mid].preguntas.forEach(q => { respActuales[q.id] = (respuestas[mid] && respuestas[mid][q.id]) ? respuestas[mid][q.id] : ''; }); });
         const sinCambios = Object.keys(respActuales).every(k => (ultimo[k] || '') === respActuales[k]);
-        if (sinCambios) {
-            mostrarStatus('saved', 'Sin cambios nuevos');
-            mostrarMensajeSinCambios();
-            return;
-        }
+        if (sinCambios) { mostrarStatus('saved', 'Sin cambios nuevos'); mostrarMensajeSinCambios(); return; }
     }
-
     mostrarStatus('saving', 'Guardando...');
     const payload = { empresa: empresaActiva, tipo_cliente: 'Essential', consultora: '' };
     Object.keys(MODULOS).forEach(mid => {
-        MODULOS[mid].preguntas.forEach(q => {
-            payload[q.id] = (respuestas[mid] && respuestas[mid][q.id]) ? respuestas[mid][q.id] : '';
-        });
+        MODULOS[mid].preguntas.forEach(q => { payload[q.id] = (respuestas[mid] && respuestas[mid][q.id]) ? respuestas[mid][q.id] : ''; });
     });
-    payload.modulos_completados = Object.keys(MODULOS).filter(id => {
-        const p = getModuloProgress(id); return p.respondidas === p.total && p.total > 0;
-    }).join(', ');
+    payload.modulos_completados = Object.keys(MODULOS).filter(id => { const p = getModuloProgress(id); return p.respondidas === p.total && p.total > 0; }).join(', ');
     payload.notas = '';
     try {
-        // Usar no-cors con FormData — mismo patrón que el tracker de consultoras
         const form = new FormData();
         form.append('payload', JSON.stringify(payload));
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: form
-        });
-        // no-cors no devuelve respuesta legible — asumimos éxito si no hubo excepción
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: form });
         guardarSnapshotLocal(payload);
         mostrarStatus('saved', 'Guardado ✓');
     } catch(e) { mostrarStatus('error', 'Sin conexión'); }
@@ -1907,72 +1949,26 @@ function guardarSnapshotLocal(payload) {
     try { registros = JSON.parse(localStorage.getItem(cacheKey)) || []; } catch(e) { registros = []; }
     const snapshot = Object.assign({}, payload, { timestamp: new Date().toISOString() });
     registros.push(snapshot);
-    // Guardar máximo 8 snapshots por empresa
     if (registros.length > 8) registros = registros.slice(-8);
     localStorage.setItem(cacheKey, JSON.stringify(registros));
     historialRegistros = registros;
-    // No mostrar historial al cliente — solo confirmar guardado
     mostrarConfirmacionGuardado();
 }
 
 function mostrarConfirmacionGuardado() {
-    // En pantalla inicio
     const confInicio = document.getElementById('confirmacionGuardadoInicio');
-    if (confInicio) {
-        confInicio.textContent = '✓ Progreso guardado correctamente';
-        confInicio.style.display = 'block';
-        confInicio.style.background = '#d4edda';
-        confInicio.style.color = '#155724';
-        confInicio.style.border = '1px solid #c3e6cb';
-        setTimeout(() => { confInicio.style.display = 'none'; }, 5000);
-    }
-    // En módulo top
-    const confTop = document.getElementById('confirmGuardadoModuloTop');
-    if (confTop) {
-        confTop.textContent = '✓ Guardado';
-        confTop.style.display = 'inline-block';
-        confTop.style.background = '#d4edda';
-        confTop.style.color = '#155724';
-        setTimeout(() => { confTop.style.display = 'none'; }, 5000);
-    }
-    // En módulo bottom
-    const confBottom = document.getElementById('confirmGuardadoModuloBottom');
-    if (confBottom) {
-        confBottom.textContent = '✓ Guardado';
-        confBottom.style.display = 'inline-block';
-        confBottom.style.background = '#d4edda';
-        confBottom.style.color = '#155724';
-        setTimeout(() => { confBottom.style.display = 'none'; }, 5000);
-    }
+    if (confInicio) { confInicio.textContent = '✓ Progreso guardado correctamente'; confInicio.style.display = 'block'; confInicio.style.background = '#d4edda'; confInicio.style.color = '#155724'; confInicio.style.border = '1px solid #c3e6cb'; setTimeout(() => { confInicio.style.display = 'none'; }, 5000); }
+    ['confirmGuardadoModuloTop','confirmGuardadoModuloBottom'].forEach(id => { const el = document.getElementById(id); if (el) { el.textContent = '✓ Guardado'; el.style.display = 'inline-block'; el.style.background = '#d4edda'; el.style.color = '#155724'; setTimeout(() => { el.style.display = 'none'; }, 5000); } });
 }
 
 function mostrarMensajeSinCambios() {
     const confInicio = document.getElementById('confirmacionGuardadoInicio');
-    if (confInicio) {
-        confInicio.textContent = 'ℹ️ No hay cambios nuevos desde el último guardado';
-        confInicio.style.display = 'block';
-        confInicio.style.background = '#fff3cd';
-        confInicio.style.color = '#856404';
-        confInicio.style.border = '1px solid #ffc107';
-        setTimeout(() => { confInicio.style.display = 'none'; }, 4000);
-    }
-    ['confirmGuardadoModuloTop','confirmGuardadoModuloBottom'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.textContent = 'Sin cambios nuevos';
-            el.style.display = 'inline-block';
-            el.style.background = '#fff3cd';
-            el.style.color = '#856404';
-            setTimeout(() => { el.style.display = 'none'; }, 4000);
-        }
-    });
+    if (confInicio) { confInicio.textContent = 'ℹ️ No hay cambios nuevos desde el último guardado'; confInicio.style.display = 'block'; confInicio.style.background = '#fff3cd'; confInicio.style.color = '#856404'; confInicio.style.border = '1px solid #ffc107'; setTimeout(() => { confInicio.style.display = 'none'; }, 4000); }
+    ['confirmGuardadoModuloTop','confirmGuardadoModuloBottom'].forEach(id => { const el = document.getElementById(id); if (el) { el.textContent = 'Sin cambios nuevos'; el.style.display = 'inline-block'; el.style.background = '#fff3cd'; el.style.color = '#856404'; setTimeout(() => { el.style.display = 'none'; }, 4000); } });
 }
 
 async function guardarProgresoDesdeModulo(origen) {
-    if (!empresaActiva) {
-        alert('Primero identifica tu empresa en la pantalla de Inicio.');
-        return;
-    }
+    if (!empresaActiva) { alert('Primero identifica tu empresa en la pantalla de Inicio.'); return; }
     await guardarProgreso();
 }
 
