@@ -283,8 +283,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
         <select id="f-tier">
           <option value="">— selecciona —</option>
           <option>Essential</option><option>Empower</option>
-          <option>Complete</option><option>Legacy</option>
-          <option>N/A</option>
+          <option>Complete</option><option>Legacy</option><option>N/A</option>
         </select>
       </div>
     </div>
@@ -325,6 +324,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       <div class="activity-pill" data-activity="TGC" onclick="selectActivity(this)"><span class="pill-icon">🌐</span>TGC</div>
       <div class="activity-pill" data-activity="Onboarding / bienvenida UP" onclick="selectActivity(this)"><span class="pill-icon">🚀</span>Onboarding / bienvenida UP</div>
       <div class="activity-pill" data-activity="Creación y desarrollo de documentos" onclick="selectActivity(this)"><span class="pill-icon">📄</span>Creación y desarrollo de documentos</div>
+      <div class="activity-pill" data-activity="Trabajo administrativo" onclick="selectActivity(this)"><span class="pill-icon">🗂️</span>Trabajo administrativo</div>
     </div>
     <div class="eyebrow" style="margin-top:20px">3 · Detalle</div>
     <div class="form-row form-row-4">
@@ -499,7 +499,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
 const SCRIPT_URL_KEY = 'upturn_script_url';
 const TIER_COLORS    = { Essential: '#2E6DFF', Empower: '#FAB727', Complete: '#4ECDC4', Legacy: '#A78BFA' };
 const ACT_COLORS     = ['#2E6DFF','#FAB727','#4ECDC4','#A78BFA','#FF6B6B','#FF9F43','#4CAF82','#6895FD','#E8A0BF','#93C6E7','#B5EAD7','#C7B8EA'];
-
 // Roster de clientes (excluye UPTURN, que es trabajo interno) — mismo listado que el formulario
 const CLIENT_ROSTER = [
   {name:'Cabrera Auto',tier:'Essential'},{name:'Fulcro',tier:'Essential'},{name:'Kayaking PR',tier:'Essential'},
@@ -579,8 +578,7 @@ const CLIENT_ACTIVITIES = ['Preparación de sesión en vivo','Sesión en vivo co
 const INTERNAL_ACTIVITIES = ['Business Update','CX','Marketing','Apoyo con casos de clientes','DCP','DCP - Preparación',
   'Facturación','UP - Nómina','Learning Day','Atención de leads','One to One Consulting','One to One G',
   'Q&A / Respuestas en UPSPACE','UPSPACE','Reunión interna UP','Proyectos especiales','TGC',
-  'Onboarding / bienvenida UP','Creación y desarrollo de documentos'];
-
+  'Onboarding / bienvenida UP','Creación y desarrollo de documentos','Trabajo administrativo'];
 let allLogs = [];
 let selectedActivity = '';
 let scriptUrl = '';
