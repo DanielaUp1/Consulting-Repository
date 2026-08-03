@@ -245,6 +245,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
           <option>Michelle Camacho</option>
           <option>Janice Alicea</option>
           <option>Kalia Torres</option>
+          <option>Alejandra Pedraza</option>
+          <option>Maria Natalia Sánchez</option>
         </select>
       </div>
       <div class="field">
@@ -267,6 +269,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
             <option>ADV</option><option>Contactica</option><option>Able Sales PR</option>
             <option>Tolic</option><option>Solar Roots</option><option>ROV Engineering</option>
           </optgroup>
+          <optgroup label="Complete Network">
+            <option>Health Chiropractic</option>
+          </optgroup>
           <optgroup label="Legacy">
             <option>CMV</option><option>American Storage</option><option>Banditech</option>
             <option>Beryllium</option><option>Bless Therapy</option><option>Caribe Drones</option>
@@ -283,7 +288,8 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
         <select id="f-tier">
           <option value="">— selecciona —</option>
           <option>Essential</option><option>Empower</option>
-          <option>Complete</option><option>Legacy</option><option>N/A</option>
+          <option>Complete</option><option>Complete Network</option><option>Legacy</option>
+          <option>N/A</option>
         </select>
       </div>
     </div>
@@ -324,7 +330,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       <div class="activity-pill" data-activity="TGC" onclick="selectActivity(this)"><span class="pill-icon">🌐</span>TGC</div>
       <div class="activity-pill" data-activity="Onboarding / bienvenida UP" onclick="selectActivity(this)"><span class="pill-icon">🚀</span>Onboarding / bienvenida UP</div>
       <div class="activity-pill" data-activity="Creación y desarrollo de documentos" onclick="selectActivity(this)"><span class="pill-icon">📄</span>Creación y desarrollo de documentos</div>
-      <div class="activity-pill" data-activity="Trabajo administrativo" onclick="selectActivity(this)"><span class="pill-icon">🗂️</span>Trabajo administrativo</div>
     </div>
     <div class="eyebrow" style="margin-top:20px">3 · Detalle</div>
     <div class="form-row form-row-4">
@@ -387,11 +392,12 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       <option value="all">Todas las consultoras</option>
       <option>Natalia Reyes</option><option>Michelle Camacho</option>
       <option>Janice Alicea</option><option>Kalia Torres</option>
+      <option>Alejandra Pedraza</option><option>Maria Natalia Sánchez</option>
     </select>
     <select class="filter-select" id="dash-filter-tier" onchange="renderDashboard()">
       <option value="all">Todos los tiers</option>
       <option>Essential</option><option>Empower</option>
-      <option>Complete</option><option>Legacy</option><option>N/A</option>
+      <option>Complete</option><option>Complete Network</option><option>Legacy</option><option>N/A</option>
     </select>
     <div class="filter-date-group">
       <span>Desde</span>
@@ -469,7 +475,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
   </div>
   <!-- Actividad más costosa por tier -->
   <div class="full-card" style="margin-bottom:20px;">
-    <div class="dash-card-title">Actividad más costosa en horas · por tier de servicio <span style="color:var(--white-soft);font-weight:400;text-transform:none;letter-spacing:0">Essential · Empower · Complete</span></div>
+    <div class="dash-card-title">Actividad más costosa en horas · por tier de servicio <span style="color:var(--white-soft);font-weight:400;text-transform:none;letter-spacing:0">Essential · Empower · Complete · Complete Network</span></div>
     <div id="tier-activity-breakdown"><div class="loading-state">Sin datos suficientes · se necesitan registros en múltiples tiers</div></div>
   </div>
   <!-- ── CAPA 3: COMPARACIÓN Y COBERTURA ── -->
@@ -497,8 +503,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
 // CONFIG
 // ═══════════════════════════════════════════════════════
 const SCRIPT_URL_KEY = 'upturn_script_url';
-const TIER_COLORS    = { Essential: '#2E6DFF', Empower: '#FAB727', Complete: '#4ECDC4', Legacy: '#A78BFA' };
+const TIER_COLORS    = { Essential: '#2E6DFF', Empower: '#FAB727', Complete: '#4ECDC4', 'Complete Network': '#4CAF82', Legacy: '#A78BFA' };
 const ACT_COLORS     = ['#2E6DFF','#FAB727','#4ECDC4','#A78BFA','#FF6B6B','#FF9F43','#4CAF82','#6895FD','#E8A0BF','#93C6E7','#B5EAD7','#C7B8EA'];
+
 // Roster de clientes (excluye UPTURN, que es trabajo interno) — mismo listado que el formulario
 const CLIENT_ROSTER = [
   {name:'Cabrera Auto',tier:'Essential'},{name:'Fulcro',tier:'Essential'},{name:'Kayaking PR',tier:'Essential'},
@@ -514,7 +521,8 @@ const CLIENT_ROSTER = [
   {name:'La Patria',tier:'Legacy'},{name:'López Luna Insurance',tier:'Legacy'},{name:'Neuronita',tier:'Legacy'},
   {name:'Ojo X Ojo',tier:'Legacy'},{name:'PDF Corp',tier:'Legacy'},{name:'PR Water Management',tier:'Legacy'},
   {name:'RANA',tier:'Legacy'},{name:'RC Group',tier:'Legacy'},{name:'Sun Flowers',tier:'Legacy'},
-  {name:'Villa Verde Inn',tier:'Legacy'}
+  {name:'Villa Verde Inn',tier:'Legacy'},
+  {name:'Health Chiropractic',tier:'Complete Network'}
 ];
 // Horas contratadas por MES por cliente — tomado de "Detalle por cliente" (UPTURN_Horas_Consultoras_Julio2026).
 // null = no hay dato de contrato disponible (Cenegenics y ROV Engineering no aparecen en esa hoja).
@@ -526,14 +534,17 @@ const CLIENT_CONTRACT_HOURS = {
   'CMV':36,'American Storage':10,'Banditech':16,'Beryllium':20,'Bless Therapy':10,'Caribe Drones':5,
   'Dr. Lisandro Montalvo':10,'Fortuño':5,'IO Automation':25,'La Patria':12,'López Luna Insurance':15,
   'Neuronita':10,'Ojo X Ojo':10,'PDF Corp':50,'PR Water Management':5,'RANA':20,'RC Group':48,
-  'Sun Flowers':12,'Villa Verde Inn':10
+  'Sun Flowers':12,'Villa Verde Inn':10,
+  'Health Chiropractic':40
 };
 // Metas de rol por consultora (horas/mes), dato de Natalia — usado como referencia en la comparación directa.
 const CONSULTANT_TARGETS = {
-  'Janice Alicea':   {cliente:128, interno:32},
-  'Michelle Camacho':{cliente:128, interno:32},
-  'Natalia Reyes':   {cliente:100, interno:60},
-  'Kalia Torres':    {cliente:100, interno:60}
+  'Janice Alicea':        {cliente:128, interno:32},
+  'Michelle Camacho':     {cliente:128, interno:32},
+  'Natalia Reyes':        {cliente:100, interno:60},
+  'Kalia Torres':         {cliente:100, interno:60},
+  'Alejandra Pedraza':    {cliente:128, interno:32},
+  'Maria Natalia Sánchez':{cliente:128, interno:32}
 };
 // Capacidad total de trabajo por mes — igual para las 4, es el techo de horas disponibles del rol (128+32 = 100+60 = 160).
 const TOTAL_CAPACITY_MONTHLY = 160;
@@ -554,11 +565,14 @@ const CLIENT_CONSULTANT = {
   'RANA':'Natalia Reyes','RC Group':'Kalia Torres','Sun Flowers':'Michelle Camacho','Villa Verde Inn':'Kalia Torres'
 };
 // Cuentas compartidas entre dos consultoras — se dividen las horas contratadas en partes iguales.
-const SHARED_CLIENTS = { 'Able Sales PR': ['Kalia Torres','Natalia Reyes'] };
+const SHARED_CLIENTS = {
+  'Able Sales PR': ['Kalia Torres','Natalia Reyes'],
+  'Health Chiropractic': ['Alejandra Pedraza','Michelle Camacho']
+};
 // Cartera contratada por consultora (horas/mes) = suma de horas contratadas de todos sus clientes asignados.
 // Se calcula, no se hardcodea, para que quede sincronizada si CLIENT_CONTRACT_HOURS cambia.
 function computePortfolio(){
-  const portfolio = {'Natalia Reyes':0,'Michelle Camacho':0,'Janice Alicea':0,'Kalia Torres':0};
+  const portfolio = {'Natalia Reyes':0,'Michelle Camacho':0,'Janice Alicea':0,'Kalia Torres':0,'Alejandra Pedraza':0,'Maria Natalia Sánchez':0};
   CLIENT_ROSTER.forEach(c=>{
     const hrs = CLIENT_CONTRACT_HOURS[c.name];
     if(hrs==null) return;
@@ -578,7 +592,8 @@ const CLIENT_ACTIVITIES = ['Preparación de sesión en vivo','Sesión en vivo co
 const INTERNAL_ACTIVITIES = ['Business Update','CX','Marketing','Apoyo con casos de clientes','DCP','DCP - Preparación',
   'Facturación','UP - Nómina','Learning Day','Atención de leads','One to One Consulting','One to One G',
   'Q&A / Respuestas en UPSPACE','UPSPACE','Reunión interna UP','Proyectos especiales','TGC',
-  'Onboarding / bienvenida UP','Creación y desarrollo de documentos','Trabajo administrativo'];
+  'Onboarding / bienvenida UP','Creación y desarrollo de documentos'];
+
 let allLogs = [];
 let selectedActivity = '';
 let scriptUrl = '';
@@ -874,7 +889,7 @@ function renderDashboard() {
   renderActivityLists(fl);
   // ── CAPA 2a: Por consultora · trabajo con cliente vs. interno ──
   const byCon = {};
-  const conColors = ['#2E6DFF','#FAB727','#4ECDC4','#A78BFA'];
+  const conColors = ['#2E6DFF','#FAB727','#4ECDC4','#A78BFA','#E8A0BF','#93C6E7'];
   fl.forEach(l => {
     const k=con(l);
     if(!byCon[k]) byCon[k]={total:0,billed:0,internal:0,clients:new Set(),acts:{}};
@@ -891,7 +906,7 @@ function renderDashboard() {
         const ip2 = 100-bp2;
         return `<div style="margin-bottom:16px">
           <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <span style="font-size:12px;font-weight:600;color:${conColors[i%4]}">${c}</span>
+            <span style="font-size:12px;font-weight:600;color:${conColors[i%conColors.length]}">${c}</span>
             <span style="font-size:10px;color:var(--white-soft)">${d.total.toFixed(1)}h · ${d.clients.size} clientes</span>
           </div>
           <div style="display:flex;height:10px;border-radius:4px;overflow:hidden;margin-bottom:3px">
@@ -920,7 +935,7 @@ function renderDashboard() {
       }).join('');
       return `<tr><td style="font-size:10px;color:var(--white-soft);padding:8px 6px">${a}</td>${cols}</tr>`;
     }).join('');
-    const headers = conSorted.map(([c],i)=>`<th style="text-align:center;font-size:9px;color:${conColors[i%4]}">${c.split(' ')[0]}</th>`).join('');
+    const headers = conSorted.map(([c],i)=>`<th style="text-align:center;font-size:9px;color:${conColors[i%conColors.length]}">${c.split(' ')[0]}</th>`).join('');
     document.getElementById('consultant-activity-avg').innerHTML = `
       <div style="font-size:9px;color:var(--white-soft);margin-bottom:10px">Promedio de horas por registro · top 5 actividades · color: <span style="color:var(--green)">≤1h</span> · <span style="color:var(--gold)">1-2h</span> · <span style="color:var(--orange)">+2h</span></div>
       <table style="width:100%;border-collapse:collapse">
@@ -934,13 +949,13 @@ function renderDashboard() {
   const byTierAct = {};
   fl.forEach(l=>{
     const t=tier(l); const a=act(l);
-    if(!['Essential','Empower','Complete'].includes(t)) return;
+    if(!['Essential','Empower','Complete','Complete Network'].includes(t)) return;
     if(!byTierAct[t]) byTierAct[t]={};
     if(!byTierAct[t][a]) byTierAct[t][a]={total:0,count:0};
     byTierAct[t][a].total += h(l);
     byTierAct[t][a].count++;
   });
-  const tierOrder = ['Essential','Empower','Complete'].filter(t=>byTierAct[t]);
+  const tierOrder = ['Essential','Empower','Complete','Complete Network'].filter(t=>byTierAct[t]);
   if(!tierOrder.length){
     document.getElementById('tier-activity-breakdown').innerHTML='<div class="loading-state">Sin datos</div>';
   } else {
@@ -1049,8 +1064,8 @@ function renderClientCompliance(){
 }
 // ── Comparación directa · consultora vs. consultora (con capacidad y metas explícitas) ──
 function renderConsultantComparison(fl){
-  const CONSULT_LIST = ['Natalia Reyes','Michelle Camacho','Janice Alicea','Kalia Torres'];
-  const conColors = {'Natalia Reyes':'#2E6DFF','Michelle Camacho':'#FAB727','Janice Alicea':'#4ECDC4','Kalia Torres':'#A78BFA'};
+  const CONSULT_LIST = ['Natalia Reyes','Michelle Camacho','Janice Alicea','Kalia Torres','Alejandra Pedraza','Maria Natalia Sánchez'];
+  const conColors = {'Natalia Reyes':'#2E6DFF','Michelle Camacho':'#FAB727','Janice Alicea':'#4ECDC4','Kalia Torres':'#A78BFA','Alejandra Pedraza':'#E8A0BF','Maria Natalia Sánchez':'#93C6E7'};
   const days = rangeDays();
   const factor = days/30.44;
   const capacityProrated = TOTAL_CAPACITY_MONTHLY * factor;
@@ -1077,7 +1092,7 @@ function renderConsultantComparison(fl){
       Barra sólida = horas reales con cliente (línea punteada = su meta) · barra clara = horas reales internas (línea punteada = su meta).
       Janice y Michelle: meta 128h cliente / 32h interno · Natalia y Kalia: meta 100h cliente / 60h interno.
     </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px">
+    <div style="display:grid;grid-template-columns:repeat(${data.length},1fr);gap:16px;margin-bottom:18px">
       ${data.map(d=>`
         <div style="border:1px solid ${d.brecha>0?'rgba(255,107,107,0.35)':'var(--border)'};border-radius:8px;padding:10px 12px;background:${d.brecha>0?'var(--red-soft)':'var(--input-bg)'}">
           <div style="font-size:9px;font-weight:700;color:${conColors[d.c]};margin-bottom:4px">${d.c} · cartera contratada</div>
