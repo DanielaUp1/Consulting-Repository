@@ -308,6 +308,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       <div class="activity-pill" data-activity="Customización plantillas" onclick="selectActivity(this)"><span class="pill-icon">🔧</span>Customización plantillas</div>
       <div class="activity-pill" data-activity="Monitoreo / alertas del ciclo" onclick="selectActivity(this)"><span class="pill-icon">📊</span>Monitoreo / alertas del ciclo</div>
       <div class="activity-pill" data-activity="Onboarding / bienvenida" onclick="selectActivity(this)"><span class="pill-icon">🚀</span>Onboarding / bienvenida</div>
+      <div class="activity-pill" data-activity="Responder consulta" onclick="selectActivity(this)"><span class="pill-icon">💡</span>Responder consulta</div>
     </div>
     <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">Actividades · UP (internas)</div>
     <div class="activity-grid" style="grid-template-columns:repeat(4,1fr);">
@@ -330,6 +331,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       <div class="activity-pill" data-activity="TGC" onclick="selectActivity(this)"><span class="pill-icon">🌐</span>TGC</div>
       <div class="activity-pill" data-activity="Onboarding / bienvenida UP" onclick="selectActivity(this)"><span class="pill-icon">🚀</span>Onboarding / bienvenida UP</div>
       <div class="activity-pill" data-activity="Creación y desarrollo de documentos" onclick="selectActivity(this)"><span class="pill-icon">📄</span>Creación y desarrollo de documentos</div>
+      <div class="activity-pill" data-activity="Trabajo administrativo" onclick="selectActivity(this)"><span class="pill-icon">🗂️</span>Trabajo administrativo</div>
     </div>
     <div class="eyebrow" style="margin-top:20px">3 · Detalle</div>
     <div class="form-row form-row-4">
@@ -522,7 +524,7 @@ const CLIENT_ROSTER = [
   {name:'Ojo X Ojo',tier:'Legacy'},{name:'PDF Corp',tier:'Legacy'},{name:'PR Water Management',tier:'Legacy'},
   {name:'RANA',tier:'Legacy'},{name:'RC Group',tier:'Legacy'},{name:'Sun Flowers',tier:'Legacy'},
   {name:'Villa Verde Inn',tier:'Legacy'},
-  {name:'Health Chiropractic',tier:'Complete Network'}
+  {name:'Health Chiropractic',tier:'Complete Network',modalidad:'remoto'} // 100% virtual — dato de referencia, el tracker no tiene campo de modalidad todavía
 ];
 // Horas contratadas por MES por cliente — tomado de "Detalle por cliente" (UPTURN_Horas_Consultoras_Julio2026).
 // null = no hay dato de contrato disponible (Cenegenics y ROV Engineering no aparecen en esa hoja).
@@ -588,11 +590,11 @@ function computePortfolio(){
 // Clasificación fija de actividades (igual que los grupos de pills del formulario)
 const CLIENT_ACTIVITIES = ['Preparación de sesión en vivo','Sesión en vivo con cliente','Documentación post-sesión',
   'Llamadas telefónicas','Visita','Reclutamiento','Adiestramientos','Consulta legal','Diagnóstico regulatorio',
-  'Customización plantillas','Monitoreo / alertas del ciclo','Onboarding / bienvenida'];
+  'Customización plantillas','Monitoreo / alertas del ciclo','Onboarding / bienvenida','Responder consulta'];
 const INTERNAL_ACTIVITIES = ['Business Update','CX','Marketing','Apoyo con casos de clientes','DCP','DCP - Preparación',
   'Facturación','UP - Nómina','Learning Day','Atención de leads','One to One Consulting','One to One G',
   'Q&A / Respuestas en UPSPACE','UPSPACE','Reunión interna UP','Proyectos especiales','TGC',
-  'Onboarding / bienvenida UP','Creación y desarrollo de documentos'];
+  'Onboarding / bienvenida UP','Creación y desarrollo de documentos','Trabajo administrativo'];
 
 let allLogs = [];
 let selectedActivity = '';
