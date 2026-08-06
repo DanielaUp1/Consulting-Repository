@@ -426,7 +426,7 @@ function reconstructSubtasksFromLogs(task){
   (task.logs||[]).forEach(l=>{
     const t=(l.text||'').trim();
     let m;
-    if((m=t.match(/^\+ Submodulo agregado: (.+)$/))){
+    if((m=t.match(/^Submodulo agregado: (.+)$/))){
       const name=m[1].trim();
       if(findIdx(name)<0)list.push({name,done:false});
     }else if((m=t.match(/^✓ (.+?) \(\d+\/\d+\)$/))){
@@ -437,7 +437,7 @@ function reconstructSubtasksFromLogs(task){
       const name=m[1].trim();
       const i=findIdx(name);
       if(i>=0)list[i].done=false; else list.push({name,done:false});
-    }else if((m=t.match(/^- Submodulo eliminado: (.+)$/))){
+    }else if((m=t.match(/^Submodulo eliminado: (.+)$/))){
       const name=m[1].trim();
       const i=findIdx(name);
       if(i>=0)list.splice(i,1);
@@ -866,7 +866,7 @@ async function addSubtask(taskId){
   inp.value='';
   openSubs[taskId]=true;
   const d=TODAY.toLocaleDateString('es-PR',{day:'numeric',month:'short',year:'numeric'});
-  const logText='+ Submodulo agregado: '+name;
+  const logText='Submodulo agregado: '+name;
   task.logs.push({date:d,text:logText});
   renderGantt();
   const res=await apiPost({action:'save_log',row:[uid(),taskId,d,logText]});
@@ -893,7 +893,7 @@ async function deleteSubtask(taskId,idx){
   task.subtasks.splice(idx,1);
   openSubs[taskId]=true;
   const d=TODAY.toLocaleDateString('es-PR',{day:'numeric',month:'short',year:'numeric'});
-  const logText='- Submodulo eliminado: '+removed.name;
+  const logText='Submodulo eliminado: '+removed.name;
   task.logs.push({date:d,text:logText});
   renderGantt();
   await apiPost({action:'save_log',row:[uid(),taskId,d,logText]});
