@@ -418,6 +418,33 @@ function parseSubtasks(raw){
   if(Array.isArray(raw))return raw;
   try{const p=JSON.parse(raw);return Array.isArray(p)?p:[];}catch(e){return[];}
 }
+// Reconstruye la lista de submodulos de una tarea leyendo su historial de comentarios.
+// Esto es lo que hace que el checklist persista sin necesitar una columna nueva en Sheets.
+function reconstructSubtasksFromLogs(task){
+  const list=[];
+  const findIdx=name=>list.findIndex(s=>s.name===name);
+  (task.logs||[]).forEach(l=>{
+    const t=(l.text||'').trim();
+    let m;
+    if((m=t.match(/^\+ Submodulo agregado: (.+)$/))){
+      const name=m[1].trim();
+      if(findIdx(name)<0)list.push({name,done:false});
+    }else if((m=t.match(/^✓ (.+?) \(\d+\/\d+\)$/))){
+      const name=m[1].trim();
+      const i=findIdx(name);
+      if(i>=0)list[i].done=true; else list.push({name,done:true});
+    }else if((m=t.match(/^↺ (.+?) \(\d+\/\d+\)$/))){
+      const name=m[1].trim();
+      const i=findIdx(name);
+      if(i>=0)list[i].done=false; else list.push({name,done:false});
+    }else if((m=t.match(/^- Submodulo eliminado: (.+)$/))){
+      const name=m[1].trim();
+      const i=findIdx(name);
+      if(i>=0)list.splice(i,1);
+    }
+  });
+  return list;
+}
 async function loadAll(){
   setSyncStatus('loading','Cargando...');
   try{
@@ -456,6 +483,9 @@ async function loadAll(){
         }
       });
     }
+    // Los submodulos no tienen columna propia en tu Sheet, asi que se reconstruyen
+    // a partir del historial de comentarios (que si sincroniza de forma confiable).
+    tasks.forEach(t=>{ t.subtasks=reconstructSubtasksFromLogs(t); });
     applyTaskOrder();
     renderGantt();
     setSyncStatus('ok','Conectado - Google Sheets');
@@ -831,12 +861,16 @@ async function addSubtask(taskId){
   const task=tasks.find(t=>String(t.id)===String(taskId));
   if(!task)return;
   if(!task.subtasks)task.subtasks=[];
+  if(task.subtasks.some(s=>s.name===name)){showToast('Ese submodulo ya existe',true);return;}
   task.subtasks.push({name,done:false});
   inp.value='';
   openSubs[taskId]=true;
-  await persistSubtasks(task);
+  const d=TODAY.toLocaleDateString('es-PR',{day:'numeric',month:'short',year:'numeric'});
+  const logText='+ Submodulo agregado: '+name;
+  task.logs.push({date:d,text:logText});
   renderGantt();
-  showToast('Submodulo agregado');
+  const res=await apiPost({action:'save_log',row:[uid(),taskId,d,logText]});
+  showToast(res.ok?'Submodulo agregado':'Agregado local (no se guardo en Sheets)',!res.ok);
 }
 async function toggleSubtaskDone(taskId,idx){
   const task=tasks.find(t=>String(t.id)===String(taskId));
@@ -848,18 +882,21 @@ async function toggleSubtaskDone(taskId,idx){
   const logText=(task.subtasks[idx].done?'✓ ':'↺ ')+task.subtasks[idx].name+' ('+done+'/'+total+')';
   task.logs.push({date:d,text:logText});
   openSubs[taskId]=true;
-  await apiPost({action:'save_log',row:[uid(),taskId,d,logText]});
-  await persistSubtasks(task);
   renderGantt();
-  showToast(total>0&&done===total?'Todos los submodulos completos':'Progreso actualizado');
+  const res=await apiPost({action:'save_log',row:[uid(),taskId,d,logText]});
+  showToast(res.ok?(total>0&&done===total?'Todos los submodulos completos':'Progreso actualizado'):'Progreso local (no se guardo en Sheets)',!res.ok);
 }
 async function deleteSubtask(taskId,idx){
   const task=tasks.find(t=>String(t.id)===String(taskId));
-  if(!task||!task.subtasks)return;
+  if(!task||!task.subtasks||!task.subtasks[idx])return;
+  const removed=task.subtasks[idx];
   task.subtasks.splice(idx,1);
   openSubs[taskId]=true;
-  await persistSubtasks(task);
+  const d=TODAY.toLocaleDateString('es-PR',{day:'numeric',month:'short',year:'numeric'});
+  const logText='- Submodulo eliminado: '+removed.name;
+  task.logs.push({date:d,text:logText});
   renderGantt();
+  await apiPost({action:'save_log',row:[uid(),taskId,d,logText]});
 }
 async function changeStatus(taskId,newStatus){
   const task=tasks.find(t=>String(t.id)===String(taskId));
@@ -872,9 +909,9 @@ async function changeStatus(taskId,newStatus){
     task.logs.push({date:d,text:reason.trim()});
     await apiPost({action:'save_log',row:[uid(),taskId,d,reason.trim()]});
   }
-  await apiPost({action:'update_task',id:taskId,updates:{status:newStatus}});
+  const res=await apiPost({action:'update_task',id:taskId,updates:{status:newStatus}});
   renderGantt();
-  showToast('Estado actualizado');
+  showToast(res.ok?'Estado actualizado':'Estado local (no se guardo en Sheets)',!res.ok);
 }
 async function addLog(taskId){
   const inp=document.getElementById('linp-'+taskId);
@@ -964,8 +1001,9 @@ async function saveEditModal(){
     task.logs.push({date:d,text:logText});
     await apiPost({action:'save_log',row:[uid(),id,d,logText]});
   }
-  await apiPost({action:'update_task',id,updates:newVals});
-  closeEditModal();renderGantt();showToast('Tarea actualizada');
+  const res=await apiPost({action:'update_task',id,updates:newVals});
+  closeEditModal();renderGantt();
+  showToast(res.ok?'Tarea actualizada':'Guardado local (no se guardo en Sheets — revisa Apps Script)',!res.ok);
 }
 // Bloqueantes modal
 function openBloqModal(id){
@@ -991,8 +1029,9 @@ async function saveBloqModal(){
   if(!task)return;
   task.depende_de=document.getElementById('bloq-dep-select').value;
   task.bloqueante=document.getElementById('bloq-ext').value.trim();
-  await apiPost({action:'update_task',id,updates:{bloqueante:task.bloqueante,depende_de:task.depende_de}});
-  closeBloqModal();renderGantt();showToast('Bloqueantes actualizados');
+  const res=await apiPost({action:'update_task',id,updates:{bloqueante:task.bloqueante,depende_de:task.depende_de}});
+  closeBloqModal();renderGantt();
+  showToast(res.ok?'Bloqueantes actualizados':'Guardado local (no se guardo en Sheets)',!res.ok);
 }
 // Sync all
 async function syncAllToSheets(){
