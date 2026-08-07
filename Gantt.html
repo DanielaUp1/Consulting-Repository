@@ -413,6 +413,19 @@ function setSyncStatus(s,t){
 }
 function cleanDate(d){if(!d)return'';const s=String(d);return s.includes('T')?s.split('T')[0]:s;}
 function cleanStatus(s){return s?String(s).toLowerCase().trim():'pendiente';}
+// El id de tareas nuevas se calculaba desde una constante fija (200) que se
+// reiniciaba cada vez que abrias la pagina. Si ya existian tareas u200, u201...
+// de una sesion anterior, la siguiente tarea nueva reusaba ese mismo id y
+// pisaba (sobreescribia por completo) la tarea vieja. Ahora se calcula en
+// base al id mas alto que ya exista en tus datos reales, asi nunca se repite.
+function updateNextId(){
+  let maxN = 199;
+  tasks.forEach(t=>{
+    const m = String(t.id).match(/^u(\d+)$/);
+    if(m){ const n = parseInt(m[1],10); if(n > maxN) maxN = n; }
+  });
+  nextId = maxN + 1;
+}
 function parseSubtasks(raw){
   if(!raw)return[];
   if(Array.isArray(raw))return raw;
@@ -486,6 +499,7 @@ async function loadAll(){
     // Los submodulos no tienen columna propia en tu Sheet, asi que se reconstruyen
     // a partir del historial de comentarios (que si sincroniza de forma confiable).
     tasks.forEach(t=>{ t.subtasks=reconstructSubtasksFromLogs(t); });
+    updateNextId();
     applyTaskOrder();
     renderGantt();
     setSyncStatus('ok','Conectado - Google Sheets');
