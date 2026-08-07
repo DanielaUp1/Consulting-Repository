@@ -593,7 +593,12 @@ document.addEventListener('click',e=>{
   });
 });
 // Nav
-function gNav(m){gViewStart=new Date(gViewStart);gViewStart.setMonth(gViewStart.getMonth()+m);renderGantt();}
+function gNav(m){
+  gViewStart=new Date(gViewStart);
+  gViewStart.setMonth(gViewStart.getMonth()+m);
+  gViewStart.setDate(gViewStart.getDate()-gViewStart.getDay()+1); // re-alinear siempre a lunes
+  renderGantt();
+}
 function gToday(){gViewStart=new Date(TODAY);gViewStart.setDate(gViewStart.getDate()-gViewStart.getDay()+1);renderGantt();}
 function gFilter(f,el){gFilter_val=f;document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderGantt();}
 function toggleAddForm(){document.getElementById('add-form').classList.toggle('open');initTagInput('nt-owner','');}
