@@ -352,10 +352,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       </div>
       <div class="field">
         <div class="field-label">Duración <span class="req">*</span></div>
-        <div class="time-input-wrap">
-          <input type="number" id="f-hours" min="0.25" max="12" step="0.25" placeholder="0.00">
-          <span class="time-unit">horas</span>
-        </div>
+        <select id="f-hours">
+          <option value="">— selecciona —</option>
+        </select>
       </div>
       <div class="field">
         <div class="field-label">¿Facturada al cliente?</div>
@@ -603,9 +602,28 @@ let scriptUrl = '';
 function init() {
   scriptUrl = localStorage.getItem(SCRIPT_URL_KEY) || '';
   setDate();
+  populateHoursSelect();
   setDashboardDefaults();
   checkConfig();
   loadLogs();
+}
+// Duración en incrementos de 15 min (15 min → 12 horas). El value que se guarda sigue siendo horas
+// decimales (lo que espera el Sheet y todos los cálculos del dashboard) — sólo cambia cómo se elige.
+function populateHoursSelect(){
+  const sel = document.getElementById('f-hours');
+  if(!sel) return;
+  for(let mins = 15; mins <= 720; mins += 15){
+    const hrs = Math.floor(mins/60);
+    const rem = mins % 60;
+    let label;
+    if(hrs === 0) label = `${rem} min`;
+    else if(rem === 0) label = hrs===1 ? '1 hora' : `${hrs} horas`;
+    else label = `${hrs}h ${rem} min`;
+    const opt = document.createElement('option');
+    opt.value = (mins/60).toString();
+    opt.textContent = label;
+    sel.appendChild(opt);
+  }
 }
 function setDashboardDefaults(){
   const now = new Date();
