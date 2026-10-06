@@ -241,12 +241,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
         <div class="field-label">Consultora <span class="req">*</span></div>
         <select id="f-consultant">
           <option value="">— selecciona —</option>
-          <option>Natalia Reyes</option>
-          <option>Michelle Camacho</option>
-          <option>Janice Alicea</option>
-          <option>Kalia Torres</option>
-          <option>Alejandra Pedraza</option>
-          <option>Maria Natalia Sánchez</option>
         </select>
       </div>
       <div class="field">
@@ -255,31 +249,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
           <option value="">— selecciona —</option>
           <optgroup label="⬡ Interno">
             <option>UPTURN</option>
-          </optgroup>
-          <optgroup label="Essential">
-            <option>Cabrera Auto</option><option>Fulcro</option><option>Kayaking PR</option>
-            <option>JC González</option><option>Pet Health</option><option>Med Transport</option>
-            <option>IG Builders Corp.</option><option>Cenegenics</option><option>Pharma Xpress</option>
-            <option>MPS Precast</option><option>PRENT</option>
-          </optgroup>
-          <optgroup label="Empower">
-            <option>Auto Service Equipment</option><option>Los Paseos</option>
-          </optgroup>
-          <optgroup label="Complete">
-            <option>ADV</option><option>Contactica</option><option>Able Sales PR</option>
-            <option>Tolic</option><option>Solar Roots</option><option>ROV Engineering</option>
-          </optgroup>
-          <optgroup label="Complete Network">
-            <option>Health Chiropractic</option>
-          </optgroup>
-          <optgroup label="Legacy">
-            <option>CMV</option><option>American Storage</option><option>Banditech</option>
-            <option>Beryllium</option><option>Bless Therapy</option><option>Caribe Drones</option>
-            <option>Dr. Lisandro Montalvo</option><option>Fortuño</option><option>IO Automation</option>
-            <option>La Patria</option><option>López Luna Insurance</option><option>Neuronita</option>
-            <option>Ojo X Ojo</option><option>PDF Corp</option><option>PR Water Management</option>
-            <option>RANA</option><option>RC Group</option><option>Sun Flowers</option>
-            <option>Villa Verde Inn</option>
           </optgroup>
         </select>
       </div>
@@ -391,9 +360,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
   <div class="filter-bar">
     <select class="filter-select" id="dash-filter-consultant" onchange="renderDashboard()">
       <option value="all">Todas las consultoras</option>
-      <option>Natalia Reyes</option><option>Michelle Camacho</option>
-      <option>Janice Alicea</option><option>Kalia Torres</option>
-      <option>Alejandra Pedraza</option><option>Maria Natalia Sánchez</option>
     </select>
     <select class="filter-select" id="dash-filter-tier" onchange="renderDashboard()">
       <option value="all">Todos los tiers</option>
@@ -507,46 +473,99 @@ const SCRIPT_URL_KEY = 'upturn_script_url';
 const TIER_COLORS    = { Essential: '#2E6DFF', Empower: '#FAB727', Complete: '#4ECDC4', 'Complete Network': '#4CAF82', Legacy: '#A78BFA' };
 const ACT_COLORS     = ['#2E6DFF','#FAB727','#4ECDC4','#A78BFA','#FF6B6B','#FF9F43','#4CAF82','#6895FD','#E8A0BF','#93C6E7','#B5EAD7','#C7B8EA'];
 
+// ═══════════════════════════════════════════════════════
+// ROSTER DE CLIENTES Y CONSULTORAS — única fuente de verdad.
+// Para dar de baja un cliente o consultora: agrega endDate:'YYYY-MM-DD' (el último día activo)
+// a su entrada aquí abajo. NO borres la fila, NO toques nada más — el formulario, los filtros del
+// dashboard, el panel de cumplimiento de contrato, "clientes sin interacción" y la comparación
+// directa se actualizan solos a partir de esa fecha. Los meses anteriores a la baja siguen viéndose
+// correctos (el sistema sabe que estaban activos entonces).
+// Para dar de alta uno nuevo: agrega la fila correspondiente (y, si es cliente, su horas de contrato
+// en CLIENT_CONTRACT_HOURS y su consultora dueña en CLIENT_CONSULTANT) — aparece automáticamente
+// en todos los formularios y paneles sin tocar HTML.
+// ═══════════════════════════════════════════════════════
+function todayStr(){
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+}
+// true si la entidad (cliente o consultora) estaba activa en la fecha dada (o sigue activa si no tiene endDate)
+// Campos opcionales: startDate (primer día activo), endDate (último día activo), returnDate (reingreso
+// después de una baja — activo de nuevo desde esa fecha).
+function activeAsOf(entity, dateStr){
+  if(entity.startDate && dateStr < entity.startDate) return false;
+  if(!entity.endDate || dateStr <= entity.endDate) return true;
+  return !!entity.returnDate && dateStr >= entity.returnDate;
+}
+
 // Roster de clientes (excluye UPTURN, que es trabajo interno) — mismo listado que el formulario
 const CLIENT_ROSTER = [
   {name:'Cabrera Auto',tier:'Essential'},{name:'Fulcro',tier:'Essential'},{name:'Kayaking PR',tier:'Essential'},
-  {name:'JC González',tier:'Essential'},{name:'Pet Health',tier:'Essential'},{name:'Med Transport',tier:'Essential'},
-  {name:'IG Builders Corp.',tier:'Essential'},{name:'Cenegenics',tier:'Essential'},{name:'Pharma Xpress',tier:'Essential'},
+  {name:'JC González',tier:'Essential',endDate:'2026-07-31'},{name:'Pet Health',tier:'Essential'},{name:'Med Transport',tier:'Essential'},
+  {name:'IG Builders Corp.',tier:'Essential'},{name:'Cenegenics',tier:'Essential',endDate:'2026-07-31'},{name:'Pharma Xpress',tier:'Essential'},
   {name:'MPS Precast',tier:'Essential'},{name:'PRENT',tier:'Essential'},
   {name:'Auto Service Equipment',tier:'Empower'},{name:'Los Paseos',tier:'Empower'},
   {name:'ADV',tier:'Complete'},{name:'Contactica',tier:'Complete'},{name:'Able Sales PR',tier:'Complete'},
-  {name:'Tolic',tier:'Complete'},{name:'Solar Roots',tier:'Complete'},{name:'ROV Engineering',tier:'Complete'},
-  {name:'CMV',tier:'Legacy'},{name:'American Storage',tier:'Legacy'},{name:'Banditech',tier:'Legacy'},
-  {name:'Beryllium',tier:'Legacy'},{name:'Bless Therapy',tier:'Legacy'},{name:'Caribe Drones',tier:'Legacy'},
+  {name:'Tolic',tier:'Complete'},{name:'Solar Roots',tier:'Complete'},{name:'ROV Engineering',tier:'Complete',endDate:'2026-07-31',returnDate:'2026-10-01'},
+  {name:'CMV',tier:'Legacy',endDate:'2026-07-31'},{name:'American Storage',tier:'Legacy'},{name:'Banditech',tier:'Legacy'},
+  {name:'Beryllium',tier:'Legacy'},{name:'Bless Therapy',tier:'Legacy'},{name:'Caribe Drones',tier:'Legacy',endDate:'2026-07-31'},
   {name:'Dr. Lisandro Montalvo',tier:'Legacy'},{name:'Fortuño',tier:'Legacy'},{name:'IO Automation',tier:'Legacy'},
   {name:'La Patria',tier:'Legacy'},{name:'López Luna Insurance',tier:'Legacy'},{name:'Neuronita',tier:'Legacy'},
   {name:'Ojo X Ojo',tier:'Legacy'},{name:'PDF Corp',tier:'Legacy'},{name:'PR Water Management',tier:'Legacy'},
   {name:'RANA',tier:'Legacy'},{name:'RC Group',tier:'Legacy'},{name:'Sun Flowers',tier:'Legacy'},
   {name:'Villa Verde Inn',tier:'Legacy'},
+  {name:'Metro Toyota',tier:'Complete Network',startDate:'2026-09-01'},
   {name:'Health Chiropractic',tier:'Complete Network',modalidad:'remoto'} // 100% virtual — dato de referencia, el tracker no tiene campo de modalidad todavía
 ];
+const CLIENT_TIER_ORDER = ['Essential','Empower','Complete','Complete Network','Legacy'];
 // Horas contratadas por MES por cliente — tomado de "Detalle por cliente" (UPTURN_Horas_Consultoras_Julio2026).
 // null = no hay dato de contrato disponible (Cenegenics y ROV Engineering no aparecen en esa hoja).
 const CLIENT_CONTRACT_HOURS = {
   'Cabrera Auto':1,'Fulcro':1,'Kayaking PR':1,'JC González':1,'Pet Health':1,'Med Transport':1,
   'IG Builders Corp.':1,'Cenegenics':null,'Pharma Xpress':1,'MPS Precast':1,'PRENT':1,
   'Auto Service Equipment':10,'Los Paseos':10,
-  'ADV':20,'Contactica':20,'Able Sales PR':20,'Tolic':1,'Solar Roots':20,'ROV Engineering':null,
+  'ADV':20,'Contactica':20,'Able Sales PR':20,'Tolic':1,'Solar Roots':20,'ROV Engineering':20,
   'CMV':36,'American Storage':10,'Banditech':16,'Beryllium':20,'Bless Therapy':10,'Caribe Drones':5,
   'Dr. Lisandro Montalvo':10,'Fortuño':5,'IO Automation':25,'La Patria':12,'López Luna Insurance':15,
   'Neuronita':10,'Ojo X Ojo':10,'PDF Corp':50,'PR Water Management':5,'RANA':20,'RC Group':48,
   'Sun Flowers':12,'Villa Verde Inn':10,
-  'Health Chiropractic':40
+  'Health Chiropractic':40,
+  'Metro Toyota':40 // base ~40h/mes; baja mes a mes (ver CLIENT_CONTRACT_SCHEDULE)
 };
-// Metas de rol por consultora (horas/mes), dato de Natalia — usado como referencia en la comparación directa.
-const CONSULTANT_TARGETS = {
-  'Janice Alicea':        {cliente:128, interno:32},
-  'Michelle Camacho':     {cliente:128, interno:32},
-  'Natalia Reyes':        {cliente:100, interno:60},
-  'Kalia Torres':         {cliente:100, interno:60},
-  'Alejandra Pedraza':    {cliente:128, interno:32},
-  'Maria Natalia Sánchez':{cliente:128, interno:32}
+// Excepciones por mes ('YYYY-MM': horas) cuando el contrato cambia en el tiempo. Meses no listados usan el valor base.
+// Metro Toyota: ~40h/mes bajando hasta 12h en diciembre — faltan los valores de octubre y noviembre.
+const CLIENT_CONTRACT_SCHEDULE = {
+  'Metro Toyota': {'2026-12':12}
 };
+function monthlyHoursFor(name, ym){
+  const s = CLIENT_CONTRACT_SCHEDULE[name];
+  if(s && s[ym]!=null) return s[ym];
+  return CLIENT_CONTRACT_HOURS[name];
+}
+// Horas esperadas en un rango: cada mes aporta sus horas contratadas × (días del rango en ese mes / días del mes).
+function expectedHoursInRange(name, fromStr, toStr){
+  if(CLIENT_CONTRACT_HOURS[name]==null) return null;
+  if(!fromStr || !toStr) return CLIENT_CONTRACT_HOURS[name];
+  const d0 = new Date(fromStr+'T00:00:00'), d1 = new Date(toStr+'T00:00:00');
+  let total = 0;
+  for(let d = new Date(d0); d <= d1; d.setDate(d.getDate()+1)){
+    const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const dim = new Date(d.getFullYear(), d.getMonth()+1, 0).getDate();
+    total += (monthlyHoursFor(name, ym) || 0) / dim;
+  }
+  return total;
+}
+// Roster de consultoras: color de gráfico + meta de rol (horas/mes, dato de Natalia).
+// Para dar de baja: agrega endDate aquí (ver nota arriba). Se deriva CONSULTANT_TARGETS automáticamente.
+const CONSULTANT_ROSTER = [
+  {name:'Natalia Reyes',         color:'#2E6DFF', target:{cliente:100, interno:60}},
+  {name:'Michelle Camacho',      color:'#FAB727', target:{cliente:128, interno:32}},
+  {name:'Janice Alicea',         color:'#4ECDC4', target:{cliente:128, interno:32}},
+  {name:'Kalia Torres',          color:'#A78BFA', target:{cliente:100, interno:60}},
+  {name:'Alejandra Pedraza',     color:'#E8A0BF', target:{cliente:128, interno:32}},
+  {name:'Maria Natalia Sánchez', color:'#93C6E7', target:{cliente:128, interno:32}, endDate:'2026-07-31'}
+];
+const CONSULTANT_TARGETS = {};
+CONSULTANT_ROSTER.forEach(c=>{ CONSULTANT_TARGETS[c.name] = c.target; });
 // Capacidad total de trabajo por mes — igual para las 4, es el techo de horas disponibles del rol (128+32 = 100+60 = 160).
 const TOTAL_CAPACITY_MONTHLY = 160;
 // Consultora dueña de cada cuenta (de "Detalle por cliente"). Cenegenics y ROV Engineering no tienen dato — quedan sin asignar.
@@ -557,7 +576,8 @@ const CLIENT_CONSULTANT = {
   'MPS Precast':'Kalia Torres','PRENT':'Michelle Camacho',
   'Auto Service Equipment':'Michelle Camacho','Los Paseos':'Kalia Torres',
   'ADV':'Kalia Torres','Contactica':'Natalia Reyes','Tolic':'Janice Alicea',
-  'Solar Roots':'Natalia Reyes','ROV Engineering':null,
+  'Solar Roots':'Natalia Reyes','ROV Engineering':'Alejandra Pedraza',
+  'Metro Toyota':null, // compartido Janice/Natalia, ver SHARED_CLIENTS
   'CMV':'Kalia Torres','American Storage':'Janice Alicea','Banditech':'Michelle Camacho',
   'Beryllium':'Janice Alicea','Bless Therapy':'Michelle Camacho','Caribe Drones':'Natalia Reyes',
   'Dr. Lisandro Montalvo':'Natalia Reyes','Fortuño':'Michelle Camacho','IO Automation':'Michelle Camacho',
@@ -568,14 +588,20 @@ const CLIENT_CONSULTANT = {
 // Cuentas compartidas entre dos consultoras — se dividen las horas contratadas en partes iguales.
 const SHARED_CLIENTS = {
   'Able Sales PR': ['Kalia Torres','Natalia Reyes'],
-  'Health Chiropractic': ['Alejandra Pedraza','Michelle Camacho']
+  'Health Chiropractic': ['Alejandra Pedraza','Michelle Camacho'],
+  'Metro Toyota': ['Janice Alicea','Natalia Reyes']
 };
-// Cartera contratada por consultora (horas/mes) = suma de horas contratadas de todos sus clientes asignados.
-// Se calcula, no se hardcodea, para que quede sincronizada si CLIENT_CONTRACT_HOURS cambia.
-function computePortfolio(){
-  const portfolio = {'Natalia Reyes':0,'Michelle Camacho':0,'Janice Alicea':0,'Kalia Torres':0,'Alejandra Pedraza':0,'Maria Natalia Sánchez':0};
+// Cartera contratada por consultora (horas/mes) = suma de horas contratadas de sus clientes ACTIVOS
+// a la fecha indicada (por defecto, hoy). Un cliente dado de baja deja de sumar en su cartera solo,
+// sin tocar esta función. Se calcula, no se hardcodea, para que quede sincronizada si
+// CLIENT_CONTRACT_HOURS o el roster cambian.
+function computePortfolio(asOfDate){
+  const dateStr = asOfDate || todayStr();
+  const portfolio = {};
+  CONSULTANT_ROSTER.forEach(c=>{ portfolio[c.name] = 0; });
   CLIENT_ROSTER.forEach(c=>{
-    const hrs = CLIENT_CONTRACT_HOURS[c.name];
+    if(!activeAsOf(c, dateStr)) return;
+    const hrs = monthlyHoursFor(c.name, dateStr.slice(0,7));
     if(hrs==null) return;
     if(SHARED_CLIENTS[c.name]){
       SHARED_CLIENTS[c.name].forEach(cons=>{ if(portfolio[cons]!=null) portfolio[cons] += hrs/SHARED_CLIENTS[c.name].length; });
@@ -603,9 +629,55 @@ function init() {
   scriptUrl = localStorage.getItem(SCRIPT_URL_KEY) || '';
   setDate();
   populateHoursSelect();
+  populateConsultantSelect();
+  populateClientSelect();
+  populateDashConsultantFilter();
   setDashboardDefaults();
   checkConfig();
   loadLogs();
+}
+// Formulario de registro: sólo consultoras activas HOY (no tiene sentido registrar horas a nombre
+// de alguien que ya no trabaja con UPTURN).
+function populateConsultantSelect(){
+  const sel = document.getElementById('f-consultant');
+  if(!sel) return;
+  const today = todayStr();
+  CONSULTANT_ROSTER.filter(c=>activeAsOf(c, today)).forEach(c=>{
+    const opt = document.createElement('option');
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
+}
+// Formulario de registro: sólo clientes activos HOY, agrupados por tier igual que antes.
+function populateClientSelect(){
+  const sel = document.getElementById('f-client');
+  if(!sel) return;
+  const today = todayStr();
+  CLIENT_TIER_ORDER.forEach(tier=>{
+    const clients = CLIENT_ROSTER.filter(c=>c.tier===tier && activeAsOf(c, today));
+    if(!clients.length) return;
+    const og = document.createElement('optgroup');
+    og.label = tier;
+    clients.forEach(c=>{
+      const opt = document.createElement('option');
+      opt.textContent = c.name;
+      og.appendChild(opt);
+    });
+    sel.appendChild(og);
+  });
+}
+// Filtro del dashboard: TODAS las consultoras (activas e inactivas), para poder seguir viendo meses
+// pasados de alguien que ya no trabaja aquí. Las inactivas se marcan para que no se confundan.
+function populateDashConsultantFilter(){
+  const sel = document.getElementById('dash-filter-consultant');
+  if(!sel) return;
+  const today = todayStr();
+  CONSULTANT_ROSTER.forEach(c=>{
+    const opt = document.createElement('option');
+    opt.value = c.name;
+    opt.textContent = activeAsOf(c, today) ? c.name : `${c.name} (inactiva)`;
+    sel.appendChild(opt);
+  });
 }
 // Duración en incrementos de 15 min (15 min → 12 horas). El value que se guarda sigue siendo horas
 // decimales (lo que espera el Sheet y todos los cálculos del dashboard) — sólo cambia cómo se elige.
@@ -1037,16 +1109,20 @@ function renderActivityLists(fl){
 // ── Horas por cliente · cumplimiento de contrato (reemplaza visible/invisible por cliente) ──
 function renderClientCompliance(){
   const days = rangeDays();
+  const toDate = document.getElementById('dash-filter-to')?.value || todayStr();
   const dateLogs = getFilteredByDate().filter(l=>cli(l)!=='UPTURN');
   const byClient = {};
   dateLogs.forEach(l=>{
     const k = cli(l);
     byClient[k] = (byClient[k]||0) + h(l);
   });
-  const rows = CLIENT_ROSTER.map(c=>{
+  // Sólo clientes activos a la fecha "hasta" del rango — uno dado de baja deja de esperarse su
+  // contrato automáticamente, pero sigue viéndose correcto si filtras un mes en que sí estaba activo.
+  const roster = CLIENT_ROSTER.filter(c=>activeAsOf(c, toDate));
+  const rows = roster.map(c=>{
     const real = byClient[c.name] || 0;
     const monthly = CLIENT_CONTRACT_HOURS[c.name];
-    const expected = (monthly!=null) ? monthly * (days/30.44) : null;
+    const expected = (monthly!=null) ? expectedHoursInRange(c.name, document.getElementById('dash-filter-from')?.value, toDate) : null;
     const pct = (expected!=null && expected>0) ? Math.round(real/expected*100) : null;
     return {...c, real, monthly, expected, pct};
   });
@@ -1084,17 +1160,22 @@ function renderClientCompliance(){
 }
 // ── Comparación directa · consultora vs. consultora (con capacidad y metas explícitas) ──
 function renderConsultantComparison(fl){
-  const CONSULT_LIST = ['Natalia Reyes','Michelle Camacho','Janice Alicea','Kalia Torres','Alejandra Pedraza','Maria Natalia Sánchez'];
-  const conColors = {'Natalia Reyes':'#2E6DFF','Michelle Camacho':'#FAB727','Janice Alicea':'#4ECDC4','Kalia Torres':'#A78BFA','Alejandra Pedraza':'#E8A0BF','Maria Natalia Sánchez':'#93C6E7'};
+  const toDate = document.getElementById('dash-filter-to')?.value || todayStr();
+  // Sólo consultoras activas a la fecha "hasta" del rango — si alguien fue dada de baja, deja de
+  // aparecer en la comparación de capacidad actual, pero un rango de fechas de cuando sí trabajaba
+  // seguiría mostrándola correctamente.
+  const active = CONSULTANT_ROSTER.filter(c=>activeAsOf(c, toDate));
+  const conColors = {}; active.forEach(c=>{ conColors[c.name] = c.color; });
   const days = rangeDays();
   const factor = days/30.44;
   const capacityProrated = TOTAL_CAPACITY_MONTHLY * factor;
-  const portfolio = computePortfolio();
-  const data = CONSULT_LIST.map(c=>{
+  const portfolio = computePortfolio(toDate);
+  const data = active.map(cn=>{
+    const c = cn.name;
     const logs = fl.filter(l=>con(l)===c);
     const cliente = logs.filter(l=>bil(l)==='si').reduce((s,l)=>s+h(l),0);
     const interno  = logs.filter(l=>bil(l)!=='si').reduce((s,l)=>s+h(l),0);
-    const t = CONSULTANT_TARGETS[c] || {cliente:0,interno:0};
+    const t = cn.target || {cliente:0,interno:0};
     const metaCliente = t.cliente * factor;
     const metaInterno = t.interno * factor;
     const total = cliente + interno;
@@ -1148,9 +1229,11 @@ function renderConsultantComparison(fl){
 }
 // ── Clientes sin interacción en el rango seleccionado ──
 function renderClientsWithoutActivity(){
+  const toDate = document.getElementById('dash-filter-to')?.value || todayStr();
+  const roster = CLIENT_ROSTER.filter(c=>activeAsOf(c, toDate)); // un cliente dado de baja no es "señal" de nada
   const dateLogs = getFilteredByDate().filter(l=>cli(l)!=='UPTURN');
   const activeSet = new Set(dateLogs.map(l=>cli(l)));
-  const inactive = CLIENT_ROSTER.filter(c=>!activeSet.has(c.name));
+  const inactive = roster.filter(c=>!activeSet.has(c.name));
   const lastByClient = {};
   allLogs.forEach(l=>{
     const k = cli(l);
