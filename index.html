@@ -305,7 +305,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
     <div class="eyebrow" style="margin-top:20px">3 · Detalle</div>
     <div class="form-row form-row-4">
       <div class="field">
-        <div class="field-label">Paso UPway™</div>
+        <div class="field-label" id="paso-label">Paso UPway™</div>
         <select id="f-paso">
           <option value="">— paso —</option>
           <option>P01 · Visión</option><option>P02 · Dirección</option>
@@ -556,6 +556,34 @@ function expectedHoursInRange(name, fromStr, toStr){
 }
 // Roster de consultoras: color de gráfico + meta de rol (horas/mes, dato de Natalia).
 // Para dar de baja: agrega endDate aquí (ver nota arriba). Se deriva CONSULTANT_TARGETS automáticamente.
+// ═══════════════════════════════════════════════════════
+// PLANES DE CLIENTE — clientes con portal de avance.
+// Para estos clientes, el campo "Paso UPway™" se convierte en "Hito del plan" (obligatorio) y se
+// guarda como "Hito · <frente>" en la misma columna Paso_UPway. El portal del cliente cuenta las
+// actividades por frente a partir de esa etiqueta.
+// IMPORTANTE: los nombres deben ser idénticos a la columna "frente" de la pestaña Portal_<cliente>.
+// Para agregar un cliente con portal: agrega aquí su lista y crea su pestaña con el Apps Script del portal.
+// ═══════════════════════════════════════════════════════
+const HITO_PREFIX = 'Hito · ';
+const CLIENT_PLANS = {
+  'Health Chiropractic': ["Arranque y alineación", "Lanzamiento y cultura", "Auditoría y remediación", "One-to-one con líderes", "Encuesta de cultura y engagement", "Manual del empleado y políticas", "Desarrollo de líderes · Simposio", "Ritmo UPway™ · UP Labs y armonización", "Business UPdate trimestral", "Retiro estratégico", "Acompañamiento a liderazgo y HR"]
+};
+let PASO_DEFAULT_HTML = '';
+function updatePasoField(){
+  const sel = document.getElementById('f-paso');
+  const lbl = document.getElementById('paso-label');
+  if(!sel || !lbl) return;
+  if(!PASO_DEFAULT_HTML) PASO_DEFAULT_HTML = sel.innerHTML;
+  const plan = CLIENT_PLANS[document.getElementById('f-client').value];
+  if(plan){
+    sel.innerHTML = '<option value="">— ¿a qué frente del plan aporta? —</option>' +
+      plan.map(h=>`<option value="${HITO_PREFIX}${h}">${h}</option>`).join('');
+    lbl.innerHTML = 'Hito del plan <span class="req">*</span>';
+  } else {
+    sel.innerHTML = PASO_DEFAULT_HTML;
+    lbl.textContent = 'Paso UPway™';
+  }
+}
 const CONSULTANT_ROSTER = [
   {name:'Natalia Reyes',         color:'#2E6DFF', target:{cliente:100, interno:60}},
   {name:'Michelle Camacho',      color:'#FAB727', target:{cliente:128, interno:32}},
@@ -631,6 +659,8 @@ function init() {
   populateHoursSelect();
   populateConsultantSelect();
   populateClientSelect();
+  document.getElementById('f-client').addEventListener('change', updatePasoField);
+  updatePasoField();
   populateDashConsultantFilter();
   setDashboardDefaults();
   checkConfig();
@@ -781,7 +811,8 @@ async function submitLog() {
   const tier       = document.getElementById('f-tier').value;
   const hours      = parseFloat(document.getElementById('f-hours').value);
   const errEl      = document.getElementById('form-error');
-  if (!consultant || !client || !tier || !selectedActivity || !hours || hours <= 0) {
+  const needsHito = !!CLIENT_PLANS[client] && !document.getElementById('f-paso').value;
+  if (!consultant || !client || !tier || !selectedActivity || !hours || hours <= 0 || needsHito) {
     errEl.style.display = 'inline';
     setTimeout(() => errEl.style.display = 'none', 3000);
     return;
@@ -1273,6 +1304,7 @@ function clearForm() {
   ['f-consultant','f-client','f-tier','f-paso','f-hours','f-notes','f-billed'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.querySelectorAll('.activity-pill').forEach(p=>p.classList.remove('selected'));
   selectedActivity='';
+  updatePasoField();
   setDate();
 }
 function showToast(msg, type='success') {
