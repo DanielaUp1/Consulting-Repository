@@ -189,6 +189,47 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
 .loading-state { text-align:center; padding:32px; color:var(--white-soft); font-size:12px; }
 .sync-btn { background:transparent; border:1px solid var(--border); border-radius:6px; padding:6px 14px; font-family:'Poppins',sans-serif; font-size:10px; color:var(--white-soft); cursor:pointer; }
 .sync-btn:hover { color:var(--white); border-color:var(--blue-tint); }
+/* ── Dictado, pendientes y celular ── */
+.notes-wrap { position: relative; }
+.dictate-btn { position:absolute; right:8px; bottom:8px; background:var(--blue); color:#fff; border:none; border-radius:999px; padding:6px 12px; font-family:'Poppins',sans-serif; font-size:11px; font-weight:600; cursor:pointer; }
+.dictate-btn.listening { background:var(--red); animation: pulse 1.2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+.dictate-hint { font-size:10px; color:var(--white-soft); margin-top:4px; }
+.activity-pill { color: rgba(255,255,255,0.78); }
+.chips { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+.chip { background:transparent; border:1px solid var(--border); color:var(--white-soft); border-radius:999px; padding:4px 12px; font-family:'Poppins',sans-serif; font-size:11px; cursor:pointer; }
+.chip:hover { border-color:var(--blue-tint); color:var(--white); }
+.chip.on { background:rgba(46,109,255,0.18); border-color:var(--blue); color:var(--white); }
+.tier-badge { display:inline-block; margin-left:6px; font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:none; }
+.toggle-acts { background:none; border:none; color:var(--blue-tint); font-family:'Poppins',sans-serif; font-size:11px; cursor:pointer; padding:0; margin:0 0 16px; text-decoration:underline; }
+.field-missing select, .field-missing input, .activity-grid.field-missing { outline:2px solid var(--red); outline-offset:2px; border-radius:8px; }
+.repeat-btn { background:transparent; border:1px solid var(--border); color:var(--white-soft); border-radius:6px; padding:3px 8px; font-family:'Poppins',sans-serif; font-size:10px; cursor:pointer; white-space:nowrap; }
+.repeat-btn:hover { color:var(--white); border-color:var(--blue-tint); }
+.delete-btn.confirming { color:#fff; background:var(--red); font-size:10px; font-weight:700; }
+.toast.warn { background:#FAB727; color:#0A1520; }
+.pending-banner { display:none; background:rgba(250,183,39,.12); border:1px solid #FAB727; color:var(--white); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:12px; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.pending-banner button { background:#FAB727; color:#0A1520; border:none; border-radius:6px; padding:6px 14px; font-family:'Poppins',sans-serif; font-size:11px; font-weight:700; cursor:pointer; }
+@media (max-width: 720px) {
+  .view { padding: 16px; }
+  .top-bar { flex-wrap: wrap; gap: 10px; height: auto; padding: 12px 16px; position: static; }
+  .top-bar > div:last-child { flex-wrap: wrap; gap: 10px !important; width: 100%; justify-content: space-between; }
+  .log-card { padding: 20px 16px; }
+  .form-row, .form-row-2, .form-row-4 { grid-template-columns: 1fr !important; }
+  .activity-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .activity-pill { padding: 10px; font-size: 11px; display:flex; align-items:center; gap:8px; text-align:left; }
+  .activity-pill .pill-icon { display:inline; margin:0; font-size:15px; }
+  .submit-row { flex-wrap: wrap; gap: 12px; }
+  .submit-btn { width: 100%; justify-content: center; padding: 14px; }
+  textarea#f-notes { min-height: 110px; padding-bottom: 40px; font-size: 16px; }
+  select, input, textarea { font-size: 16px; }
+  .toast { left: 16px; right: 16px; bottom: 16px; text-align: center; }
+  .log-table-wrap { overflow-x: auto; }
+  .col-tier, .col-paso, .col-fact, .col-cons { display:none; }
+  .log-table th, .log-table td { padding: 10px 8px; }
+  #view-dashboard [style*="grid-template-columns"], #view-dashboard [class*="grid"] { grid-template-columns: 1fr !important; }
+  #view-dashboard { overflow-x: hidden; }
+  #view-dashboard table { display:block; overflow-x:auto; }
+}
 </style>
 </head>
 <body>
@@ -224,6 +265,10 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
 </div>
 <!-- ═══ VIEW: REGISTER ═══ -->
 <div id="view-register" class="view active">
+  <div class="pending-banner" id="pending-banner">
+    <span id="pending-text"></span>
+    <button type="button" onclick="flushPending(true)">Enviar ahora</button>
+  </div>
   <div class="log-card">
     <div class="log-header">
       <div>
@@ -236,15 +281,15 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       </div>
     </div>
     <div class="eyebrow">1 · Contexto</div>
-    <div class="form-row">
-      <div class="field">
+    <div class="form-row form-row-2">
+      <div class="field" id="fld-consultant">
         <div class="field-label">Consultora <span class="req">*</span></div>
         <select id="f-consultant">
           <option value="">— selecciona —</option>
         </select>
       </div>
       <div class="field">
-        <div class="field-label">Cliente <span class="req">*</span></div>
+        <div class="field-label">Cliente <span class="req">*</span><span class="tier-badge" id="client-tier-badge"></span></div>
         <select id="f-client">
           <option value="">— selecciona —</option>
           <optgroup label="⬡ Interno">
@@ -252,7 +297,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
           </optgroup>
         </select>
       </div>
-      <div class="field">
+      <div class="field" id="fld-tier" style="display:none">
         <div class="field-label">Tier <span class="req">*</span></div>
         <select id="f-tier">
           <option value="">— selecciona —</option>
@@ -263,7 +308,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       </div>
     </div>
     <div class="eyebrow" style="margin-top:20px">2 · Tipo de actividad <span style="color:var(--white-soft);text-transform:none;letter-spacing:0;font-weight:400;font-size:9px">— selecciona una *</span></div>
-    <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-tint);margin-bottom:8px;">Actividades · Cliente</div>
+    <div id="grp-client-h" style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-tint);margin-bottom:8px;">Actividades · Cliente</div>
     <div class="activity-grid" id="activity-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px;">
       <div class="activity-pill" data-activity="Preparación de sesión en vivo" onclick="selectActivity(this)"><span class="pill-icon">📋</span>Preparación de sesión en vivo</div>
       <div class="activity-pill" data-activity="Sesión en vivo con cliente" onclick="selectActivity(this)"><span class="pill-icon">💬</span>Sesión en vivo con cliente</div>
@@ -279,8 +324,9 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       <div class="activity-pill" data-activity="Onboarding / bienvenida" onclick="selectActivity(this)"><span class="pill-icon">🚀</span>Onboarding / bienvenida</div>
       <div class="activity-pill" data-activity="Responder consulta" onclick="selectActivity(this)"><span class="pill-icon">💡</span>Responder consulta</div>
     </div>
-    <div style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">Actividades · UP (internas)</div>
-    <div class="activity-grid" style="grid-template-columns:repeat(4,1fr);">
+    <button type="button" class="toggle-acts" id="toggle-acts" style="display:none" onclick="showAllActivities()"></button>
+    <div id="grp-internal-h" style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">Actividades · UP (internas)</div>
+    <div class="activity-grid" id="activity-grid-internal" style="grid-template-columns:repeat(4,1fr);">
       <div class="activity-pill" data-activity="Business Update" onclick="selectActivity(this)"><span class="pill-icon">📣</span>Business Update</div>
       <div class="activity-pill" data-activity="CX" onclick="selectActivity(this)"><span class="pill-icon">🎯</span>CX</div>
       <div class="activity-pill" data-activity="Marketing" onclick="selectActivity(this)"><span class="pill-icon">📢</span>Marketing</div>
@@ -305,7 +351,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
     <div class="eyebrow" style="margin-top:20px">3 · Detalle</div>
     <div class="form-row form-row-4">
       <div class="field">
-        <div class="field-label">Paso UPway™</div>
+        <div class="field-label" id="paso-label">Paso UPway™ <span style="text-transform:none;font-weight:400;letter-spacing:0">(opcional)</span></div>
         <select id="f-paso">
           <option value="">— paso —</option>
           <option>P01 · Visión</option><option>P02 · Dirección</option>
@@ -318,12 +364,14 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       <div class="field">
         <div class="field-label">Fecha <span class="req">*</span></div>
         <input type="date" id="f-date">
+        <div class="chips"><button type="button" class="chip" onclick="setDayOffset(0)">Hoy</button><button type="button" class="chip" onclick="setDayOffset(1)">Ayer</button><button type="button" class="chip" onclick="setDayOffset(2)">Anteayer</button></div>
       </div>
       <div class="field">
         <div class="field-label">Duración <span class="req">*</span></div>
         <select id="f-hours">
           <option value="">— selecciona —</option>
         </select>
+        <div class="chips" id="hour-chips"><button type="button" class="chip" data-h="0.5">30 min</button><button type="button" class="chip" data-h="1">1 h</button><button type="button" class="chip" data-h="1.5">1½ h</button><button type="button" class="chip" data-h="2">2 h</button></div>
       </div>
       <div class="field">
         <div class="field-label">¿Facturada al cliente?</div>
@@ -334,8 +382,12 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
       </div>
     </div>
     <div class="field" style="margin-top:4px">
-      <div class="field-label">Notas <span style="color:var(--white-soft);text-transform:none;font-weight:400;font-size:9px">— ¿qué hiciste? ¿qué fue lento? ¿qué podría sistematizarse?</span></div>
-      <textarea id="f-notes" placeholder="Ej: Preparé agenda de Paso 03 para Contactica — tomé 45 min buscando plantilla de Matriz de Competencias. Podría ser template preconfigurado por industria."></textarea>
+      <div class="field-label">Notas <span style="color:var(--white-soft);text-transform:none;font-weight:400;font-size:9px">— qué pasó, qué sigue y si algo te preocupa del cliente</span></div>
+      <div class="notes-wrap">
+        <textarea id="f-notes" placeholder="Ej: Revisamos evaluaciones con la gerente. Le preocupa la rotación de supervisores; la próxima sesión vemos retención."></textarea>
+        <button type="button" class="dictate-btn" id="dictate-btn" onclick="toggleDictation()" style="display:none">🎙 Dictar</button>
+      </div>
+      <div class="dictate-hint" id="dictate-hint" style="display:none">Para dictar, toca el micrófono de tu teclado.</div>
     </div>
     <div class="submit-row">
       <button class="clear-btn" onclick="clearForm()">Limpiar</button>
@@ -349,7 +401,7 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
     </div>
   </div>
   <!-- RECENT LOGS -->
-  <div class="eyebrow">Registros recientes <span style="color:var(--white-soft);text-transform:none;letter-spacing:0;font-weight:400">(últimos 20)</span></div>
+  <div class="eyebrow"><span id="recent-title">Registros recientes</span> <span style="color:var(--white-soft);text-transform:none;letter-spacing:0;font-weight:400">(últimos 20 · ↻ Repetir copia un registro al formulario)</span></div>
   <div id="recent-logs-wrap">
     <div class="loading-state">Cargando registros...</div>
   </div>
@@ -470,6 +522,14 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus { background: rgba(46
 // CONFIG
 // ═══════════════════════════════════════════════════════
 const SCRIPT_URL_KEY = 'upturn_script_url';
+// URL fija del Apps Script: así el registro funciona en cualquier navegador (Teams, WhatsApp, celular)
+// sin que nadie tenga que configurar nada.
+// Pendiente de decisión: fijar aquí la URL la haría pública (el repositorio es público). Ver nota en el chat.
+const DEFAULT_SCRIPT_URL = '';
+const PENDING_KEY = 'upturn_pending_logs';
+const LAST_CONSULTANT_KEY = 'upturn_last_consultant';
+function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+function lsSet(k,v){ try { localStorage.setItem(k,v); return true; } catch(e){ return false; } }
 const TIER_COLORS    = { Essential: '#2E6DFF', Empower: '#FAB727', Complete: '#4ECDC4', 'Complete Network': '#4CAF82', Legacy: '#A78BFA' };
 const ACT_COLORS     = ['#2E6DFF','#FAB727','#4ECDC4','#A78BFA','#FF6B6B','#FF9F43','#4CAF82','#6895FD','#E8A0BF','#93C6E7','#B5EAD7','#C7B8EA'];
 
@@ -502,7 +562,7 @@ const CLIENT_ROSTER = [
   {name:'Cabrera Auto',tier:'Essential'},{name:'Fulcro',tier:'Essential'},{name:'Kayaking PR',tier:'Essential'},
   {name:'JC González',tier:'Essential',endDate:'2026-07-31'},{name:'Pet Health',tier:'Essential'},{name:'Med Transport',tier:'Essential'},
   {name:'IG Builders Corp.',tier:'Essential'},{name:'Cenegenics',tier:'Essential',endDate:'2026-07-31'},{name:'Pharma Xpress',tier:'Essential'},
-  {name:'MPS Precast',tier:'Essential'},{name:'PRENT',tier:'Essential'},
+  {name:'MPS Precast',tier:'Essential'},{name:'PRENT',tier:'Essential'},{name:'Technology Partners',tier:'Essential'},
   {name:'Auto Service Equipment',tier:'Empower'},{name:'Los Paseos',tier:'Empower'},
   {name:'ADV',tier:'Complete'},{name:'Contactica',tier:'Complete'},{name:'Able Sales PR',tier:'Complete'},
   {name:'Tolic',tier:'Complete'},{name:'Solar Roots',tier:'Complete'},{name:'ROV Engineering',tier:'Complete',endDate:'2026-07-31',returnDate:'2026-10-01'},
@@ -521,7 +581,7 @@ const CLIENT_TIER_ORDER = ['Essential','Empower','Complete','Complete Network','
 // null = no hay dato de contrato disponible (Cenegenics y ROV Engineering no aparecen en esa hoja).
 const CLIENT_CONTRACT_HOURS = {
   'Cabrera Auto':1,'Fulcro':1,'Kayaking PR':1,'JC González':1,'Pet Health':1,'Med Transport':1,
-  'IG Builders Corp.':1,'Cenegenics':null,'Pharma Xpress':1,'MPS Precast':1,'PRENT':1,
+  'IG Builders Corp.':1,'Cenegenics':null,'Pharma Xpress':1,'MPS Precast':1,'PRENT':1,'Technology Partners':0.5,
   'Auto Service Equipment':10,'Los Paseos':10,
   'ADV':20,'Contactica':20,'Able Sales PR':20,'Tolic':1,'Solar Roots':20,'ROV Engineering':20,
   'CMV':36,'American Storage':10,'Banditech':16,'Beryllium':20,'Bless Therapy':10,'Caribe Drones':5,
@@ -576,6 +636,34 @@ function contractMonthsInRange(name, fromStr, toStr){
 }
 // Roster de consultoras: color de gráfico + meta de rol (horas/mes, dato de Natalia).
 // Para dar de baja: agrega endDate aquí (ver nota arriba). Se deriva CONSULTANT_TARGETS automáticamente.
+// ═══════════════════════════════════════════════════════
+// PLANES DE CLIENTE — clientes con portal de avance.
+// Para estos clientes, el campo "Paso UPway™" se convierte en "Hito del plan" (obligatorio) y se
+// guarda como "Hito · <frente>" en la misma columna Paso_UPway. El portal del cliente cuenta las
+// actividades por frente a partir de esa etiqueta.
+// IMPORTANTE: los nombres deben ser idénticos a la columna "frente" de la pestaña Portal_<cliente>.
+// Para agregar un cliente con portal: agrega aquí su lista y crea su pestaña con el Apps Script del portal.
+// ═══════════════════════════════════════════════════════
+const HITO_PREFIX = 'Hito · ';
+const CLIENT_PLANS = {
+  'Health Chiropractic': ["Arranque y alineación", "Lanzamiento y cultura", "Auditoría y remediación", "One-to-one con líderes", "Encuesta de cultura y engagement", "Manual del empleado y políticas", "Desarrollo de líderes · Simposio", "Ritmo UPway™ · UP Labs y armonización", "Business UPdate trimestral", "Retiro estratégico", "Acompañamiento a liderazgo y HR"]
+};
+let PASO_DEFAULT_HTML = '';
+function updatePasoField(){
+  const sel = document.getElementById('f-paso');
+  const lbl = document.getElementById('paso-label');
+  if(!sel || !lbl) return;
+  if(!PASO_DEFAULT_HTML) PASO_DEFAULT_HTML = sel.innerHTML;
+  const plan = CLIENT_PLANS[document.getElementById('f-client').value];
+  if(plan){
+    sel.innerHTML = '<option value="">— ¿a qué frente del plan aporta? —</option>' +
+      plan.map(h=>`<option value="${HITO_PREFIX}${h}">${h}</option>`).join('');
+    lbl.innerHTML = 'Hito del plan <span class="req">*</span>';
+  } else {
+    sel.innerHTML = PASO_DEFAULT_HTML;
+    lbl.innerHTML = 'Paso UPway™ <span style="text-transform:none;font-weight:400;letter-spacing:0">(opcional)</span>';
+  }
+}
 const CONSULTANT_ROSTER = [
   {name:'Natalia Reyes',         color:'#2E6DFF', target:{cliente:100, interno:60}},
   {name:'Michelle Camacho',      color:'#FAB727', target:{cliente:128, interno:32}},
@@ -593,7 +681,7 @@ const CLIENT_CONSULTANT = {
   'Cabrera Auto':'Natalia Reyes','Fulcro':'Natalia Reyes','Kayaking PR':'Michelle Camacho',
   'JC González':'Janice Alicea','Pet Health':'Natalia Reyes','Med Transport':'Janice Alicea',
   'IG Builders Corp.':'Natalia Reyes','Cenegenics':null,'Pharma Xpress':'Natalia Reyes',
-  'MPS Precast':'Kalia Torres','PRENT':'Michelle Camacho',
+  'MPS Precast':'Kalia Torres','PRENT':'Michelle Camacho','Technology Partners':'Natalia Reyes',
   'Auto Service Equipment':'Michelle Camacho','Los Paseos':'Kalia Torres',
   'ADV':'Kalia Torres','Contactica':'Natalia Reyes','Tolic':'Janice Alicea',
   'Solar Roots':'Natalia Reyes','ROV Engineering':'Alejandra Pedraza',
@@ -646,15 +734,26 @@ let selectedActivity = '';
 let scriptUrl = '';
 // ── Init ────────────────────────────────────────────────
 function init() {
-  scriptUrl = localStorage.getItem(SCRIPT_URL_KEY) || '';
+  scriptUrl = lsGet(SCRIPT_URL_KEY) || DEFAULT_SCRIPT_URL;
   setDate();
   populateHoursSelect();
   populateConsultantSelect();
   populateClientSelect();
+  document.getElementById('f-client').addEventListener('change', ()=>{ updatePasoField(); onClientChange(); });
+  document.getElementById('f-consultant').addEventListener('change', renderRecentLogs);
+  document.querySelectorAll('#view-register select, #view-register input').forEach(el=>el.addEventListener('change', ()=>{ const f=el.closest('.field'); if(f) f.classList.remove('field-missing'); }));
+  document.querySelectorAll('#hour-chips .chip').forEach(b=>b.addEventListener('click', ()=>{ const f=b.closest('.field'); if(f) f.classList.remove('field-missing'); }));
+  document.getElementById('f-hours').addEventListener('change', syncHourChips);
+  document.querySelectorAll('#hour-chips .chip').forEach(b=>b.addEventListener('click', ()=>{ document.getElementById('f-hours').value=b.dataset.h; syncHourChips(); }));
+  updatePasoField();
   populateDashConsultantFilter();
   setDashboardDefaults();
   checkConfig();
-  loadLogs();
+  restoreLastConsultant();
+  setupDictation();
+  renderPending();
+  loadLogs().then(()=>flushPending(false));
+  window.addEventListener('online', ()=>flushPending(false));
 }
 // Formulario de registro: sólo consultoras activas HOY (no tiene sentido registrar horas a nombre
 // de alguien que ya no trabaja con UPTURN).
@@ -743,7 +842,7 @@ function saveScriptUrl() {
     return;
   }
   scriptUrl = val;
-  localStorage.setItem(SCRIPT_URL_KEY, scriptUrl);
+  lsSet(SCRIPT_URL_KEY, scriptUrl);
   document.getElementById('config-banner').classList.add('hidden');
   showToast('Conectado — cargando datos...', 'success');
   loadLogs();
@@ -801,7 +900,13 @@ async function submitLog() {
   const tier       = document.getElementById('f-tier').value;
   const hours      = parseFloat(document.getElementById('f-hours').value);
   const errEl      = document.getElementById('form-error');
-  if (!consultant || !client || !tier || !selectedActivity || !hours || hours <= 0) {
+  const needsHito = !!CLIENT_PLANS[client] && !document.getElementById('f-paso').value;
+  if (!consultant || !client || !tier || !selectedActivity || !hours || hours <= 0 || needsHito) {
+    const miss = [];
+    const mark = (id, bad, name) => { const el = document.getElementById(id); const f = el && (el.closest('.field') || el); if (f) f.classList.toggle('field-missing', !!bad); if (bad) miss.push(name); };
+    mark('f-consultant', !consultant, 'consultora'); mark('f-client', !client, 'cliente');
+    mark('activity-grid', !selectedActivity, 'actividad'); mark('f-hours', !hours || hours <= 0, 'duración'); mark('f-paso', needsHito, 'hito del plan');
+    errEl.textContent = 'Falta: ' + miss.join(', ');
     errEl.style.display = 'inline';
     setTimeout(() => errEl.style.display = 'none', 3000);
     return;
@@ -824,34 +929,87 @@ async function submitLog() {
   btn.disabled = true;
   txt.textContent = 'Guardando...';
   spinner.style.display = 'block';
-  if (!scriptUrl) {
-    // Offline mode: store locally with warning
-    allLogs.unshift({ ...payload, ID: Date.now(), Timestamp: new Date().toISOString(), _offline: true });
-    resetSubmitBtn();
-    clearForm();
+  lsSet(LAST_CONSULTANT_KEY, consultant);
+  // 1) Se guarda primero en este dispositivo: si el envío falla, nada se pierde.
+  const item = { ...payload, _localId: Date.now() + '-' + Math.random().toString(36).slice(2,7), _savedAt: new Date().toISOString() };
+  const queue = getPending(); queue.push(item); setPending(queue);
+  // 2) Se intenta enviar.
+  const ok = await sendOne(item);
+  resetSubmitBtn();
+  clearForm();
+  if (ok) {
+    showToast('✓ Actividad registrada en el Sheet', 'success');
+    allLogs.unshift({ ...payload, Fecha: payload.fecha, Consultora: payload.consultora, Cliente: payload.cliente, Tier: payload.tier, Actividad: payload.actividad, Paso_UPway: payload.paso, Horas: payload.horas, Facturada: payload.facturada, Notas: payload.notas });
     renderRecentLogs();
-    showToast('Guardado localmente — conecta el Sheet para sincronizar', 'error');
-    return;
+    loadLogs(); // refresca en segundo plano, sin hacer esperar a la consultora
+  } else {
+    showToast('Sin conexión: quedó guardado en este dispositivo y se enviará solo', 'warn');
   }
+  renderPending();
+}
+// ── Registros pendientes (guardados en el dispositivo) ──
+function getPending(){ try { return JSON.parse(lsGet(PENDING_KEY) || '[]'); } catch(e){ return []; } }
+function setPending(q){ lsSet(PENDING_KEY, JSON.stringify(q)); }
+async function sendOne(item){
+  const { _localId, _savedAt, ...payload } = item;
   try {
-    const res  = await fetch(scriptUrl, {
-      method: 'POST',
-      mode: 'cors',
-      body: JSON.stringify(payload),
-    });
+    const res  = await fetch(scriptUrl, { method: 'POST', mode: 'cors', body: JSON.stringify(payload) });
     const data = await res.json();
-    if (data.status === 'ok') {
-      showToast('✓ Actividad registrada en el Sheet', 'success');
-      clearForm();
-      await loadLogs();
-    } else {
-      throw new Error(data.message);
+    if (data.status !== 'ok') throw new Error(data.message);
+    setPending(getPending().filter(x => x._localId !== _localId));
+    return true;
+  } catch(e) { return false; }
+}
+let flushing = false;
+async function flushPending(manual){
+  if (flushing) return;
+  const q = getPending();
+  if (!q.length) { renderPending(); return; }
+  flushing = true;
+  let sent = 0;
+  for (const item of q) { if (await sendOne(item)) sent++; }
+  flushing = false;
+  renderPending();
+  if (sent) { showToast(`✓ ${sent} registro${sent>1?'s':''} pendiente${sent>1?'s':''} enviado${sent>1?'s':''}`, 'success'); loadLogs(); }
+  else if (manual) showToast('Todavía sin conexión — se reintentará solo', 'warn');
+}
+function renderPending(){
+  const b = document.getElementById('pending-banner'); if (!b) return;
+  const n = getPending().length;
+  b.style.display = n ? 'flex' : 'none';
+  document.getElementById('pending-text').textContent = n ? `⏳ ${n} registro${n>1?'s':''} guardado${n>1?'s':''} en este dispositivo, pendiente${n>1?'s':''} de enviar.` : '';
+}
+function restoreLastConsultant(){
+  const last = lsGet(LAST_CONSULTANT_KEY); const sel = document.getElementById('f-consultant');
+  if (last && sel && [...sel.options].some(o => o.textContent === last)) sel.value = last;
+}
+// ── Dictado de notas ──
+let recognizer = null, listening = false;
+function setupDictation(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { document.getElementById('dictate-hint').style.display = 'block'; return; }
+  document.getElementById('dictate-btn').style.display = 'inline-block';
+  recognizer = new SR();
+  recognizer.lang = 'es-US'; recognizer.continuous = true; recognizer.interimResults = false;
+  recognizer.onresult = (e) => {
+    const ta = document.getElementById('f-notes');
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) ta.value = (ta.value ? ta.value.trim() + ' ' : '') + e.results[i][0].transcript.trim();
     }
-  } catch(e) {
-    showToast('Error al guardar — intenta de nuevo', 'error');
-  } finally {
-    resetSubmitBtn();
-  }
+  };
+  recognizer.onend = () => { listening = false; updateDictateBtn(); };
+  recognizer.onerror = () => { listening = false; updateDictateBtn(); document.getElementById('dictate-hint').style.display = 'block'; };
+}
+function toggleDictation(){
+  if (!recognizer) return;
+  if (listening) { recognizer.stop(); listening = false; }
+  else { try { recognizer.start(); listening = true; } catch(e) {} }
+  updateDictateBtn();
+}
+function updateDictateBtn(){
+  const b = document.getElementById('dictate-btn'); if (!b) return;
+  b.classList.toggle('listening', listening);
+  b.textContent = listening ? '■ Detener' : '🎙 Dictar';
 }
 function resetSubmitBtn() {
   document.getElementById('submit-btn').disabled = false;
@@ -880,24 +1038,30 @@ function renderRecentLogs() {
     wrap.innerHTML = `<div class="empty-state"><div style="font-size:32px;margin-bottom:12px;opacity:0.3">📋</div><div style="font-size:12px">Sin registros aún. Completa el formulario para empezar.</div></div>`;
     return;
   }
-  const show = allLogs.slice(0, 20);
+  const me = (document.getElementById('f-consultant')||{}).value || '';
+  const title = document.getElementById('recent-title'); if (title) title.textContent = me ? 'Tus registros recientes' : 'Registros recientes';
+  const mine = me ? allLogs.filter(l => (l.Consultora||l.consultora) === me) : allLogs.slice();
+  mine.sort((a,b) => String(b.Fecha||b.fecha||'').localeCompare(String(a.Fecha||a.fecha||'')) || String(b.Timestamp||'').localeCompare(String(a.Timestamp||'')));
+  const show = mine.slice(0, 20);
+  window._recentShown = show;
+  if (!show.length) { wrap.innerHTML = `<div class="empty-state"><div style="font-size:12px">Aún no tienes registros. Completa el formulario para empezar.</div></div>`; return; }
   wrap.innerHTML = `
     <div class="log-table-wrap">
       <table class="log-table">
         <thead>
-          <tr><th>Fecha</th><th>Consultora</th><th>Cliente</th><th>Tier</th><th>Actividad</th><th>Paso</th><th>Horas</th><th>Facturada</th><th></th></tr>
+          <tr><th>Fecha</th><th class="col-cons">Consultora</th><th>Cliente</th><th class="col-tier">Tier</th><th>Actividad</th><th class="col-paso">Paso</th><th>Horas</th><th class="col-fact">Facturada</th><th></th></tr>
         </thead>
         <tbody>
-          ${show.map(l => `<tr>
+          ${show.map((l, i) => `<tr>
             <td>${l.Fecha || l.fecha || '—'}</td>
-            <td style="color:var(--white);font-weight:500">${l.Consultora || l.consultora || '—'}</td>
+            <td class="col-cons" style="color:var(--white);font-weight:500">${l.Consultora || l.consultora || '—'}</td>
             <td style="color:var(--white)">${l.Cliente || l.cliente || '—'}</td>
-            <td><span style="color:${TIER_COLORS[l.Tier||l.tier]||'#888'};font-weight:700;font-size:10px">${l.Tier||l.tier||'—'}</span></td>
+            <td class="col-tier"><span style="color:${TIER_COLORS[l.Tier||l.tier]||'#888'};font-weight:700;font-size:10px">${l.Tier||l.tier||'—'}</span></td>
             <td>${l.Actividad || l.actividad || '—'}</td>
-            <td style="font-size:10px">${l.Paso_UPway || l.paso || '—'}</td>
+            <td class="col-paso" style="font-size:10px">${l.Paso_UPway || l.paso || '—'}</td>
             <td><span class="hours-badge">${parseFloat(l.Horas||l.horas||0).toFixed(1)}h</span></td>
-            <td><span style="font-size:10px;font-weight:600;color:${(l.Facturada||l.facturada)==='si'?'var(--blue)':'var(--white-soft)'}">${(l.Facturada||l.facturada)==='si'?'Sí':'No'}</span></td>
-            <td><button class="delete-btn" onclick="deleteLog('${l.ID||l.id||''}')" title="Eliminar">✕</button></td>
+            <td class="col-fact"><span style="font-size:10px;font-weight:600;color:${(l.Facturada||l.facturada)==='si'?'var(--blue)':'var(--white-soft)'}">${(l.Facturada||l.facturada)==='si'?'Sí':'No'}</span></td>
+            <td style="white-space:nowrap"><button class="repeat-btn" onclick="repeatLog(${i})" title="Copiar al formulario">↻ Repetir</button> <button class="delete-btn" onclick="confirmDelete(this,'${l.ID||l.id||''}')" title="Eliminar">✕</button></td>
           </tr>`).join('')}
         </tbody>
       </table>
@@ -913,15 +1077,6 @@ function inRange(dateStr, from, to){
   if(to && d > new Date(to+'T23:59:59')) return false;
   return true;
 }
-// Excluye de TODOS los conteos del dashboard los registros de un cliente dado de baja cuya fecha
-// cae después de su baja (endDate). Los registros de antes de la baja se conservan.
-function logClientActive(l){
-  const c = CLIENT_ROSTER.find(x=>x.name===(l.Cliente||l.cliente||''));
-  if(!c) return true; // UPTURN u otro nombre que no está en el roster
-  const d = String(l.Fecha||l.fecha||'');
-  if(!/^\d{4}-\d{2}-\d{2}/.test(d)) return true;
-  return activeAsOf(c, d.slice(0,10));
-}
 // Respeta los 3 filtros (consultora, tier, fechas) — para KPIs, actividades y vista por consultora
 function getFiltered() {
   const fc = document.getElementById("dash-filter-consultant")?.value || "all";
@@ -932,7 +1087,7 @@ function getFiltered() {
     const conOk  = fc==="all" || con(l)===fc;
     const tierOk = ft==="all" || tier(l)===ft;
     const dateOk = inRange(l.Fecha||l.fecha||"", from, to);
-    return conOk && tierOk && dateOk && logClientActive(l);
+    return conOk && tierOk && dateOk;
   });
 }
 // Sólo respeta el rango de fechas — para los paneles a nivel de cliente (cumplimiento y sin interacción),
@@ -941,7 +1096,7 @@ function getFiltered() {
 function getFilteredByDate(){
   const from = document.getElementById("dash-filter-from")?.value || "";
   const to   = document.getElementById("dash-filter-to")?.value || "";
-  return allLogs.filter(l => inRange(l.Fecha||l.fecha||"", from, to) && logClientActive(l));
+  return allLogs.filter(l => inRange(l.Fecha||l.fecha||"", from, to));
 }
 function h(l) { return parseFloat(l.Horas||l.horas||0); }
 function tier(l) { return l.Tier||l.tier||''; }
@@ -1290,8 +1445,63 @@ function renderClientsWithoutActivity(){
        </div>`
     : `<div class="loading-state" style="color:var(--green)">Todos los clientes tuvieron actividad en el rango seleccionado.</div>`;
 }
-// ── Helpers ───────────────────────────────────────────────
+// ── Ayudas del formulario ─────────────────────────────────
+function onClientChange(){
+  const client = document.getElementById('f-client').value;
+  const tierSel = document.getElementById('f-tier');
+  const badge = document.getElementById('client-tier-badge');
+  const r = CLIENT_ROSTER.find(c => c.name === client);
+  const tier = client === 'UPTURN' ? 'N/A' : (r ? r.tier : '');
+  tierSel.value = tier;
+  document.getElementById('fld-tier').style.display = (client && !tier) ? '' : 'none';
+  badge.textContent = (client && tier && tier !== 'N/A') ? '· ' + tier : '';
+  badge.style.color = TIER_COLORS[tier] || 'var(--white-soft)';
+  if (client) document.getElementById('f-billed').value = client === 'UPTURN' ? 'no' : 'si';
+  setActivityGroups(client ? (client === 'UPTURN' ? 'internal' : 'client') : 'all');
+}
+let actMode = 'all';
+function setActivityGroups(mode){
+  actMode = mode;
+  const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? '' : 'none'; };
+  show('grp-client-h', mode !== 'internal'); show('activity-grid', mode !== 'internal');
+  show('grp-internal-h', mode !== 'client'); show('activity-grid-internal', mode !== 'client');
+  const t = document.getElementById('toggle-acts');
+  t.style.display = mode === 'all' ? 'none' : '';
+  t.textContent = mode === 'client' ? '+ Ver actividades internas UP' : '+ Ver actividades con cliente';
+}
+function showAllActivities(){ setActivityGroups('all'); }
+function setDayOffset(n){
+  const d = new Date(); d.setDate(d.getDate() - n);
+  const pad = x => String(x).padStart(2,'0');
+  document.getElementById('f-date').value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function syncHourChips(){
+  const v = document.getElementById('f-hours').value;
+  document.querySelectorAll('#hour-chips .chip').forEach(b => b.classList.toggle('on', b.dataset.h === v));
+}
+function repeatLog(i){
+  const l = (window._recentShown || [])[i]; if (!l) return;
+  const sel = document.getElementById('f-client'); sel.value = l.Cliente || l.cliente || '';
+  sel.dispatchEvent(new Event('change'));
+  const act = l.Actividad || l.actividad;
+  const pill = [...document.querySelectorAll('.activity-pill')].find(p => p.dataset.activity === act);
+  if (pill) { setActivityGroups('all'); selectActivity(pill); }
+  const h = parseFloat(l.Horas || l.horas || 0);
+  const hs = document.getElementById('f-hours'); if ([...hs.options].some(o => o.value === String(h))) hs.value = String(h); syncHourChips();
+  const fb = (l.Facturada || l.facturada); if (fb === 'si' || fb === 'no') document.getElementById('f-billed').value = fb;
+  const paso = l.Paso_UPway || l.paso; const ps = document.getElementById('f-paso'); if (paso && [...ps.options].some(o => o.value === paso || o.textContent === paso)) ps.value = paso;
+  setDayOffset(0);
+  document.getElementById('f-notes').value = '';
+  document.getElementById('f-notes').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  showToast('Copiado al formulario: revisa fecha y notas', 'success');
+}
+function confirmDelete(btn, id){
+  if (btn.classList.contains('confirming')) { deleteLog(id); return; }
+  btn.classList.add('confirming'); btn.textContent = '¿Eliminar?';
+  setTimeout(() => { btn.classList.remove('confirming'); btn.textContent = '✕'; }, 3000);
+}
 function selectActivity(el) {
+  const g = document.getElementById('activity-grid'); if (g) g.classList.remove('field-missing');
   document.querySelectorAll('.activity-pill').forEach(p=>p.classList.remove('selected'));
   el.classList.add('selected');
   selectedActivity = el.dataset.activity;
@@ -1304,9 +1514,15 @@ function switchView(v, btn) {
   if(v==='dashboard') renderDashboard();
 }
 function clearForm() {
-  ['f-consultant','f-client','f-tier','f-paso','f-hours','f-notes','f-billed'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['f-client','f-tier','f-paso','f-hours','f-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const billed=document.getElementById('f-billed'); if(billed) billed.selectedIndex=0;
+  restoreLastConsultant();
   document.querySelectorAll('.activity-pill').forEach(p=>p.classList.remove('selected'));
   selectedActivity='';
+  updatePasoField();
+  onClientChange();
+  syncHourChips();
+  document.querySelectorAll('.field-missing').forEach(e=>e.classList.remove('field-missing'));
   setDate();
 }
 function showToast(msg, type='success') {
